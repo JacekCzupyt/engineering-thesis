@@ -9,6 +9,8 @@ public class DemoPlayerMovement : NetworkBehaviour {
     public float acceleration = 2f;
 
     private void Start() {
+        if (!IsLocalPlayer)
+            this.GetComponentInChildren<Camera>().enabled = false;
         rb = this.GetComponent<Rigidbody>();
     }
 
