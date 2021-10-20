@@ -15,19 +15,20 @@ public class DemoPlayerMovement : NetworkBehaviour {
     }
 
     private void FixedUpdate() {
-        if (this.IsOwner) {
-            if (Input.GetKey(KeyCode.W))
-                rb.AddForce(transform.forward * acceleration);
-            if (Input.GetKey(KeyCode.S))
-                rb.AddForce(-transform.forward * acceleration);
-            if (Input.GetKey(KeyCode.D))
-                rb.AddForce(transform.right * acceleration);
-            if (Input.GetKey(KeyCode.A))
-                rb.AddForce(-transform.right * acceleration);
-            if (Input.GetKey(KeyCode.Space))
-                rb.AddForce(transform.up * acceleration);
-            if (Input.GetKey(KeyCode.LeftShift))
-                rb.AddForce(-transform.up * acceleration);
-        }
+        if (!this.IsOwner)
+            return;
+        
+        if (Input.GetKey(KeyCode.W))
+            rb.AddForce(transform.forward * acceleration);
+        if (Input.GetKey(KeyCode.S))
+            rb.AddForce(-transform.forward * acceleration);
+        if (Input.GetKey(KeyCode.D))
+            rb.AddForce(transform.right * acceleration);
+        if (Input.GetKey(KeyCode.A))
+            rb.AddForce(-transform.right * acceleration);
+        if (Input.GetKey(KeyCode.Space))
+            rb.AddForce(transform.up * acceleration);
+        if (Input.GetKey(KeyCode.LeftShift))
+            rb.AddForce(-transform.up * acceleration);
     }
 }
