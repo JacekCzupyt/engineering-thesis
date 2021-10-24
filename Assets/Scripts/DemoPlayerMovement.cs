@@ -32,17 +32,17 @@ public class DemoPlayerMovement : NetworkBehaviour {
         Vector3 acc = Vector3.zero;
 
         if (Input.GetKey(KeyCode.W))
-            acc += Vector3.forward;
+            acc += transform.forward;
         if (Input.GetKey(KeyCode.S))
-            acc -= Vector3.forward;
+            acc -= transform.forward;
         if (Input.GetKey(KeyCode.D))
-            acc += Vector3.right;
+            acc += transform.right;
         if (Input.GetKey(KeyCode.A))
-            acc -= Vector3.right;
+            acc -= transform.right;
         if (Input.GetKey(KeyCode.Space))
-            acc += Vector3.up;
+            acc += transform.up;
         if (Input.GetKey(KeyCode.LeftShift))
-            acc -= Vector3.up;
+            acc -= transform.up;
         
         if(acc != Vector3.zero)
             acc.Normalize();
