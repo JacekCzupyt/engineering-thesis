@@ -8,10 +8,20 @@ using UnityEngine;
 public class DemoPlayerMovement : NetworkBehaviour {
     private Rigidbody rb;
     public float acceleration = 2f;
-    public bool latencyHiding = true;
+    public float snap = 1;
 
-    private NetworkVariableVector3 networkVelocity;
-    private NetworkVariableVector3 networkAcceleration;
+    private NetworkVariableVector3 networkVelocity = new NetworkVariableVector3(new NetworkVariableSettings {
+        ReadPermission = NetworkVariablePermission.Everyone,
+        WritePermission = NetworkVariablePermission.OwnerOnly
+    });
+    private NetworkVariableVector3 networkAcceleration = new NetworkVariableVector3(new NetworkVariableSettings {
+        ReadPermission = NetworkVariablePermission.Everyone,
+        WritePermission = NetworkVariablePermission.OwnerOnly
+    });
+    private NetworkVariableVector3 networkTransform = new NetworkVariableVector3(new NetworkVariableSettings {
+        ReadPermission = NetworkVariablePermission.Everyone,
+        WritePermission = NetworkVariablePermission.OwnerOnly
+    });
 
     private void Start() {
         if (!IsLocalPlayer)
@@ -21,13 +31,13 @@ public class DemoPlayerMovement : NetworkBehaviour {
 
     private void FixedUpdate() {
         if (!this.IsOwner) {
-            if (latencyHiding) {
-                rb.velocity = networkVelocity.Value;
-                rb.AddForce(networkAcceleration.Value);
-            }
+            if((transform.position - networkTransform.Value).magnitude > snap)
+                transform.position = networkTransform.Value;
+            rb.velocity = networkVelocity.Value;
+            rb.AddForce(networkAcceleration.Value);
+
             return;
         }
-
 
         Vector3 acc = Vector3.zero;
 
@@ -48,7 +58,8 @@ public class DemoPlayerMovement : NetworkBehaviour {
             acc.Normalize();
         
         rb.AddForce(acc * acceleration);
-        networkVelocity = new NetworkVariableVector3(rb.velocity);
-        networkAcceleration = new NetworkVariableVector3(acc * acceleration);
+        networkVelocity.Value = rb.velocity;
+        networkAcceleration.Value = acc * acceleration;
+        networkTransform.Value = transform.position;
     }
 }
