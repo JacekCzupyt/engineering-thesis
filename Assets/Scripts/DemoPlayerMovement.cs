@@ -2,11 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using MLAPI;
+using MLAPI.NetworkVariable;
 using UnityEngine;
 
 public class DemoPlayerMovement : NetworkBehaviour {
     private Rigidbody rb;
     public float acceleration = 2f;
+    public bool latencyHiding = true;
+
+    private NetworkVariableVector3 networkVelocity;
+    private NetworkVariableVector3 networkAcceleration;
 
     private void Start() {
         if (!IsLocalPlayer)
@@ -15,20 +20,35 @@ public class DemoPlayerMovement : NetworkBehaviour {
     }
 
     private void FixedUpdate() {
-        if (!this.IsOwner)
+        if (!this.IsOwner) {
+            if (latencyHiding) {
+                rb.velocity = networkVelocity.Value;
+                rb.AddForce(networkAcceleration.Value);
+            }
             return;
-        
+        }
+
+
+        Vector3 acc = Vector3.zero;
+
         if (Input.GetKey(KeyCode.W))
-            rb.AddForce(transform.forward * acceleration);
+            acc += Vector3.forward;
         if (Input.GetKey(KeyCode.S))
-            rb.AddForce(-transform.forward * acceleration);
+            acc -= Vector3.forward;
         if (Input.GetKey(KeyCode.D))
-            rb.AddForce(transform.right * acceleration);
+            acc += Vector3.right;
         if (Input.GetKey(KeyCode.A))
-            rb.AddForce(-transform.right * acceleration);
+            acc -= Vector3.right;
         if (Input.GetKey(KeyCode.Space))
-            rb.AddForce(transform.up * acceleration);
+            acc += Vector3.up;
         if (Input.GetKey(KeyCode.LeftShift))
-            rb.AddForce(-transform.up * acceleration);
+            acc -= Vector3.up;
+        
+        if(acc != Vector3.zero)
+            acc.Normalize();
+        
+        rb.AddForce(acc * acceleration);
+        networkVelocity = new NetworkVariableVector3(rb.velocity);
+        networkAcceleration = new NetworkVariableVector3(acc * acceleration);
     }
 }
