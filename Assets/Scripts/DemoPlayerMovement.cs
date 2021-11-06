@@ -10,6 +10,9 @@ public class DemoPlayerMovement : NetworkBehaviour {
     public float acceleration = 2f;
     public float snap = 1;
 
+    [SerializeField] Item[] items;
+    private int Itemindex;
+
     private NetworkVariableVector3 networkVelocity = new NetworkVariableVector3(new NetworkVariableSettings {
         ReadPermission = NetworkVariablePermission.Everyone,
         WritePermission = NetworkVariablePermission.OwnerOnly
@@ -26,6 +29,7 @@ public class DemoPlayerMovement : NetworkBehaviour {
     private void Start() {
         if (!IsLocalPlayer)
             this.GetComponentInChildren<Camera>().enabled = false;
+        EquipItem(0);
         rb = this.GetComponent<Rigidbody>();
     }
 
@@ -61,5 +65,17 @@ public class DemoPlayerMovement : NetworkBehaviour {
         networkVelocity.Value = rb.velocity;
         networkAcceleration.Value = acc * acceleration;
         networkTransform.Value = transform.position;
+    }
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            items[Itemindex].Use();
+        }
+    }
+    private void EquipItem(int index)
+    {
+        items[index].itemGameObject.SetActive(true);
+        Itemindex = index;
     }
 }
