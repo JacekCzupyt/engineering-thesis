@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d4984d9b76636d448102aa2fd78b3a6, type: 3}
   m_Name: Weapon1
   m_EditorClassIdentifier: 
+  itemName: Weapon1
