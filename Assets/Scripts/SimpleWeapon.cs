@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SimpleWeapon : Gun
 {
+
     [SerializeField] Camera cam;
     public override void Use()
     {

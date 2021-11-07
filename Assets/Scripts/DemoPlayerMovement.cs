@@ -9,6 +9,8 @@ public class DemoPlayerMovement : NetworkBehaviour {
     private Rigidbody rb;
     public float acceleration = 2f;
     public float snap = 1;
+    public ParticleSystem bulletSystem;
+    private ParticleSystem.EmissionModule em;
 
     [SerializeField] Item[] items;
     private int Itemindex;
@@ -30,6 +32,8 @@ public class DemoPlayerMovement : NetworkBehaviour {
         if (!IsLocalPlayer)
             this.GetComponentInChildren<Camera>().enabled = false;
         EquipItem(0);
+
+        em = bulletSystem.emission;
         rb = this.GetComponent<Rigidbody>();
     }
 
@@ -71,7 +75,13 @@ public class DemoPlayerMovement : NetworkBehaviour {
         if(Input.GetMouseButtonDown(0))
         {
             items[Itemindex].Use();
+            em.rateOverTime = 10f;
         }
+        else
+        {
+            em.rateOverTime = 0f;
+        }
+
     }
     private void EquipItem(int index)
     {
