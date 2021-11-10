@@ -27,6 +27,13 @@ public class DemoPlayerMovement : NetworkBehaviour {
             WritePermission = NetworkVariablePermission.OwnerOnly
         }
     );
+    
+    private NetworkVariable<Vector3> networkAcceleration = new NetworkVariable<Vector3>(
+        new NetworkVariableSettings {
+            ReadPermission = NetworkVariablePermission.Everyone,
+            WritePermission = NetworkVariablePermission.OwnerOnly
+        }
+    );
 
     private void Start() {
         if (!IsLocalPlayer)
@@ -44,27 +51,32 @@ public class DemoPlayerMovement : NetworkBehaviour {
     private void NetworkMovement() {
         // Debug.Log((networkPosition.LocalTick, networkPosition.LocalTick, tickDelta, CurrentTick - networkPosition.LocalTick));
 
-        if (!tickDelta.HasValue) {
-            if (networkPosition.LocalTick != NetworkTickSystem.NoTick)
-                tickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
-            else
-                return;
-        }
-
-        if (networkPosition.LocalTick == NetworkTickSystem.NoTick)
-            return;
+        if (!tickDelta.HasValue && networkPosition.LocalTick != NetworkTickSystem.NoTick)
+            tickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
 
         //TODO: variable tick delta
-        var currentTickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
-        var timeDelta = (currentTickDelta - tickDelta.Value) * NetworkManager.NetworkConfig.NetworkTickIntervalSec;
-        var predictedPosition = networkPosition.Value + networkVelocity.Value * timeDelta;
+
+        float timeDelta;
+        if (networkPosition.LocalTick == NetworkTickSystem.NoTick) {
+            timeDelta = 0;
+        }
+        else {
+            var currentTickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
+            timeDelta = (currentTickDelta - tickDelta.Value) * NetworkManager.NetworkConfig.NetworkTickIntervalSec;
+        }
+
+        var predictedPosition = 
+            networkPosition.Value + 
+            networkVelocity.Value * timeDelta +
+            networkAcceleration.Value * (timeDelta * timeDelta) / 2;
 
         if ((predictedPosition - transform.position).magnitude > snapDistance)
             transform.position = predictedPosition;
 
         rb.velocity = networkVelocity.Value + (predictedPosition - transform.position) * networkPullModifier;
+        rb.AddForce(networkAcceleration.Value);
 
-        //todo: include acceleration? decrease desired accuracy with relative speed? 
+        //todo: decrease desired accuracy with relative speed? 
     }
 
     private void InputMovement() {
@@ -90,6 +102,7 @@ public class DemoPlayerMovement : NetworkBehaviour {
         if (!Input.GetKey(KeyCode.Mouse1)) {
             networkPosition.Value = transform.position;
             networkVelocity.Value = rb.velocity;
+            networkAcceleration.Value = acc * acceleration;
         }
     }
 }
