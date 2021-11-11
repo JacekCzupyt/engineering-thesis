@@ -11,6 +11,11 @@ public class DemoPlayerMovement : NetworkBehaviour {
     public float acceleration = 2f;
     public float snapDistance = 3;
     public float networkPullModifier = 1;
+    public ParticleSystem bulletSystem;
+    private ParticleSystem.EmissionModule em;
+
+    [SerializeField] Item[] items;
+    private int Itemindex;
 
     private int? tickDelta = null;
 
@@ -38,6 +43,9 @@ public class DemoPlayerMovement : NetworkBehaviour {
     private void Start() {
         if (!IsLocalPlayer)
             this.GetComponentInChildren<Camera>().enabled = false;
+        EquipItem(0);
+
+        em = bulletSystem.emission;
         rb = this.GetComponent<Rigidbody>();
     }
 
@@ -107,5 +115,23 @@ public class DemoPlayerMovement : NetworkBehaviour {
             networkVelocity.Value = rb.velocity;
             networkAcceleration.Value = acc * acceleration;
         }
+    }
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            items[Itemindex].Use();
+            em.rateOverTime = 10f;
+        }
+        else
+        {
+            em.rateOverTime = 0f;
+        }
+
+    }
+    private void EquipItem(int index)
+    {
+        items[index].itemGameObject.SetActive(true);
+        Itemindex = index;
     }
 }
