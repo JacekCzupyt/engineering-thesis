@@ -49,19 +49,16 @@ public class DemoPlayerMovement : NetworkBehaviour {
     }
 
     private void NetworkMovement() {
-        // Debug.Log((networkPosition.LocalTick, networkPosition.LocalTick, tickDelta, CurrentTick - networkPosition.LocalTick));
-
         if (!tickDelta.HasValue && networkPosition.LocalTick != NetworkTickSystem.NoTick)
             tickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
-
-        //TODO: variable tick delta
-
+        
         float timeDelta;
         if (networkPosition.LocalTick == NetworkTickSystem.NoTick) {
             timeDelta = 0;
         }
         else {
             var currentTickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
+            tickDelta = Math.Min(tickDelta.Value, currentTickDelta);
             timeDelta = (currentTickDelta - tickDelta.Value) * NetworkManager.NetworkConfig.NetworkTickIntervalSec;
         }
 
@@ -73,7 +70,13 @@ public class DemoPlayerMovement : NetworkBehaviour {
         if ((predictedPosition - transform.position).magnitude > snapDistance)
             transform.position = predictedPosition;
 
-        rb.velocity = networkVelocity.Value + (predictedPosition - transform.position) * networkPullModifier;
+        var posDiff = (predictedPosition - transform.position);
+
+        rb.velocity = 
+            networkVelocity.Value + 
+            networkAcceleration.Value * timeDelta +
+            posDiff.normalized * (float) (Math.Pow(posDiff.magnitude, 2) * networkPullModifier);
+        
         rb.AddForce(networkAcceleration.Value);
 
         //todo: decrease desired accuracy with relative speed? 
