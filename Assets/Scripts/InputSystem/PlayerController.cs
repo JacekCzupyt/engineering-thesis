@@ -92,15 +92,9 @@ public class PlayerController : NetworkBehaviour {
     }
 
     private void InputMovement(){
-        Vector2 hm = inputManager.GetPlayerHorizontalMovement();
-        Vector2 vm = inputManager.GetPlayerVerticalMovement();
-
-        Vector3 acc = new Vector3(hm.x, vm.y, hm.y);
-
-        acc = transform.forward * acc.z + transform.right * acc.x + transform.up * acc.y;
-
-        if (acc != Vector3.zero)
-            acc.Normalize();
+        Vector3 acc = inputManager.GetPlayerMovement();
+        
+        acc = transform.rotation * acc;
 
         rb.AddForce(acc * acceleration);
         if (!Input.GetKey(KeyCode.Mouse1)) {

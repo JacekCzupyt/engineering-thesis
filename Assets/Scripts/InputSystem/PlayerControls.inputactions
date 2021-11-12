@@ -1,5 +1,5 @@
 {
-    "name": "PlayerInputActions",
+    "name": "PlayerControls",
     "maps": [
         {
             "name": "Player",
@@ -17,7 +17,7 @@
                     "name": "VerticalMovement",
                     "type": "Value",
                     "id": "5b836b16-e8c3-44d4-b8da-c735cec93474",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
                 }
@@ -79,9 +79,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "2D Vector",
-                    "id": "6315cc6c-41b6-4e51-b7cb-192d6b584bed",
-                    "path": "2DVector",
+                    "name": "1D Axis",
+                    "id": "1740ffb7-db96-4483-aa36-71c1a7af7af8",
+                    "path": "1DAxis",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -90,9 +90,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "up",
-                    "id": "b420d6a3-9685-401e-94e4-eea41f3e377e",
-                    "path": "<Keyboard>/space",
+                    "name": "negative",
+                    "id": "b0c92eb9-5d3c-45e6-8215-920ecf0985a2",
+                    "path": "<Keyboard>/leftCtrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -101,31 +101,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "down",
-                    "id": "f323bca1-a9a8-44f8-94b9-8c7f8342785e",
+                    "name": "positive",
+                    "id": "0cc95074-ebc6-47db-a8e1-347c1f81674a",
                     "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "VerticalMovement",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "5292c7f5-808b-43c3-819c-0a7620db1846",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "VerticalMovement",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "007190c1-d5de-4729-8afb-cdf0bddf74db",
-                    "path": "",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

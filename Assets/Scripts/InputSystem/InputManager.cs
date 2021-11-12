@@ -5,6 +5,7 @@ using MLAPI;
 using MLAPI.NetworkVariable;
 using MLAPI.Profiling;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem;
 
 public class InputManager : NetworkBehaviour
@@ -16,8 +17,6 @@ public class InputManager : NetworkBehaviour
         }
     }
     PlayerControls controls;
-
-    Vector2 horizontalInput;
 
     private void Awake() {
         if(_instance != null && _instance != this){
@@ -36,11 +35,9 @@ public class InputManager : NetworkBehaviour
         controls.Disable();
     }
 
-    public Vector2 GetPlayerHorizontalMovement(){
-        return controls.Player.HorizontalMovement.ReadValue<Vector2>();
-    }
-
-    public Vector2 GetPlayerVerticalMovement(){
-        return controls.Player.VerticalMovement.ReadValue<Vector2>();
+    public Vector3 GetPlayerMovement(){
+        var vertical = controls.Player.VerticalMovement.ReadValue<float>();
+        var horizontal = controls.Player.HorizontalMovement.ReadValue<Vector2>();
+        return new Vector3(horizontal.x, vertical, horizontal.y).normalized;
     }
 }
