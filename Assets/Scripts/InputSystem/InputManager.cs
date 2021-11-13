@@ -40,4 +40,8 @@ public class InputManager : NetworkBehaviour
         var horizontal = controls.Player.HorizontalMovement.ReadValue<Vector2>();
         return new Vector3(horizontal.x, vertical, horizontal.y).normalized;
     }
+
+    public Vector2 GetMouseDelta() {
+        return controls.Player.CameraMovement.ReadValue<Vector2>();
+    }
 }
