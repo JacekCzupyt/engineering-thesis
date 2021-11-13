@@ -7,6 +7,7 @@ using MLAPI.Profiling;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.HID;
 
 public class InputManager : NetworkBehaviour
 {
@@ -43,5 +44,9 @@ public class InputManager : NetworkBehaviour
 
     public Vector2 GetMouseDelta() {
         return controls.Player.CameraMovement.ReadValue<Vector2>();
+    }
+
+    public bool GetRollMod() {
+        return controls.Player.CameraRollMod.ReadValue<float>() == 1f;
     }
 }
