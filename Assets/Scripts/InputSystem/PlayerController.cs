@@ -9,15 +9,15 @@ using UnityEngine;
 public class PlayerController : NetworkBehaviour {
 
     private Rigidbody rb;
-    public float acceleration = 2f;
     public float snapDistance = 3;
-    private InputManager inputManager;
     public float networkPullModifier = 1;
     public ParticleSystem bulletSystem;
     private ParticleSystem.EmissionModule em;
     [SerializeField] Item[] items;
     private int Itemindex;
     private int? tickDelta = null;
+
+    private MovementControls movementControls;
 
     private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>(
         new NetworkVariableSettings {
@@ -47,7 +47,7 @@ public class PlayerController : NetworkBehaviour {
 
         // em = bulletSystem.emission;
         rb = this.GetComponent<Rigidbody>();
-        inputManager = InputManager.Instance;
+        movementControls = GetComponentInChildren<MovementControls>();
     }
 
     private void FixedUpdate() {
@@ -91,16 +91,12 @@ public class PlayerController : NetworkBehaviour {
         //todo: decrease desired accuracy with relative speed? 
     }
 
-    private void InputMovement(){
-        Vector3 acc = inputManager.GetPlayerMovement();
-        
-        acc = transform.rotation * acc;
-
-        rb.AddForce(acc * acceleration);
+    private void InputMovement() {
+        var acc = movementControls.InputMovement();
         if (!Input.GetKey(KeyCode.Mouse1)) {
             networkPosition.Value = transform.position;
             networkVelocity.Value = rb.velocity;
-            networkAcceleration.Value = acc * acceleration;
+            networkAcceleration.Value = acc;
         }
     }
 
