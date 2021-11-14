@@ -115,6 +115,7 @@ GameObject:
   - component: {fileID: 94830311501573991}
   - component: {fileID: 94830311501574013}
   - component: {fileID: 3677255792734329779}
+  - component: {fileID: 8718053127613962448}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -250,6 +251,21 @@ MonoBehaviour:
   networkPullModifier: 1
   bulletSystem: {fileID: 0}
   items: []
+--- !u!114 &8718053127613962448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94830311501573989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a58d81feb3baa4f9091c0422c7f04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tickRate: 20
+  interpolate: 1
+  minAngle: 1
 --- !u!1 &2228724938188831063
 GameObject:
   m_ObjectHideFlags: 0
