@@ -49,6 +49,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Analog"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Grip"",
+                    ""type"": ""Button"",
+                    ""id"": ""24498500-1d23-4daa-8812-46755aa39c9b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -161,6 +169,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""CameraRollMod"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a1ea010-46ec-4742-94d4-729443cbec0f"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -173,6 +192,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Player_VerticalMovement = m_Player.FindAction("VerticalMovement", throwIfNotFound: true);
         m_Player_CameraMovement = m_Player.FindAction("CameraMovement", throwIfNotFound: true);
         m_Player_CameraRollMod = m_Player.FindAction("CameraRollMod", throwIfNotFound: true);
+        m_Player_Grip = m_Player.FindAction("Grip", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -226,6 +246,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_VerticalMovement;
     private readonly InputAction m_Player_CameraMovement;
     private readonly InputAction m_Player_CameraRollMod;
+    private readonly InputAction m_Player_Grip;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -234,6 +255,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @VerticalMovement => m_Wrapper.m_Player_VerticalMovement;
         public InputAction @CameraMovement => m_Wrapper.m_Player_CameraMovement;
         public InputAction @CameraRollMod => m_Wrapper.m_Player_CameraRollMod;
+        public InputAction @Grip => m_Wrapper.m_Player_Grip;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -255,6 +277,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @CameraRollMod.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
                 @CameraRollMod.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
                 @CameraRollMod.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
+                @Grip.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                @Grip.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                @Grip.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -271,6 +296,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @CameraRollMod.started += instance.OnCameraRollMod;
                 @CameraRollMod.performed += instance.OnCameraRollMod;
                 @CameraRollMod.canceled += instance.OnCameraRollMod;
+                @Grip.started += instance.OnGrip;
+                @Grip.performed += instance.OnGrip;
+                @Grip.canceled += instance.OnGrip;
             }
         }
     }
@@ -281,5 +309,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnVerticalMovement(InputAction.CallbackContext context);
         void OnCameraMovement(InputAction.CallbackContext context);
         void OnCameraRollMod(InputAction.CallbackContext context);
+        void OnGrip(InputAction.CallbackContext context);
     }
 }

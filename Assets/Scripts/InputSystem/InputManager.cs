@@ -1,28 +1,20 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using MLAPI;
-using MLAPI.NetworkVariable;
-using MLAPI.Profiling;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.HID;
 
-public class InputManager : NetworkBehaviour
-{
+public class InputManager : MonoBehaviour {
     private static InputManager _instance;
-    public static InputManager Instance{
-        get{
+    public static InputManager Instance {
+        get {
             return _instance;
         }
     }
     PlayerControls controls;
 
     private void Awake() {
-        if(_instance != null && _instance != this){
+        if (_instance != null && _instance != this) {
             Destroy(this.gameObject);
-        }else{
+        }
+        else {
             _instance = this;
         }
         controls = new PlayerControls();
@@ -36,7 +28,7 @@ public class InputManager : NetworkBehaviour
         controls.Disable();
     }
 
-    public Vector3 GetPlayerMovement(){
+    public Vector3 GetPlayerMovement() {
         var vertical = controls.Player.VerticalMovement.ReadValue<float>();
         var horizontal = controls.Player.HorizontalMovement.ReadValue<Vector2>();
         return new Vector3(horizontal.x, vertical, horizontal.y).normalized;
@@ -48,5 +40,9 @@ public class InputManager : NetworkBehaviour
 
     public bool GetRollMod() {
         return controls.Player.CameraRollMod.ReadValue<float>() == 1f;
+    }
+
+    public InputActionPhase GetGripAction() {
+        return controls.Player.Grip.phase;
     }
 }
