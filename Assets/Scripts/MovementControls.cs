@@ -11,6 +11,9 @@ public class MovementControls : MonoBehaviour {
     [SerializeField] private float driftAcceleration = 5f;
 
     [SerializeField] private float gripRadius = 1.5f;
+    [SerializeField] private float gripAcceleration = 20f;
+    [SerializeField] private float gripDrag = 4f;
+    [SerializeField] private float gripDragExponent = 1.4f;
     
     
     public enum MovementState {
@@ -50,6 +53,12 @@ public class MovementControls : MonoBehaviour {
                 return acceleration;
             }
             case MovementState.Grip: {
+                Vector3 dir = transform.rotation * input.GetPlayerMovement();
+                //TODO: change to velocity relative to gripped object if movable maps are implemented
+                //TODO: cap drag deceleration
+                Vector3 acceleration = dir * gripAcceleration - rb.velocity.normalized * (Mathf.Pow(rb.velocity.magnitude, gripDragExponent) * gripDrag);
+                rb.AddForce(acceleration);
+                
                 if ((input.GetGripAction() == InputActionPhase.Started &&
                     !gripActionUsed) ||
                     Physics.OverlapSphere(transform.position, gripRadius, LayerMask.GetMask("Map")).Length == 0) {
@@ -57,7 +66,7 @@ public class MovementControls : MonoBehaviour {
                     gripActionUsed = true;
                     currentState = MovementState.Drift;
                 }
-                return Vector3.zero;
+                return acceleration;
             }
         }
         throw new ArgumentException("movement state is invalid");

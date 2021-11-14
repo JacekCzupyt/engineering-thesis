@@ -448,6 +448,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   driftAcceleration: 5
   gripRadius: 1.5
+  gripAcceleration: 10
+  gripDrag: 4
+  gripDragExponent: 1.4
   currentState: 0
 --- !u!1 &7837012280776756268
 GameObject:

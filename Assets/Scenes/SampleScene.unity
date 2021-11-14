@@ -210,7 +210,7 @@ GameObject:
   - component: {fileID: 398133161}
   - component: {fileID: 398133160}
   - component: {fileID: 398133159}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -381,7 +381,7 @@ GameObject:
   - component: {fileID: 546182866}
   - component: {fileID: 546182865}
   - component: {fileID: 546182864}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5496,6 +5496,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 2411eed9-000d-4dc4-a650-ca7ab8733d15
     m_ActionName: Player/CameraRollMod[/Mouse/middleButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 24498500-1d23-4daa-8812-46755aa39c9b
+    m_ActionName: Player/Grip[/Keyboard/e]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -5654,7 +5658,7 @@ GameObject:
   - component: {fileID: 1182681744}
   - component: {fileID: 1182681743}
   - component: {fileID: 1182681742}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5749,7 +5753,7 @@ GameObject:
   - component: {fileID: 1425533096}
   - component: {fileID: 1425533095}
   - component: {fileID: 1425533094}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5845,7 +5849,7 @@ GameObject:
   - component: {fileID: 1447552816}
   - component: {fileID: 1447552815}
   - component: {fileID: 1447552814}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5981,7 +5985,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1546152448}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6197,7 +6201,7 @@ GameObject:
   - component: {fileID: 1849937161}
   - component: {fileID: 1849937160}
   - component: {fileID: 1849937159}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6403,7 +6407,7 @@ GameObject:
   - component: {fileID: 1929272711}
   - component: {fileID: 1929272710}
   - component: {fileID: 1929272709}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6498,7 +6502,7 @@ GameObject:
   - component: {fileID: 2023067673}
   - component: {fileID: 2023067672}
   - component: {fileID: 2023067671}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6591,7 +6595,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2125392775}
   - component: {fileID: 2125392776}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Asteroid Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
