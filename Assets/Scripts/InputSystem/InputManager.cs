@@ -45,4 +45,8 @@ public class InputManager : MonoBehaviour {
     public InputActionPhase GetGripAction() {
         return controls.Player.Grip.phase;
     }
+
+    public InputActionPhase GetJumpAction() {
+        return controls.Player.Jump.phase;
+    }
 }

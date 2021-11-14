@@ -14,11 +14,17 @@ public class MovementControls : MonoBehaviour {
     [SerializeField] private float gripAcceleration = 20f;
     [SerializeField] private float gripDrag = 4f;
     [SerializeField] private float gripDragExponent = 1.4f;
-    
-    
+
+    private float jumpCharge = 0;
+    [SerializeField] private float jumpChargeTime = 1;
+    [SerializeField] private float minJumpSpeed = 1f;
+    [SerializeField] private float maxJumpSpeed = 10f;
+
+
     public enum MovementState {
         Drift,
-        Grip
+        Grip,
+        Jump
     }
 
     public MovementState currentState = MovementState.Drift;
@@ -66,6 +72,34 @@ public class MovementControls : MonoBehaviour {
                     gripActionUsed = true;
                     currentState = MovementState.Drift;
                 }
+
+                if (input.GetJumpAction() == InputActionPhase.Started) {
+                    currentState = MovementState.Jump;
+                }
+                
+                return acceleration;
+            }
+            case MovementState.Jump: {
+                Vector3 acceleration = - rb.velocity.normalized * (Mathf.Pow(rb.velocity.magnitude, gripDragExponent) * gripDrag);
+                rb.AddForce(acceleration);
+                
+                if (input.GetJumpAction() == InputActionPhase.Started) {
+                    jumpCharge += Time.fixedDeltaTime / jumpChargeTime;
+                    jumpCharge = Mathf.Min(jumpCharge, 1f);
+                }
+                else {
+                    rb.AddForce(rb.transform.forward * Mathf.Lerp(minJumpSpeed, maxJumpSpeed, jumpCharge), ForceMode.VelocityChange);
+                    currentState = MovementState.Drift;
+                    jumpCharge = 0;
+                    return acceleration;
+                }
+
+                if (input.GetGripAction() == InputActionPhase.Started && !gripActionUsed) {
+                    gripActionUsed = true;
+                    currentState = MovementState.Grip;
+                    jumpCharge = 0;
+                }
+                
                 return acceleration;
             }
         }

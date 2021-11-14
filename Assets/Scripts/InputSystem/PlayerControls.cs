@@ -57,6 +57,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""88fe6a91-cdbc-41c2-9387-6e0076ad15c1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -180,6 +188,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Grip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3513d883-c664-4184-ae11-08acc4ccc346"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -193,6 +212,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Player_CameraMovement = m_Player.FindAction("CameraMovement", throwIfNotFound: true);
         m_Player_CameraRollMod = m_Player.FindAction("CameraRollMod", throwIfNotFound: true);
         m_Player_Grip = m_Player.FindAction("Grip", throwIfNotFound: true);
+        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -247,6 +267,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_CameraMovement;
     private readonly InputAction m_Player_CameraRollMod;
     private readonly InputAction m_Player_Grip;
+    private readonly InputAction m_Player_Jump;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -256,6 +277,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @CameraMovement => m_Wrapper.m_Player_CameraMovement;
         public InputAction @CameraRollMod => m_Wrapper.m_Player_CameraRollMod;
         public InputAction @Grip => m_Wrapper.m_Player_Grip;
+        public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -280,6 +302,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Grip.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
                 @Grip.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
                 @Grip.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -299,6 +324,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Grip.started += instance.OnGrip;
                 @Grip.performed += instance.OnGrip;
                 @Grip.canceled += instance.OnGrip;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
             }
         }
     }
@@ -310,5 +338,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnCameraMovement(InputAction.CallbackContext context);
         void OnCameraRollMod(InputAction.CallbackContext context);
         void OnGrip(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }
