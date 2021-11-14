@@ -28,6 +28,10 @@ public class MovementControls : MonoBehaviour {
     }
 
     public Vector3 InputMovement() {
+        Debug.Log(currentState);
+
+        if (input.GetGripAction() != InputActionPhase.Started)
+            gripActionUsed = false;
 
         switch (currentState) {
             case MovementState.Drift: {
@@ -46,7 +50,14 @@ public class MovementControls : MonoBehaviour {
                 return acceleration;
             }
             case MovementState.Grip: {
-                throw new NotImplementedException();
+                if ((input.GetGripAction() == InputActionPhase.Started &&
+                    !gripActionUsed) ||
+                    Physics.OverlapSphere(transform.position, gripRadius, LayerMask.GetMask("Map")).Length == 0) {
+
+                    gripActionUsed = true;
+                    currentState = MovementState.Drift;
+                }
+                return Vector3.zero;
             }
         }
         throw new ArgumentException("movement state is invalid");
