@@ -58,6 +58,8 @@ public class PlayerController : NetworkBehaviour {
     }
 
     private void NetworkMovement() {
+        //TODO: FOR TESTING
+        return;
         if (!tickDelta.HasValue && networkPosition.LocalTick != NetworkTickSystem.NoTick)
             tickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
         

@@ -130,6 +130,7 @@ Transform:
   m_Children:
   - {fileID: 94830311284520284}
   - {fileID: 3762044865511022492}
+  - {fileID: 8339405322677182429}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -307,6 +308,51 @@ MonoBehaviour:
   itemInfo: {fileID: 11400000, guid: de840bc634d1eb94fa1a24203b3fc375, type: 2}
   itemGameObject: {fileID: 9109141040604236965}
   cam: {fileID: 94830311284520283}
+--- !u!1 &2732053220316878978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8339405322677182429}
+  - component: {fileID: 755432373188184884}
+  m_Layer: 0
+  m_Name: Networking
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8339405322677182429
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2732053220316878978}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 94830311501574011}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &755432373188184884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2732053220316878978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 258c961d43a3cf34b899e783a2c2b479, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tickMultiplier: 2
+  physicsInterpolate: 1
 --- !u!1 &4296333263486058836
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,6 +497,9 @@ MonoBehaviour:
   gripAcceleration: 10
   gripDrag: 4
   gripDragExponent: 1.4
+  jumpChargeTime: 1
+  minJumpSpeed: 1
+  maxJumpSpeed: 10
   currentState: 0
 --- !u!1 &7837012280776756268
 GameObject:
