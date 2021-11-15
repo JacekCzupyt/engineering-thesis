@@ -88,7 +88,10 @@ public class MovementControls : MonoBehaviour {
                     jumpCharge = Mathf.Min(jumpCharge, 1f);
                 }
                 else {
-                    rb.AddForce(rb.transform.forward * Mathf.Lerp(minJumpSpeed, maxJumpSpeed, jumpCharge), ForceMode.VelocityChange);
+                    var dir = input.GetPlayerMovement();
+                    if (dir == Vector3.zero)
+                        dir = Vector3.forward;
+                    rb.AddForce(transform.rotation * dir * Mathf.Lerp(minJumpSpeed, maxJumpSpeed, jumpCharge), ForceMode.VelocityChange);
                     currentState = MovementState.Drift;
                     jumpCharge = 0;
                     return acceleration;
