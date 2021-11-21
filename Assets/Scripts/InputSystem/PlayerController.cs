@@ -11,9 +11,6 @@ public class PlayerController : NetworkBehaviour {
     private Rigidbody rb;
     public float snapDistance = 3;
     public float networkPullModifier = 1;
-    public ParticleSystem bulletSystem;
-    private ParticleSystem.EmissionModule em;
-    [SerializeField] Item[] items;
     private int Itemindex;
     private int? tickDelta = null;
 
