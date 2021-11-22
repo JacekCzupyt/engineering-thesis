@@ -19,6 +19,9 @@ public class PlayerHealth : NetworkBehaviour
     }
     void Update()
     {
+        if (IsOwner) {
+            bar.SetHealth(health.Value);
+        }
         if(IsOwner && health.Value<=0)
         {
             health.Value = 100;
@@ -31,7 +34,5 @@ public class PlayerHealth : NetworkBehaviour
     {
         Debug.Log("applyDemage");
         health.Value = health.Value-damage;
-        bar.SetHealth(health.Value);
-
     }
 }
