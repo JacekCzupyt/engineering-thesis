@@ -18,27 +18,6 @@ public class PlayerController : NetworkBehaviour {
 
     [SerializeField] Canvas barHealth;
 
-    private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>(
-        new NetworkVariableSettings {
-            ReadPermission = NetworkVariablePermission.Everyone,
-            WritePermission = NetworkVariablePermission.OwnerOnly
-        }
-    );
-
-    private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>(
-        new NetworkVariableSettings {
-            ReadPermission = NetworkVariablePermission.Everyone,
-            WritePermission = NetworkVariablePermission.OwnerOnly
-        }
-    );
-    
-    private NetworkVariable<Vector3> networkAcceleration = new NetworkVariable<Vector3>(
-        new NetworkVariableSettings {
-            ReadPermission = NetworkVariablePermission.Everyone,
-            WritePermission = NetworkVariablePermission.OwnerOnly
-        }
-    );
-
     private void Start() {
         if (!IsLocalPlayer)
         {
@@ -54,52 +33,6 @@ public class PlayerController : NetworkBehaviour {
 
     private void FixedUpdate() {
         if (this.IsOwner)
-            InputMovement();
-        else
-            NetworkMovement();
+            movementControls.InputMovement();
     }
-
-    private void NetworkMovement() {
-        if (!tickDelta.HasValue && networkPosition.LocalTick != NetworkTickSystem.NoTick)
-            tickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
-        
-        float timeDelta;
-        if (networkPosition.LocalTick == NetworkTickSystem.NoTick) {
-            timeDelta = 0;
-        }
-        else {
-            var currentTickDelta = (CurrentTick - networkPosition.LocalTick) % NetworkTickSystem.TickPeriod;
-            tickDelta = Math.Min(tickDelta.Value, currentTickDelta);
-            timeDelta = (currentTickDelta - tickDelta.Value) * NetworkManager.NetworkConfig.NetworkTickIntervalSec;
-        }
-
-        var predictedPosition = 
-            networkPosition.Value + 
-            networkVelocity.Value * timeDelta +
-            networkAcceleration.Value * (timeDelta * timeDelta) / 2;
-
-        if ((predictedPosition - transform.position).magnitude > snapDistance)
-            transform.position = predictedPosition;
-
-        var posDiff = (predictedPosition - transform.position);
-
-        rb.velocity = 
-            networkVelocity.Value + 
-            networkAcceleration.Value * timeDelta +
-            posDiff.normalized * (float) (Math.Pow(posDiff.magnitude, 2) * networkPullModifier);
-        
-        rb.AddForce(networkAcceleration.Value);
-
-        //todo: decrease desired accuracy with relative speed? 
-    }
-
-    private void InputMovement() {
-        var acc = movementControls.InputMovement();
-        if (!Input.GetKey(KeyCode.Mouse1)) {
-            networkPosition.Value = transform.position;
-            networkVelocity.Value = rb.velocity;
-            networkAcceleration.Value = acc;
-        }
-    }
-
 }
