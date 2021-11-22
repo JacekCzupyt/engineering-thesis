@@ -16,6 +16,8 @@ public class PlayerController : NetworkBehaviour {
 
     private MovementControls movementControls;
 
+    [SerializeField] Canvas barHealth;
+
     private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>(
         new NetworkVariableSettings {
             ReadPermission = NetworkVariablePermission.Everyone,
@@ -39,7 +41,10 @@ public class PlayerController : NetworkBehaviour {
 
     private void Start() {
         if (!IsLocalPlayer)
+        {
+            barHealth.enabled = false;
             this.GetComponentInChildren<Camera>().enabled = false;
+        }
         // EquipItem(0);
 
         // em = bulletSystem.emission;

@@ -10,9 +10,11 @@ public class PlayerRespawn : NetworkBehaviour
     private Renderer[] renderers;
     [SerializeField] Behaviour[] scripts;
     HideCanvas hide;
+    CapsuleCollider collider;
     // Start is called before the first frame update
     void Start()
     {
+        collider = GetComponent<CapsuleCollider>();
         hide = GetComponent<HideCanvas>();
         cc = GetComponent<PlayerController>();
         renderers = GetComponentsInChildren<Renderer>();
@@ -47,11 +49,13 @@ public class PlayerRespawn : NetworkBehaviour
     IEnumerator WaitForRespawn(Vector3 randomPos)
     {
         cc.enabled = false;
+        collider.enabled = false;
         PlayerState(false);
         hide.hideCanvas();
         yield return new WaitForSeconds(5);
         transform.position = randomPos;
         cc.enabled = true;
+        collider.enabled = false;
         PlayerState(true);
         hide.showCanvas();
     }

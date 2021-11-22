@@ -343,6 +343,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   snapDistance: 3
   networkPullModifier: 1
+  barHealth: {fileID: 6361307876163070764}
 --- !u!114 &8718053127613962448
 MonoBehaviour:
   m_ObjectHideFlags: 0
