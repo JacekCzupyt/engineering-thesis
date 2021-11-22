@@ -57,7 +57,7 @@ public class PlayerShooting : NetworkBehaviour
     [ServerRpc]
     private void ShootServerRPC(bool isShoot,ServerRpcParams rpcParams = default)
     {
-        if (!(NetworkManager.Singleton.NetworkTime - lastSendTime >= (1f / tickRate)))
+        if (!(NetworkManager.Singleton.NetworkTime - lastSendTime >= (1f / tickRate)) && isShoot)
             return;
         lastSendTime = NetworkManager.Singleton.NetworkTime;
         Debug.Log("HI" + isShoot);
@@ -68,7 +68,6 @@ public class PlayerShooting : NetworkBehaviour
             enemyHealth = hit.transform.GetComponent<PlayerHealth>();
             if (enemyHealth!=null)
             {
-                
                 enemyHealth.takeDemage(1);
             }
 

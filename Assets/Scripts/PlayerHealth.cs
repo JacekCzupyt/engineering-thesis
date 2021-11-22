@@ -5,17 +5,33 @@ using MLAPI;
 using MLAPI.NetworkVariable;
 public class PlayerHealth : NetworkBehaviour
 {
-    NetworkVariableInt health = new NetworkVariableInt(100);
-    public int userHealth=100;
+    [SerializeField] NetworkVariableInt health = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.OwnerOnly }, 100);
+    PlayerRespawn respawnPlayer;
+    [SerializeField] HealthBar bar;
     // Start is called before the first frame update
 
     // Update is called once per frame
+
+    private void Start()
+    {
+        respawnPlayer = GetComponent<PlayerRespawn>();
+        bar.SetInitialHealth();
+    }
     void Update()
     {
-        userHealth = health.Value;
+        if(IsOwner && health.Value<=0)
+        {
+            //health.Value = 100;
+            //bar.SetInitialHealth(100);
+            respawnPlayer.Respawn();
+        }
+
     }
     public void takeDemage(int damage)
     {
-        health.Value = health.Value -damage;
+        Debug.Log("applyDemage");
+        health.Value = health.Value-damage;
+        bar.SetHealth(health.Value);
+
     }
 }
