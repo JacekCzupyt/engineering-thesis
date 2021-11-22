@@ -21,7 +21,7 @@ public class PlayerHealth : NetworkBehaviour
     {
         if(IsOwner && health.Value<=0)
         {
-            //health.Value = 100;
+            health.Value = 100;
             //bar.SetInitialHealth(100);
             respawnPlayer.Respawn();
         }
