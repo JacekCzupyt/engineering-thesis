@@ -103,7 +103,7 @@ public class NetworkMovement : NetworkBehaviour {
     }
     
     private void ApplyStateInternal(Vector3 position, Vector3 velocity) {
-        if (!enabled)
+        if (!enabled || IsOwner)
             return;
 
         lastTickReceived = 0;
