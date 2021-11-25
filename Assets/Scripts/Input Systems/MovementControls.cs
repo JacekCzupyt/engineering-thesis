@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace Input_Systems {
     public class MovementControls : MonoBehaviour {
         private Rigidbody rb;
-        private InputManager input;
+        private CharacterInputManager input;
     
         [SerializeField] private float driftAcceleration = 5f;
 
@@ -31,7 +31,7 @@ namespace Input_Systems {
         private bool gripActionUsed = false;
     
         public void Start() {
-            input = InputManager.Instance;
+            input = CharacterInputManager.Instance;
             rb = GetComponentInParent<Rigidbody>();
         }
 

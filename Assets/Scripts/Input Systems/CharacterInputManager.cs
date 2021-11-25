@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Input_Systems {
-    public class InputManager : MonoBehaviour {
-        private static InputManager _instance;
-        public static InputManager Instance {
+    public class CharacterInputManager : MonoBehaviour {
+        private static CharacterInputManager _instance;
+        public static CharacterInputManager Instance {
             get {
                 return _instance;
             }

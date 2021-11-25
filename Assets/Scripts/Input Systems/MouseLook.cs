@@ -6,10 +6,10 @@ namespace Input_Systems {
         [SerializeField] public float mouseSensitivity = 5f;
         public Transform playerBody;
 
-        private InputManager input;
+        private CharacterInputManager input;
         private void Start(){
             Cursor.lockState = CursorLockMode.Locked;
-            input = InputManager.Instance;
+            input = CharacterInputManager.Instance;
         }
         private void Update() {
             var rotation = input.GetMouseDelta() * mouseSensitivity;
