@@ -1,38 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using MLAPI;
 using MLAPI.NetworkVariable;
-public class PlayerHealth : NetworkBehaviour
-{
-    [SerializeField] NetworkVariableInt health = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.OwnerOnly }, 100);
-    PlayerRespawn respawnPlayer;
-    [SerializeField] HealthBar bar;
-    // Start is called before the first frame update
+using UI;
+using UnityEngine;
 
-    // Update is called once per frame
+namespace Game_Systems {
+    public class PlayerHealth : NetworkBehaviour
+    {
+        [SerializeField] NetworkVariableInt health = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.OwnerOnly }, 100);
+        PlayerRespawn respawnPlayer;
+        [SerializeField] HealthBar bar;
+        // Start is called before the first frame update
 
-    private void Start()
-    {
-        respawnPlayer = GetComponent<PlayerRespawn>();
-        bar.SetInitialHealth();
-    }
-    void Update()
-    {
-        if (IsOwner) {
-            bar.SetHealth(health.Value);
-        }
-        if(IsOwner && health.Value<=0)
+        // Update is called once per frame
+
+        private void Start()
         {
-            health.Value = 100;
-            //bar.SetInitialHealth(100);
-            respawnPlayer.Respawn();
+            respawnPlayer = GetComponent<PlayerRespawn>();
+            bar.SetInitialHealth();
         }
+        void Update()
+        {
+            if (IsOwner) {
+                bar.SetHealth(health.Value);
+            }
+            if(IsOwner && health.Value<=0)
+            {
+                health.Value = 100;
+                //bar.SetInitialHealth(100);
+                respawnPlayer.Respawn();
+            }
 
-    }
-    public void takeDemage(int damage)
-    {
-        Debug.Log("applyDemage");
-        health.Value = health.Value-damage;
+        }
+        public void takeDemage(int damage)
+        {
+            Debug.Log("applyDemage");
+            health.Value = health.Value-damage;
+        }
     }
 }

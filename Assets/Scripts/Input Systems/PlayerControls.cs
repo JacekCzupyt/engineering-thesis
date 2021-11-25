@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public class @PlayerControls : IInputActionCollection, IDisposable
-{
-    public InputActionAsset asset { get; }
-    public @PlayerControls()
+namespace Input_Systems {
+    public class @PlayerControls : IInputActionCollection, IDisposable
     {
-        asset = InputActionAsset.FromJson(@"{
+        public InputActionAsset asset { get; }
+        public @PlayerControls()
+        {
+            asset = InputActionAsset.FromJson(@"{
     ""name"": ""PlayerControls"",
     ""maps"": [
         {
@@ -205,139 +206,140 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     ],
     ""controlSchemes"": []
 }");
-        // Player
-        m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_HorizontalMovement = m_Player.FindAction("HorizontalMovement", throwIfNotFound: true);
-        m_Player_VerticalMovement = m_Player.FindAction("VerticalMovement", throwIfNotFound: true);
-        m_Player_CameraMovement = m_Player.FindAction("CameraMovement", throwIfNotFound: true);
-        m_Player_CameraRollMod = m_Player.FindAction("CameraRollMod", throwIfNotFound: true);
-        m_Player_Grip = m_Player.FindAction("Grip", throwIfNotFound: true);
-        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-    }
+            // Player
+            m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+            m_Player_HorizontalMovement = m_Player.FindAction("HorizontalMovement", throwIfNotFound: true);
+            m_Player_VerticalMovement = m_Player.FindAction("VerticalMovement", throwIfNotFound: true);
+            m_Player_CameraMovement = m_Player.FindAction("CameraMovement", throwIfNotFound: true);
+            m_Player_CameraRollMod = m_Player.FindAction("CameraRollMod", throwIfNotFound: true);
+            m_Player_Grip = m_Player.FindAction("Grip", throwIfNotFound: true);
+            m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        }
 
-    public void Dispose()
-    {
-        UnityEngine.Object.Destroy(asset);
-    }
-
-    public InputBinding? bindingMask
-    {
-        get => asset.bindingMask;
-        set => asset.bindingMask = value;
-    }
-
-    public ReadOnlyArray<InputDevice>? devices
-    {
-        get => asset.devices;
-        set => asset.devices = value;
-    }
-
-    public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
-
-    public bool Contains(InputAction action)
-    {
-        return asset.Contains(action);
-    }
-
-    public IEnumerator<InputAction> GetEnumerator()
-    {
-        return asset.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public void Enable()
-    {
-        asset.Enable();
-    }
-
-    public void Disable()
-    {
-        asset.Disable();
-    }
-
-    // Player
-    private readonly InputActionMap m_Player;
-    private IPlayerActions m_PlayerActionsCallbackInterface;
-    private readonly InputAction m_Player_HorizontalMovement;
-    private readonly InputAction m_Player_VerticalMovement;
-    private readonly InputAction m_Player_CameraMovement;
-    private readonly InputAction m_Player_CameraRollMod;
-    private readonly InputAction m_Player_Grip;
-    private readonly InputAction m_Player_Jump;
-    public struct PlayerActions
-    {
-        private @PlayerControls m_Wrapper;
-        public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @HorizontalMovement => m_Wrapper.m_Player_HorizontalMovement;
-        public InputAction @VerticalMovement => m_Wrapper.m_Player_VerticalMovement;
-        public InputAction @CameraMovement => m_Wrapper.m_Player_CameraMovement;
-        public InputAction @CameraRollMod => m_Wrapper.m_Player_CameraRollMod;
-        public InputAction @Grip => m_Wrapper.m_Player_Grip;
-        public InputAction @Jump => m_Wrapper.m_Player_Jump;
-        public InputActionMap Get() { return m_Wrapper.m_Player; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
-        public void SetCallbacks(IPlayerActions instance)
+        public void Dispose()
         {
-            if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
+            UnityEngine.Object.Destroy(asset);
+        }
+
+        public InputBinding? bindingMask
+        {
+            get => asset.bindingMask;
+            set => asset.bindingMask = value;
+        }
+
+        public ReadOnlyArray<InputDevice>? devices
+        {
+            get => asset.devices;
+            set => asset.devices = value;
+        }
+
+        public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
+
+        public bool Contains(InputAction action)
+        {
+            return asset.Contains(action);
+        }
+
+        public IEnumerator<InputAction> GetEnumerator()
+        {
+            return asset.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void Enable()
+        {
+            asset.Enable();
+        }
+
+        public void Disable()
+        {
+            asset.Disable();
+        }
+
+        // Player
+        private readonly InputActionMap m_Player;
+        private IPlayerActions m_PlayerActionsCallbackInterface;
+        private readonly InputAction m_Player_HorizontalMovement;
+        private readonly InputAction m_Player_VerticalMovement;
+        private readonly InputAction m_Player_CameraMovement;
+        private readonly InputAction m_Player_CameraRollMod;
+        private readonly InputAction m_Player_Grip;
+        private readonly InputAction m_Player_Jump;
+        public struct PlayerActions
+        {
+            private @PlayerControls m_Wrapper;
+            public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+            public InputAction @HorizontalMovement => m_Wrapper.m_Player_HorizontalMovement;
+            public InputAction @VerticalMovement => m_Wrapper.m_Player_VerticalMovement;
+            public InputAction @CameraMovement => m_Wrapper.m_Player_CameraMovement;
+            public InputAction @CameraRollMod => m_Wrapper.m_Player_CameraRollMod;
+            public InputAction @Grip => m_Wrapper.m_Player_Grip;
+            public InputAction @Jump => m_Wrapper.m_Player_Jump;
+            public InputActionMap Get() { return m_Wrapper.m_Player; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+            public void SetCallbacks(IPlayerActions instance)
             {
-                @HorizontalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
-                @HorizontalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
-                @HorizontalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
-                @VerticalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
-                @VerticalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
-                @VerticalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
-                @CameraMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
-                @CameraMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
-                @CameraMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
-                @CameraRollMod.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
-                @CameraRollMod.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
-                @CameraRollMod.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
-                @Grip.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
-                @Grip.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
-                @Grip.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
-                @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-                @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-                @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-            }
-            m_Wrapper.m_PlayerActionsCallbackInterface = instance;
-            if (instance != null)
-            {
-                @HorizontalMovement.started += instance.OnHorizontalMovement;
-                @HorizontalMovement.performed += instance.OnHorizontalMovement;
-                @HorizontalMovement.canceled += instance.OnHorizontalMovement;
-                @VerticalMovement.started += instance.OnVerticalMovement;
-                @VerticalMovement.performed += instance.OnVerticalMovement;
-                @VerticalMovement.canceled += instance.OnVerticalMovement;
-                @CameraMovement.started += instance.OnCameraMovement;
-                @CameraMovement.performed += instance.OnCameraMovement;
-                @CameraMovement.canceled += instance.OnCameraMovement;
-                @CameraRollMod.started += instance.OnCameraRollMod;
-                @CameraRollMod.performed += instance.OnCameraRollMod;
-                @CameraRollMod.canceled += instance.OnCameraRollMod;
-                @Grip.started += instance.OnGrip;
-                @Grip.performed += instance.OnGrip;
-                @Grip.canceled += instance.OnGrip;
-                @Jump.started += instance.OnJump;
-                @Jump.performed += instance.OnJump;
-                @Jump.canceled += instance.OnJump;
+                if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
+                {
+                    @HorizontalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
+                    @HorizontalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
+                    @HorizontalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
+                    @VerticalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
+                    @VerticalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
+                    @VerticalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
+                    @CameraMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
+                    @CameraMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
+                    @CameraMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
+                    @CameraRollMod.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
+                    @CameraRollMod.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
+                    @CameraRollMod.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
+                    @Grip.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                    @Grip.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                    @Grip.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                    @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                    @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                    @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                }
+                m_Wrapper.m_PlayerActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @HorizontalMovement.started += instance.OnHorizontalMovement;
+                    @HorizontalMovement.performed += instance.OnHorizontalMovement;
+                    @HorizontalMovement.canceled += instance.OnHorizontalMovement;
+                    @VerticalMovement.started += instance.OnVerticalMovement;
+                    @VerticalMovement.performed += instance.OnVerticalMovement;
+                    @VerticalMovement.canceled += instance.OnVerticalMovement;
+                    @CameraMovement.started += instance.OnCameraMovement;
+                    @CameraMovement.performed += instance.OnCameraMovement;
+                    @CameraMovement.canceled += instance.OnCameraMovement;
+                    @CameraRollMod.started += instance.OnCameraRollMod;
+                    @CameraRollMod.performed += instance.OnCameraRollMod;
+                    @CameraRollMod.canceled += instance.OnCameraRollMod;
+                    @Grip.started += instance.OnGrip;
+                    @Grip.performed += instance.OnGrip;
+                    @Grip.canceled += instance.OnGrip;
+                    @Jump.started += instance.OnJump;
+                    @Jump.performed += instance.OnJump;
+                    @Jump.canceled += instance.OnJump;
+                }
             }
         }
-    }
-    public PlayerActions @Player => new PlayerActions(this);
-    public interface IPlayerActions
-    {
-        void OnHorizontalMovement(InputAction.CallbackContext context);
-        void OnVerticalMovement(InputAction.CallbackContext context);
-        void OnCameraMovement(InputAction.CallbackContext context);
-        void OnCameraRollMod(InputAction.CallbackContext context);
-        void OnGrip(InputAction.CallbackContext context);
-        void OnJump(InputAction.CallbackContext context);
+        public PlayerActions @Player => new PlayerActions(this);
+        public interface IPlayerActions
+        {
+            void OnHorizontalMovement(InputAction.CallbackContext context);
+            void OnVerticalMovement(InputAction.CallbackContext context);
+            void OnCameraMovement(InputAction.CallbackContext context);
+            void OnCameraRollMod(InputAction.CallbackContext context);
+            void OnGrip(InputAction.CallbackContext context);
+            void OnJump(InputAction.CallbackContext context);
+        }
     }
 }
