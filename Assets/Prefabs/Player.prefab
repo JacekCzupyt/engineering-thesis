@@ -203,7 +203,6 @@ GameObject:
   - component: {fileID: 94830311501573991}
   - component: {fileID: 94830311501574013}
   - component: {fileID: 3677255792734329779}
-  - component: {fileID: 8718053127613962448}
   - component: {fileID: 6589340532127799218}
   - component: {fileID: 6804493127309558196}
   - component: {fileID: 2318923978237058040}
@@ -345,21 +344,6 @@ MonoBehaviour:
   snapDistance: 3
   networkPullModifier: 1
   barHealth: {fileID: 6361307876163070764}
---- !u!114 &8718053127613962448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 94830311501573989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a58d81feb3baa4f9091c0422c7f04f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tickRate: 20
-  interpolate: 1
-  minAngle: 1
 --- !u!114 &6589340532127799218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,7 +388,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scripts:
   - {fileID: 3677255792734329779}
-  - {fileID: 8718053127613962448}
+  - {fileID: 0}
   - {fileID: 6589340532127799218}
   - {fileID: 6804493127309558196}
 --- !u!114 &8843877001111750290
@@ -1042,8 +1026,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6764510891016150959}
   - component: {fileID: 9126715735029684269}
+  - component: {fileID: 8493809120207507758}
   m_Layer: 0
-  m_Name: Player Networking
+  m_Name: Networking
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1077,6 +1062,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tickMultiplier: 2
   physicsInterpolate: 1
+--- !u!114 &8493809120207507758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6148218201698468736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a58d81feb3baa4f9091c0422c7f04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tickRate: 20
+  interpolate: 1
+  minAngle: 1
 --- !u!1 &7337105240578041683
 GameObject:
   m_ObjectHideFlags: 0

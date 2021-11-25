@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MLAPI;
 using MLAPI.Messaging;
@@ -13,6 +14,7 @@ namespace Network {
         private Quaternion lerpStartRot;
         private Quaternion lerpEndRot;
         private float lerpTime;
+        private Transform playerTransform;
 
         private float lastSendTime;
         private Quaternion lastSentRot;
@@ -27,6 +29,10 @@ namespace Network {
                         .Select(c => c.ClientId).ToArray()
                 }
             };
+
+        private void Start() {
+            playerTransform = transform.parent;
+        }
 
         private void Update() {
             //TODO: merge with mouse look script?
@@ -44,20 +50,20 @@ namespace Network {
         private void SendData() {
             //Only send if min time has passed and min angle change has been reached
             if (!(NetworkManager.Singleton.NetworkTime - lastSendTime >= (1f / tickRate)) ||
-                !(Quaternion.Angle(transform.rotation, lastSentRot) > minAngle))
+                !(Quaternion.Angle(playerTransform.rotation, lastSentRot) > minAngle))
                 return;
         
             lastSendTime = NetworkManager.Singleton.NetworkTime;
-            lastSentRot = transform.rotation;
+            lastSentRot = playerTransform.rotation;
 
             if (IsServer) {
                 SubmitRotationClientRpc(
-                    transform.rotation,
+                    playerTransform.rotation,
                     NonOwnerClientParams
                 );
             }
             else {
-                SubmitRotationServerRpc(transform.rotation);
+                SubmitRotationServerRpc(playerTransform.rotation);
             }
         }
 
@@ -68,7 +74,7 @@ namespace Network {
             float sendDelay = 1f / tickRate;
             lerpTime += Time.unscaledDeltaTime / sendDelay;
 
-            transform.rotation = Quaternion.Slerp(lerpStartRot, lerpEndRot, lerpTime);
+            playerTransform.rotation = Quaternion.Slerp(lerpStartRot, lerpEndRot, lerpTime);
         }
 
         /// <summary>
@@ -81,12 +87,12 @@ namespace Network {
 
             if (interpolate && IsClient) {
                 lastReceiveTime = Time.unscaledTime;
-                lerpStartRot = transform.rotation;
+                lerpStartRot = playerTransform.rotation;
                 lerpEndRot = rotation;
                 lerpTime = 0;
             }
             else {
-                transform.rotation = rotation;
+                playerTransform.rotation = rotation;
             }
         }
     
