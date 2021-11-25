@@ -2,7 +2,7 @@ using MLAPI;
 using UnityEngine;
 
 namespace Game_Systems {
-    public class GameManager : MonoBehaviour {
+    public class StartupUIManager : MonoBehaviour {
 
         public void OnGUI() {
             GUILayout.BeginArea(new Rect(10, 10, 300, 300));
