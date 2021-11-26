@@ -11,15 +11,14 @@ namespace Game_Systems {
         private PlayerController cc;
         private Renderer[] renderers;
         [SerializeField] Behaviour[] scripts;
-        HideCanvas hide;
+        [SerializeField] private GameObject canvas;
         CapsuleCollider collider;
         // Start is called before the first frame update
         void Start()
         {
-            collider = GetComponent<CapsuleCollider>();
-            hide = GetComponent<HideCanvas>();
-            cc = GetComponent<PlayerController>();
-            renderers = GetComponentsInChildren<Renderer>();
+            collider = GetComponentInParent<CapsuleCollider>();
+            cc = GetComponentInParent<PlayerController>();
+            renderers = transform.parent.GetComponentsInChildren<Renderer>();
         }
         // Update is called once per frame
         void Update()
@@ -53,13 +52,13 @@ namespace Game_Systems {
             cc.enabled = false;
             collider.enabled = false;
             PlayerState(false);
-            hide.hideCanvas();
+            canvas.SetActive(false);
             yield return new WaitForSeconds(5);
-            transform.position = randomPos;
+            transform.parent.position = randomPos;
             cc.enabled = true;
-            collider.enabled = false;
+            collider.enabled = true;
             PlayerState(true);
-            hide.showCanvas();
+            canvas.SetActive(true);
         }
     
         private void PlayerState(bool state)
