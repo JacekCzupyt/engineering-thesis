@@ -35,6 +35,10 @@ namespace Input_Systems {
             rb = GetComponentInParent<Rigidbody>();
         }
 
+        private void FixedUpdate() {
+            InputMovement();
+        }
+
         public Vector3 InputMovement() {
             Debug.Log(currentState);
 

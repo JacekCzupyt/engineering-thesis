@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 3669082577767021151}
   m_Layer: 0
   m_Name: Player Camera
-  m_TagString: MainCamera
+  m_TagString: ClientSide
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -644,7 +644,7 @@ GameObject:
   - component: {fileID: 1874289112992405795}
   m_Layer: 0
   m_Name: Canvas
-  m_TagString: Untagged
+  m_TagString: ClientSide
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -887,7 +887,7 @@ GameObject:
   - component: {fileID: 5971295356278041402}
   m_Layer: 0
   m_Name: Player Controls
-  m_TagString: Untagged
+  m_TagString: ClientSide
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
