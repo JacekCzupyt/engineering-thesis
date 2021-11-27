@@ -44,3 +44,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  anchorPrefab: {fileID: 3759531633558558396, guid: 012cc94e0bc6b6443b8c069844db7987, type: 3}
+  hookVelocity: 30
+  throwType: 0

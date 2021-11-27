@@ -5,14 +5,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Game_Systems.Utility {
-    public static class ObjectThrower {
-        public enum ThrowType {
-            Static,
-            Relative,
-            AimAssist,
-            Enhanced
-        }
 
+    public static class ObjectThrower {
         public delegate GameObject ThrowMethod(
             Transform source,
             Vector3 direction,
@@ -52,5 +46,11 @@ namespace Game_Systems.Utility {
         private static GameObject CreateObject(Transform source, GameObject prefab) {
             return Object.Instantiate(prefab, source.position, source.rotation, SceneManager.Instance.ProjectileContainer.transform);
         }
+    }
+    public enum ThrowType {
+        Static,
+        Relative,
+        AimAssist,
+        Enhanced
     }
 }
