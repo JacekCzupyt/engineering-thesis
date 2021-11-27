@@ -1,7 +1,9 @@
 using System.Linq;
+using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Game_Systems {
     public class PlayerShooting : NetworkBehaviour
@@ -12,9 +14,12 @@ namespace Game_Systems {
         [SerializeField] Camera cam;
         [SerializeField] ParticleSystem bulletSystem;
         private ParticleSystem.EmissionModule em;
-        private PlayerHealth enemyHealth;
 
         private float lastSendTime;
+        
+        private CharacterInputManager input;
+
+        private bool firing = false;
         //NetworkVariable<ParticleSystem> par;
         private ClientRpcParams NonOwnerClientParams =>
             new ClientRpcParams
@@ -30,6 +35,7 @@ namespace Game_Systems {
         {
             //  par = new NetworkVariable<ParticleSystem>(bulletSystem);
             em = bulletSystem.emission;
+            input = CharacterInputManager.Instance;
         }
 
         // Update is called once per frame
@@ -43,12 +49,12 @@ namespace Game_Systems {
         }
         void SendData()
         {       
-            if (Input.GetMouseButton(0))
-            {
+            if (input.GetFireAction() == InputActionPhase.Started) {
+                firing = true;
                 ShootServerRPC(true);
             }
-            else if(Input.GetMouseButtonUp(0))
-            {
+            else if(firing) {
+                firing = false;
                 ShootServerRPC(false);
             }
         }
@@ -58,12 +64,12 @@ namespace Game_Systems {
             if (!(NetworkManager.Singleton.NetworkTime - lastSendTime >= (1f / tickRate)) && isShoot)
                 return;
             lastSendTime = NetworkManager.Singleton.NetworkTime;
-            Debug.Log("HI" + isShoot);
+            // Debug.Log("HI" + isShoot);
             Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             ray.origin = cam.transform.position;
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                enemyHealth = hit.transform.GetComponent<PlayerHealth>();
+                var enemyHealth = hit.transform.GetComponent<PlayerHealth>();
                 if (enemyHealth!=null)
                 {
                     enemyHealth.takeDemage(1);

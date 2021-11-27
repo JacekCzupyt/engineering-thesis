@@ -1,5 +1,9 @@
+using System;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 
 namespace Input_Systems {
     public class CharacterInputManager : MonoBehaviour {
@@ -49,6 +53,10 @@ namespace Input_Systems {
 
         public InputActionPhase GetJumpAction() {
             return controls.Player.Jump.phase;
+        }
+
+        public InputActionPhase GetFireAction() {
+            return controls.Player.Fire.phase;
         }
     }
 }
