@@ -49,3 +49,5 @@ MonoBehaviour:
   hookVelocity: 60
   retractionVelocity: 120
   maxHookDistance: 60
+  maxReelForce: 10
+  maxBreakForce: 40

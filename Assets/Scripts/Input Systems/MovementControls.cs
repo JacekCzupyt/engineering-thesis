@@ -53,7 +53,7 @@ namespace Input_Systems {
 
                     if (input.GetGripAction() == InputActionPhase.Started &&
                         !gripActionUsed &&
-                        Physics.OverlapSphere(transform.position, gripRadius, LayerMask.GetMask("Map")).Length > 0) {
+                        Physics.OverlapSphere(transform.position, gripRadius, LayerMask.GetMask("Terrain")).Length > 0) {
 
                         gripActionUsed = true;
                         currentState = MovementState.Grip;
@@ -70,7 +70,7 @@ namespace Input_Systems {
                 
                     if ((input.GetGripAction() == InputActionPhase.Started &&
                             !gripActionUsed) ||
-                        Physics.OverlapSphere(transform.position, gripRadius, LayerMask.GetMask("Map")).Length == 0) {
+                        Physics.OverlapSphere(transform.position, gripRadius, LayerMask.GetMask("Terrain")).Length == 0) {
 
                         gripActionUsed = true;
                         currentState = MovementState.Drift;

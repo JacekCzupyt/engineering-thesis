@@ -17,12 +17,20 @@ namespace Game_Systems.Equipment {
         [SerializeField] private float retractionVelocity = 60;
         [SerializeField] private float maxHookDistance = 60;
 
+        [Tooltip("Force that will be applied when player is moving towards the grapple point.")] [SerializeField]
+        private float maxReelForce = 10f;
+
+        [Tooltip("Force that will be applied when player is moving away from the grapple point.")] [SerializeField]
+        private float maxBreakForce = 20f;
+
         private float attachOffset = 0.001f;
 
         private CharacterInputManager input;
 
         private GameObject anchor;
         private Rigidbody anchorRb;
+
+        private Rigidbody rb;
 
         public enum GrappleState {
             Ready,
@@ -38,15 +46,19 @@ namespace Game_Systems.Equipment {
             input = CharacterInputManager.Instance;
             input.AbilityAction.started += Fire;
             input.AbilityAction.canceled += CancelGrapple;
+            rb = player.GetComponent<Rigidbody>();
         }
 
         private void FixedUpdate() {
             if (!State.In(GrappleState.Attached, GrappleState.Retracting, GrappleState.InFlight))
                 return;
-            
+
             if (State.In(GrappleState.InFlight, GrappleState.Attached)) {
                 CheckGrapplePath();
             }
+
+            if (State == GrappleState.Attached)
+                ReelIn();
 
             var deltaPos = player.transform.position - anchor.transform.position;
 
@@ -64,8 +76,13 @@ namespace Game_Systems.Equipment {
             }
         }
 
-        private void Update() {
-            Debug.Log(State);
+        private void ReelIn() {
+            var dir = (anchor.transform.position - player.transform.position).normalized;
+            var force = dir *
+                (Vector3.Dot(dir, rb.velocity) > 0 ?
+                    maxReelForce :
+                    maxBreakForce);
+            rb.AddForce(force, ForceMode.Force);
         }
 
         private void CheckGrapplePath() {
@@ -77,7 +94,7 @@ namespace Game_Systems.Equipment {
                 dir,
                 out var hit,
                 dir.magnitude - attachOffset,
-                LayerMask.GetMask("Map")
+                LayerMask.GetMask("Terrain")
             ))
                 return;
 
