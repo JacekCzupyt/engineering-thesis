@@ -1,12 +1,15 @@
 using System.Linq;
 using MLAPI;
 using MLAPI.Messaging;
+using MLAPI.NetworkVariable;
 using UnityEngine;
 
 namespace Game_Systems {
     public class PlayerShooting : NetworkBehaviour
 
     {
+        
+
         [SerializeField] private float tickRate = 20;
 
         [SerializeField] Camera cam;
@@ -15,6 +18,7 @@ namespace Game_Systems {
         private PlayerHealth enemyHealth;
 
         private float lastSendTime;
+
         //NetworkVariable<ParticleSystem> par;
         private ClientRpcParams NonOwnerClientParams =>
             new ClientRpcParams
@@ -66,7 +70,7 @@ namespace Game_Systems {
                 enemyHealth = hit.transform.GetComponent<PlayerHealth>();
                 if (enemyHealth!=null)
                 {
-                    enemyHealth.takeDemage(1);
+                    enemyHealth.takeDemage(1,GetComponent<NetworkObject>().OwnerClientId);
                 }
 
             }

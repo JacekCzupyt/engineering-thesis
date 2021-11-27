@@ -9,6 +9,8 @@ namespace Game_Systems {
         [SerializeField] NetworkVariableInt health = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.OwnerOnly }, 100);
         PlayerRespawn respawnPlayer;
         [SerializeField] HealthBar bar;
+        NetworkObject shooter;
+        ScoreSystem score;
         // Start is called before the first frame update
 
         // Update is called once per frame
@@ -31,10 +33,16 @@ namespace Game_Systems {
             }
 
         }
-        public void takeDemage(int damage)
+        public void takeDemage(int damage, ulong player)
         {
             Debug.Log("applyDemage");
             health.Value = health.Value-damage;
+            if(health.Value<=0)
+            {
+                shooter=NetworkManager.Singleton.ConnectedClients[player].PlayerObject;
+                score = shooter.GetComponent<ScoreSystem>();
+                score.AddPoint();
+            }
         }
     }
 }
