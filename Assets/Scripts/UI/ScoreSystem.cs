@@ -18,12 +18,11 @@ public class ScoreSystem : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        Score.text = userScore.ToString();
+        Score.text = userScore.Value.ToString();
     }
     public void AddPoint()
     {
         userScore.Value = +1;
-        Debug.Log($"User score {userScore.Value}");
     }
 
 }
