@@ -12,12 +12,13 @@ namespace Game_Systems.Equipment {
         [SerializeField] private GameObject player;
         [SerializeField] private GameObject anchorPrefab;
 
+        [SerializeField] private ThrowType throwType = ThrowType.Static;
         [SerializeField] private float hookVelocity = 30;
         [SerializeField] private float retractionVelocity = 60;
-        [SerializeField] private ThrowType throwType = ThrowType.Static;
+        [SerializeField] private float maxHookDistance = 60;
 
-        private float attachOffset = 0.1f;
-        
+        private float attachOffset = 0.001f;
+
         private CharacterInputManager input;
 
         private GameObject anchor;
@@ -36,27 +37,35 @@ namespace Game_Systems.Equipment {
         private void Start() {
             input = CharacterInputManager.Instance;
             input.AbilityAction.started += Fire;
-            input.AbilityAction.canceled += Cancel;
+            input.AbilityAction.canceled += CancelGrapple;
         }
 
         private void FixedUpdate() {
-            if (State != GrappleState.Retracting)
+            if (!State.In(GrappleState.Attached, GrappleState.Retracting, GrappleState.InFlight))
                 return;
             
-            var deltaPos = player.transform.position - anchor.transform.position;
-            if (deltaPos.magnitude < retractionVelocity * Time.fixedDeltaTime) {
-                RemoveHook();
+            if (State.In(GrappleState.InFlight, GrappleState.Attached)) {
+                CheckGrapplePath();
             }
-            else {
-                anchorRb.velocity = (player.transform.position - anchor.transform.position).normalized * retractionVelocity;
+
+            var deltaPos = player.transform.position - anchor.transform.position;
+
+            if (State == GrappleState.InFlight && deltaPos.magnitude > maxHookDistance) {
+                Retract();
+            }
+
+            if (State == GrappleState.Retracting) {
+                if (deltaPos.magnitude < retractionVelocity * Time.fixedDeltaTime) {
+                    RemoveHook();
+                }
+                else {
+                    anchorRb.velocity = (player.transform.position - anchor.transform.position).normalized * retractionVelocity;
+                }
             }
         }
 
         private void Update() {
             Debug.Log(State);
-            if (State.In(GrappleState.InFlight, GrappleState.Attached)) {
-                CheckGrapplePath();
-            }
         }
 
         private void CheckGrapplePath() {
@@ -64,14 +73,14 @@ namespace Game_Systems.Equipment {
             var dir = anchor.transform.position - pos;
             //TODO: currently only connects to terrain, not other players
             if (!Physics.Raycast(
-                pos, 
+                pos,
                 dir,
                 out var hit,
                 dir.magnitude - attachOffset,
                 LayerMask.GetMask("Map")
             ))
                 return;
-            
+
             anchorRb.isKinematic = true;
             anchor.transform.position = hit.point;
             State = GrappleState.Attached;
@@ -90,12 +99,15 @@ namespace Game_Systems.Equipment {
             anchorRb = anchor.GetComponent<Rigidbody>();
         }
 
-        private void Cancel(InputAction.CallbackContext context) {
-            if (!State.In(GrappleState.InFlight, GrappleState.Attached, GrappleState.Retracting))
+        private void CancelGrapple(InputAction.CallbackContext context) {
+            Retract();
+        }
+
+        private void Retract() {
+            if (!State.In(GrappleState.InFlight, GrappleState.Attached))
                 return;
             State = GrappleState.Retracting;
             anchorRb.isKinematic = false;
-            anchorRb.velocity = (player.transform.position - anchor.transform.position).normalized * retractionVelocity;
         }
     }
 }
