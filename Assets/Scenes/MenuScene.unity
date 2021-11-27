@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4504958
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1017,7 +1017,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 906763897}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 980122611}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: ClientConnect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &906763897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1101,6 +1113,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialMenu: {fileID: 1973438838}
   playMenu: {fileID: 4504957}
+  playerNameInput: {fileID: 1001255290}
+  passwordInput: {fileID: 1561115970}
 --- !u!1 &992265414
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,8 +1723,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1561115971}
   m_TextComponent: {fileID: 1806389331}
   m_Placeholder: {fileID: 140242442}
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -2280,8 +2294,9 @@ MonoBehaviour:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1886826478}
     RegisteredScenes:
-    - MainMenuScene
     - SampleScene
+    - MenuScene
+    - LobbyScene
     AllowRuntimeSceneChanges: 0
     NetworkPrefabs:
     - Prefab: {fileID: 94830311501573989, guid: 8d2dc0a7bc613044eb8e37cfdc91f84f, type: 3}
@@ -2345,7 +2360,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1973438839
 RectTransform:
   m_ObjectHideFlags: 0
