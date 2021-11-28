@@ -17,6 +17,8 @@ public class LobbyManager : NetworkBehaviour
     private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
     private List<GameObject> playerItems = new List<GameObject>();
 
+    [SerializeField] private GameObject playerManager;
+
     public override void NetworkStart()
     {
         InitializePlayerItems();
@@ -82,6 +84,8 @@ public class LobbyManager : NetworkBehaviour
             playerData.Value.PlayerName,
             false
         ));
+
+        SpawnPlayerManager(clientId);
     }
 
     private void HandleClientDisconnect(ulong clientId)
@@ -94,6 +98,12 @@ public class LobbyManager : NetworkBehaviour
                 break;
             }
         }
+    }
+
+    private GameObject SpawnPlayerManager(ulong clientId) {
+        var manager = GameObject.Instantiate(playerManager);
+        manager.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
+        return manager;
     }
 
     [ServerRpc(RequireOwnership = false)]

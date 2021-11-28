@@ -8504,6 +8504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileContainer: {fileID: 1212696659}
+  playerPrefab: {fileID: 94830311501573989, guid: 8d2dc0a7bc613044eb8e37cfdc91f84f, type: 3}
 --- !u!1 &1513626855
 GameObject:
   m_ObjectHideFlags: 0

@@ -64,7 +64,7 @@ public class ServerGameNetPortal : MonoBehaviour
 
     public PlayerData? GetPlayerData(ulong clientId)
     {
-        Debug.Log(clientId);
+        //Debug.Log(clientId);
         if (clientIdToGuid.TryGetValue(clientId, out string clientGuid))
         {
             if (clientData.TryGetValue(clientGuid, out PlayerData playerData))
@@ -88,7 +88,7 @@ public class ServerGameNetPortal : MonoBehaviour
     {
         gameInProgress = true;
 
-        NetworkSceneManager.SwitchScene("SampleScene");
+        NetworkSceneManager.SwitchScene("GameScene");
     }
 
     public void EndRound()

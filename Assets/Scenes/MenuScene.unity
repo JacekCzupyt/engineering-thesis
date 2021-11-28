@@ -2479,11 +2479,13 @@ MonoBehaviour:
     RegisteredScenes:
     - MenuScene
     - LobbyScene
-    - SampleScene
+    - GameScene
     AllowRuntimeSceneChanges: 0
     NetworkPrefabs:
+    - Prefab: {fileID: 4405543599418297458, guid: d2fd60207659abc4e892e442f59c62d4, type: 3}
+      PlayerPrefab: 0
     - Prefab: {fileID: 94830311501573989, guid: 8d2dc0a7bc613044eb8e37cfdc91f84f, type: 3}
-      PlayerPrefab: 1
+      PlayerPrefab: 0
     PlayerPrefabHash:
       id: 0
     CreatePlayerPrefab: 0
@@ -2511,9 +2513,7 @@ MonoBehaviour:
   references:
     version: 1
     00000000:
-      type: {class: NullableBoolSerializable, ns: MLAPI.Configuration, asm: Unity.Multiplayer.MLAPI.Runtime}
-      data:
-        Value: 1897319656204293034
+      type: {class: , ns: , asm: }
 --- !u!4 &1886826480
 Transform:
   m_ObjectHideFlags: 0
