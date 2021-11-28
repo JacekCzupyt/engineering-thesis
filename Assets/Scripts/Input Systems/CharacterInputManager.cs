@@ -58,5 +58,7 @@ namespace Input_Systems {
         public InputActionPhase GetFireAction() {
             return controls.Player.Fire.phase;
         }
+
+        public InputAction AbilityAction => controls.Player.Ability;
     }
 }
