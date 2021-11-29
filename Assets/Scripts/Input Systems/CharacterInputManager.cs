@@ -23,6 +23,7 @@ namespace Input_Systems {
                 _instance = this;
             }
             controls = new PlayerControls();
+            DontDestroyOnLoad(this.gameObject);
         }
 
         private void OnEnable() {

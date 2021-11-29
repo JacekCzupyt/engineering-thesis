@@ -4704,7 +4704,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &910042364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8470,6 +8470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1501253577}
   - component: {fileID: 1501253578}
+  - component: {fileID: 1501253576}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -8477,6 +8478,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1501253576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501253575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65eadb0ffb8c8c8469fb6308fb349776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1501253577
 Transform:
   m_ObjectHideFlags: 0
@@ -8504,7 +8517,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectileContainer: {fileID: 1212696659}
-  playerPrefab: {fileID: 94830311501573989, guid: 8d2dc0a7bc613044eb8e37cfdc91f84f, type: 3}
 --- !u!1 &1513626855
 GameObject:
   m_ObjectHideFlags: 0

@@ -25,6 +25,7 @@ public class LobbyManager : NetworkBehaviour
         if(IsClient)
         {
             lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
+            SpawnPlayerManagerServerRpc(NetworkManager.Singleton.LocalClientId);
         }
         
         if(IsServer)
@@ -84,8 +85,6 @@ public class LobbyManager : NetworkBehaviour
             playerData.Value.PlayerName,
             false
         ));
-
-        SpawnPlayerManager(clientId);
     }
 
     private void HandleClientDisconnect(ulong clientId)
@@ -99,11 +98,11 @@ public class LobbyManager : NetworkBehaviour
             }
         }
     }
-
-    private GameObject SpawnPlayerManager(ulong clientId) {
-        var manager = GameObject.Instantiate(playerManager);
-        manager.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-        return manager;
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
+        var manager = Instantiate(playerManager);
+        manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
     }
 
     [ServerRpc(RequireOwnership = false)]
