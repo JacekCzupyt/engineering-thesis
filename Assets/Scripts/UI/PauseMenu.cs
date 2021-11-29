@@ -27,19 +27,24 @@ public class PauseMenu : NetworkBehaviour
     {
         pauseMenu.SetActive(true);
         script.enabled = false;
+        Input_Systems.CharacterInputManager.Instance.enabled = false;
+        Cursor.lockState = CursorLockMode.None;
 
     }
     public void Resume()
     {
+        Debug.Log("is work");
         pauseMenu.SetActive(false);
         script.enabled = true;
+        Input_Systems.CharacterInputManager.Instance.enabled = true;
+        Cursor.lockState = CursorLockMode.Locked;
     }
     public void LeaveGame()
     {
         if (IsOwner)
         {
             NetworkManager.Singleton.StopClient();
-
+            Input_Systems.CharacterInputManager.Instance.enabled = true;
         }
     }
     public void QuitGame()
