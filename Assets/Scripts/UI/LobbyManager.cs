@@ -146,6 +146,7 @@ public class LobbyManager : NetworkBehaviour
 
     private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
     {
+        ClearItemListPanel();
         for(int i = 0; i < lobbyPlayers.Count; i++)
         {
             UpdateListItem(playerItems[i], lobbyPlayers[i]);
@@ -170,5 +171,13 @@ public class LobbyManager : NetworkBehaviour
             playerIsReadyIndicator.color = Color.red;
         }
         listItem.SetActive(true);
+    }
+
+    private void ClearItemListPanel()
+    {
+        foreach(var item in playerItems)
+        {
+            item.SetActive(false);
+        }
     }
 }
