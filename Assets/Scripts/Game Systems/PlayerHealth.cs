@@ -11,6 +11,9 @@ namespace Game_Systems {
         );
 
         private PlayerRespawn respawnPlayer;
+        
+        NetworkObject shooter;
+        ScoreSystem score;
 
         [SerializeField] private HealthBar bar;
 
@@ -27,9 +30,16 @@ namespace Game_Systems {
                 respawnPlayer.Respawn();
             }
         }
-        public void takeDemage(int damage) {
+        public void takeDemage(int damage, ulong player)
+        {
             Debug.Log($"Apply {damage} Damage");
             health.Value -= damage;
+            if(health.Value<=0)
+            {
+                shooter=NetworkManager.Singleton.ConnectedClients[player].PlayerObject;
+                score = shooter.GetComponent<ScoreSystem>();
+                score.AddPoint();
+            }
         }
     }
 }

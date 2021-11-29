@@ -2,6 +2,7 @@ using System.Linq;
 using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
+using MLAPI.NetworkVariable;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -72,7 +73,7 @@ namespace Game_Systems {
                 var enemyHealth = hit.transform.GetComponent<PlayerHealth>();
                 if (enemyHealth!=null)
                 {
-                    enemyHealth.takeDemage(1);
+                    enemyHealth.takeDemage(1,GetComponent<NetworkObject>().OwnerClientId);
                 }
 
             }
