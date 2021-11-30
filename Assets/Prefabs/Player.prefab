@@ -505,6 +505,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb9ef29d4d388a43b1e7c6ec8eff5b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userScore:
+    m_InternalValue: 0
   Score: {fileID: 4009618780752795497}
 --- !u!114 &7589496400887434914
 MonoBehaviour:
@@ -1219,7 +1221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 1
+  m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
@@ -1449,7 +1451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1c58bb4026640c428957279ffe69527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: {fileID: 4837107048708343563}
   health:
     m_InternalValue: 100
   bar: {fileID: 1662205532299446409}
