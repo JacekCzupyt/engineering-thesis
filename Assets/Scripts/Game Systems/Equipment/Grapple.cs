@@ -2,13 +2,14 @@ using System;
 using System.Diagnostics;
 using Game_Systems.Utility;
 using Input_Systems;
+using MLAPI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Utility;
 using Debug = UnityEngine.Debug;
 
 namespace Game_Systems.Equipment {
-    public class Grapple : MonoBehaviour {
+    public class Grapple : NetworkBehaviour {
         [SerializeField] private GameObject player;
         [SerializeField] private GameObject anchorPrefab;
 
@@ -43,6 +44,9 @@ namespace Game_Systems.Equipment {
         public GrappleState State { get; set; }
 
         private void Start() {
+            if (!IsOwner)
+                return;
+
             input = CharacterInputManager.Instance;
             input.AbilityAction.started += Fire;
             input.AbilityAction.canceled += CancelGrapple;
@@ -50,6 +54,9 @@ namespace Game_Systems.Equipment {
         }
 
         private void FixedUpdate() {
+            if (!IsOwner)
+                return;
+            
             if (!State.In(GrappleState.Attached, GrappleState.Retracting, GrappleState.InFlight))
                 return;
 
