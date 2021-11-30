@@ -14,14 +14,16 @@ public class LobbyManager : NetworkBehaviour
     [SerializeField] private Button startGameButton;
     [SerializeField] private GameObject ListItemPrefab;
     [SerializeField] private GameObject listItemsPanel;
+    [SerializeField] private GameObject playerManager;
+
     private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
     private List<GameObject> playerItems = new List<GameObject>();
-
-    [SerializeField] private GameObject playerManager;
+    private bool IsPlayerReadyUI;
 
     public override void NetworkStart()
     {
         InitializePlayerItems();
+        IsPlayerReadyUI = false;
         if(IsClient)
         {
             lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
@@ -142,6 +144,7 @@ public class LobbyManager : NetworkBehaviour
 
     public void OnReadyUpButtonClicked(){
         ToggleReadyServerRpc();
+        ToggleReadyUpButtonText();
     }
 
     private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
@@ -178,6 +181,20 @@ public class LobbyManager : NetworkBehaviour
         foreach(var item in playerItems)
         {
             item.SetActive(false);
+        }
+    }
+
+    private void ToggleReadyUpButtonText()
+    {
+        if(IsPlayerReadyUI)
+        {
+            readyUpButton.GetComponentInChildren<Text>().text =  "Ready Up!";
+            IsPlayerReadyUI = false;
+        }
+        else
+        {
+            readyUpButton.GetComponentInChildren<Text>().text =  "Cancel";
+            IsPlayerReadyUI = true;
         }
     }
 }

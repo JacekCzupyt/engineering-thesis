@@ -4762,6 +4762,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 1bc5efd8-3adf-4b7d-9fdb-ab24e00f7309
     m_ActionName: Player/Ability[/Keyboard/f,/Mouse/forwardButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 18543668-6ced-4697-b0ea-43d6745c17cc
+    m_ActionName: Player/PauseGame[/Keyboard/escape]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
