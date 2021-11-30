@@ -52,13 +52,15 @@ namespace Game_Systems {
             cc.enabled = false;
             collider.enabled = false;
             PlayerState(false);
-            canvas.SetActive(false);
+            if(IsOwner)
+                canvas.SetActive(false);
             yield return new WaitForSeconds(5);
             transform.parent.position = randomPos;
             cc.enabled = true;
             collider.enabled = true;
             PlayerState(true);
-            canvas.SetActive(true);
+            if(IsOwner)
+                canvas.SetActive(true);
         }
     
         private void PlayerState(bool state)

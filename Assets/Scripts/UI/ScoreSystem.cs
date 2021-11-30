@@ -7,7 +7,7 @@ using MLAPI.NetworkVariable;
 
 public class ScoreSystem : NetworkBehaviour
 {
-    NetworkVariableInt userScore = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
+    public NetworkVariableInt userScore = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
     [SerializeField] Text Score;
     // Start is called before the first frame update
 
@@ -22,7 +22,7 @@ public class ScoreSystem : NetworkBehaviour
     }
     public void AddPoint()
     {
-        userScore.Value = +1;
+        userScore.Value += 1;
     }
 
 }

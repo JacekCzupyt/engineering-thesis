@@ -1,5 +1,6 @@
 using MLAPI;
 using MLAPI.NetworkVariable;
+using Network;
 using UI;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace Game_Systems {
 
         private PlayerRespawn respawnPlayer;
         
-        NetworkObject shooter;
+        GameObject shooter;
         ScoreSystem score;
 
         [SerializeField] private HealthBar bar;
@@ -36,8 +37,9 @@ namespace Game_Systems {
             health.Value -= damage;
             if(health.Value<=0)
             {
-                shooter=NetworkManager.Singleton.ConnectedClients[player].PlayerObject;
-                score = shooter.GetComponent<ScoreSystem>();
+                shooter=NetworkManager.Singleton.ConnectedClients[player].PlayerObject
+                    .GetComponent<PlayerManager>().playerCharacter.Value;
+                score = shooter.GetComponentInChildren<ScoreSystem>();
                 score.AddPoint();
             }
         }

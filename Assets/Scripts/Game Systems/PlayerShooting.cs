@@ -70,7 +70,7 @@ namespace Game_Systems {
             ray.origin = cam.transform.position;
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                var enemyHealth = hit.transform.GetComponent<PlayerHealth>();
+                var enemyHealth = hit.transform.GetComponentInChildren<PlayerHealth>();
                 if (enemyHealth!=null)
                 {
                     enemyHealth.takeDemage(1,GetComponent<NetworkObject>().OwnerClientId);

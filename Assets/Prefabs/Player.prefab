@@ -1158,6 +1158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1c58bb4026640c428957279ffe69527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: {fileID: 4837107048708343563}
   health:
     m_InternalValue: 100
   bar: {fileID: 1662205532299446409}
@@ -1178,7 +1179,7 @@ MonoBehaviour:
   - {fileID: 2532869666853082425}
   - {fileID: 6589340532127799218}
   - {fileID: 5971295356278041402}
-  canvas: {fileID: 0}
+  canvas: {fileID: 2781009344651921778}
 --- !u!1 &3857362805943963503
 GameObject:
   m_ObjectHideFlags: 0
