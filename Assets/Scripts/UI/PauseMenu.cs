@@ -7,7 +7,9 @@ public class PauseMenu : NetworkBehaviour
 {
     [SerializeField] GameObject pauseMenu;
     [SerializeField] Behaviour script;
+    [SerializeField] GameObject settingsMenu;
     private CharacterInputManager characterInput;
+
 
     
     void Start()
@@ -19,7 +21,7 @@ public class PauseMenu : NetworkBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            if(pauseMenu.activeSelf)
+            if(pauseMenu.activeSelf || settingsMenu.activeSelf)
             {
                 Resume();
             }else{
@@ -35,10 +37,17 @@ public class PauseMenu : NetworkBehaviour
         Cursor.lockState = CursorLockMode.None;
 
     }
+    public void GoBack()
+    {
+        settingsMenu.SetActive(false);
+        pauseMenu.SetActive(true);
+
+    }
     public void Resume()
     {
         //Debug.Log("is work");
         pauseMenu.SetActive(false);
+        settingsMenu.SetActive(false);
         script.enabled = true;
         characterInput.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
@@ -46,7 +55,8 @@ public class PauseMenu : NetworkBehaviour
 
     public void Settings()
     {
-        Debug.Log("Settings");
+        pauseMenu.SetActive(false);
+        settingsMenu.SetActive(true);
     }
 
     public void LeaveGame()
