@@ -4036,10 +4036,10 @@ RectTransform:
   m_Father: {fileID: 8713235043272504314}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 75, y: 0}
-  m_SizeDelta: {x: -150, y: -4}
+  m_SizeDelta: {x: 162, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5703565002510338689
 MonoBehaviour:
@@ -4103,7 +4103,6 @@ GameObject:
   - component: {fileID: 6893052685560044589}
   - component: {fileID: 1474592885373562574}
   - component: {fileID: 4918796370826426887}
-  - component: {fileID: 3975582765214205237}
   m_Layer: 5
   m_Name: SettingOption
   m_TagString: Untagged
@@ -4172,27 +4171,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!223 &3975582765214205237
-Canvas:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6879338600643842055}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 2
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 0
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_TargetDisplay: 0
 --- !u!1 &7008269447182591200
 GameObject:
   m_ObjectHideFlags: 0
@@ -4417,10 +4395,10 @@ RectTransform:
   m_Father: {fileID: 5492929455683525226}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 75, y: 0}
-  m_SizeDelta: {x: -150, y: 0}
+  m_SizeDelta: {x: 162, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &812579476040115406
 MonoBehaviour:
@@ -5800,13 +5778,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 391349dea2ce4634b9c6f63545d9eafb, type: 3}
---- !u!4 &9180381622869270877 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1450405418080317532, guid: 391349dea2ce4634b9c6f63545d9eafb, type: 3}
-  m_PrefabInstance: {fileID: 7730328125831057665}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &1690133084603815426 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 8949544630654666499, guid: 391349dea2ce4634b9c6f63545d9eafb, type: 3}
+  m_PrefabInstance: {fileID: 7730328125831057665}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9180381622869270877 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1450405418080317532, guid: 391349dea2ce4634b9c6f63545d9eafb, type: 3}
   m_PrefabInstance: {fileID: 7730328125831057665}
   m_PrefabAsset: {fileID: 0}
