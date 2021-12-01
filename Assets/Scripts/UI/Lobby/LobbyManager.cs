@@ -12,12 +12,12 @@ public class LobbyManager : NetworkBehaviour
     [Header("References")]
     [SerializeField] private Button readyUpButton;
     [SerializeField] private Button startGameButton;
+    [SerializeField] private GameObject playerManager;
     [SerializeField] private GameObject ListItemPrefab;
     [SerializeField] private GameObject listItemsPanel;
-    [SerializeField] private GameObject playerManager;
-
     private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
     private List<GameObject> playerItems = new List<GameObject>();
+
     private bool IsPlayerReadyUI;
 
     public override void NetworkStart()
@@ -42,7 +42,6 @@ public class LobbyManager : NetworkBehaviour
                 HandleClientConnected(client.ClientId);
             }
         }
-
     }
 
     private void InitializePlayerItems()
@@ -198,3 +197,4 @@ public class LobbyManager : NetworkBehaviour
         }
     }
 }
+
