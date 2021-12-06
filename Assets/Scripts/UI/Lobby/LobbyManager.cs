@@ -13,16 +13,16 @@ public class LobbyManager : NetworkBehaviour
     [SerializeField] private Button readyUpButton;
     [SerializeField] private Button startGameButton;
     [SerializeField] private GameObject playerManager;
-    [SerializeField] private GameObject ListItemPrefab;
-    [SerializeField] private GameObject listItemsPanel;
+    [SerializeField] private GameObject playerCardPrefab;
+    [SerializeField] private GameObject playerCardPanel;
+    [SerializeField] private GameObject playerCountText;
     private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
-    private List<GameObject> playerItems = new List<GameObject>();
+    private List<LobbyPlayerCard> playerCards = new List<LobbyPlayerCard>();
 
     private bool IsPlayerReadyUI;
 
     public override void NetworkStart()
     {
-        InitializePlayerItems();
         IsPlayerReadyUI = false;
         if(IsClient)
         {
@@ -41,18 +41,6 @@ public class LobbyManager : NetworkBehaviour
             {
                 HandleClientConnected(client.ClientId);
             }
-        }
-    }
-
-    private void InitializePlayerItems()
-    {
-        for(int i = 0; i < 10; i++)
-        {
-            int position = -(30*i + 20*(i+1));
-            GameObject listItem = Instantiate(ListItemPrefab, new Vector3(0, position, 0), Quaternion.identity) as GameObject;
-            listItem.transform.SetParent(listItemsPanel.transform, false);
-            listItem.SetActive(false);
-            playerItems.Add(listItem);
         }
     }
 
@@ -98,6 +86,7 @@ public class LobbyManager : NetworkBehaviour
                 break;
             }
         }
+
     }
     
     [ServerRpc(RequireOwnership = false)]
@@ -148,38 +137,17 @@ public class LobbyManager : NetworkBehaviour
 
     private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
     {
-        ClearItemListPanel();
+        DestroyCards();
         for(int i = 0; i < lobbyPlayers.Count; i++)
         {
-            UpdateListItem(playerItems[i], lobbyPlayers[i]);
+            float position = -(30*i + 20*(i+1));
+            InitializePlayerCard(lobbyPlayers[i], position);
         }
-
+        UpdatePlayerCount();
+        
         if(IsHost)
         {
             startGameButton.interactable = IsEveryoneReady();
-        }
-    }
-
-    private void UpdateListItem(GameObject listItem, LobbyPlayerState lobbyPlayerState)
-    {
-        Text playerTextbox = listItem.transform.GetChild(0).gameObject.GetComponent<Text>();
-        playerTextbox.text = lobbyPlayerState.PlayerName;
-        Image playerIsReadyIndicator = listItem.transform.GetChild(1).gameObject.GetComponent<Image>();
-        if(lobbyPlayerState.IsReady)
-        {
-            playerIsReadyIndicator.color = Color.green;
-        }else
-        {
-            playerIsReadyIndicator.color = Color.red;
-        }
-        listItem.SetActive(true);
-    }
-
-    private void ClearItemListPanel()
-    {
-        foreach(var item in playerItems)
-        {
-            item.SetActive(false);
         }
     }
 
@@ -196,5 +164,29 @@ public class LobbyManager : NetworkBehaviour
             IsPlayerReadyUI = true;
         }
     }
+
+    private void InitializePlayerCard(LobbyPlayerState state, float position)
+    {
+        GameObject obj = Instantiate(playerCardPrefab, new Vector3(0, position, 0), Quaternion.identity) as GameObject;
+        LobbyPlayerCard card = new LobbyPlayerCard(obj, state);
+        card.SetParent(playerCardPanel);
+        card.SetActive(true);
+        playerCards.Add(card);
+    }
+
+    private void DestroyCards()
+    {
+        foreach(LobbyPlayerCard card in playerCards)
+        {
+            Destroy(card.playerCard);
+        }
+        playerCards.Clear();
+    }
+
+    private void UpdatePlayerCount()
+    {
+        playerCountText.GetComponent<Text>().text = "Players("+lobbyPlayers.Count+"/10)";
+    }
+
 }
 
