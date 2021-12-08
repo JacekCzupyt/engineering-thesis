@@ -1,4 +1,5 @@
 using System.Linq;
+using Audio;
 using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
@@ -18,11 +19,13 @@ namespace Game_Systems.Equipment {
         [SerializeField] private float fireRate;
 
         [SerializeField] private int damage;
+
+        [SerializeField] private VariableSound fireAudio;
         
         private CharacterInputManager input;
         private bool firing = false;
         private float lastShotTime = float.NegativeInfinity;
-        
+
         private ClientRpcParams NonOwnerClientParams =>
             new ClientRpcParams
             {
@@ -59,6 +62,8 @@ namespace Game_Systems.Equipment {
         private void FireWeapon() {
             lastShotTime = Time.time;
             
+            FireWeaponPresentation();
+            
             var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             ray.origin = cam.transform.position;
             GameObject hitPlayer = null;
@@ -73,6 +78,10 @@ namespace Game_Systems.Equipment {
             }
 
             ShotServerRPC(ray,  hitPlayerId);
+        }
+
+        private void FireWeaponPresentation() {
+            fireAudio.Play();
         }
 
         [ServerRpc]
@@ -100,7 +109,7 @@ namespace Game_Systems.Equipment {
             if (!enabled || IsOwner)
                 return;
 
-            //TODO: implement visuals
+            FireWeaponPresentation();
         }
     }
 }
