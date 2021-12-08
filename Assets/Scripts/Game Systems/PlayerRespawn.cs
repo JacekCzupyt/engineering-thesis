@@ -12,11 +12,11 @@ namespace Game_Systems {
         private Renderer[] renderers;
         [SerializeField] Behaviour[] scripts;
         [SerializeField] private GameObject canvas;
-        CapsuleCollider collider;
+        CapsuleCollider playerCollider;
         // Start is called before the first frame update
         void Start()
         {
-            collider = GetComponentInParent<CapsuleCollider>();
+            playerCollider = GetComponentInParent<CapsuleCollider>();
             cc = GetComponentInParent<PlayerController>();
             renderers = transform.parent.GetComponentsInChildren<Renderer>();
         }
@@ -50,14 +50,14 @@ namespace Game_Systems {
         IEnumerator WaitForRespawn(Vector3 randomPos)
         {
             cc.enabled = false;
-            collider.enabled = false;
+            playerCollider.enabled = false;
             PlayerState(false);
             if(IsOwner)
                 canvas.SetActive(false);
             yield return new WaitForSeconds(5);
             transform.parent.position = randomPos;
             cc.enabled = true;
-            collider.enabled = true;
+            playerCollider.enabled = true;
             PlayerState(true);
             if(IsOwner)
                 canvas.SetActive(true);
