@@ -10,8 +10,6 @@ using UnityEngine.InputSystem;
 namespace Game_Systems.Equipment {
     public class HitscanWeapon : NetworkBehaviour {
         //TODO: recoil, bloom, damage falloff?, physics recoil?, ammo
-        
-        //TODO: sound, particle effects
 
         [SerializeField] private Camera cam;
 
@@ -23,6 +21,7 @@ namespace Game_Systems.Equipment {
         [SerializeField] private VariableSound fireAudio;
         
         private CharacterInputManager input;
+        private ParticleSystem particles;
         private bool firing = false;
         private float lastShotTime = float.NegativeInfinity;
 
@@ -38,6 +37,7 @@ namespace Game_Systems.Equipment {
 
         private void Start() {
             input = CharacterInputManager.Instance;
+            particles = GetComponentInChildren<ParticleSystem>();
         }
 
         // Update is called once per frame
@@ -82,6 +82,7 @@ namespace Game_Systems.Equipment {
 
         private void FireWeaponPresentation() {
             fireAudio.Play();
+            particles.Emit(new ParticleSystem.EmitParams(), 1);
         }
 
         [ServerRpc]
