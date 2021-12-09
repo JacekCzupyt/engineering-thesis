@@ -4542,6 +4542,8 @@ MonoBehaviour:
   equipment:
   - {fileID: 733983232544436711}
   - {fileID: 3059277187565542199}
+  currentlyEquipped:
+    m_InternalValue: 0
 --- !u!1 &7735149784652371082
 GameObject:
   m_ObjectHideFlags: 0
@@ -5668,7 +5670,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4624637393124916215, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7868692278534635022, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
       propertyPath: cam

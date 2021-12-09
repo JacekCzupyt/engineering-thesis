@@ -1,28 +1,40 @@
 using System;
 using System.Collections.Generic;
 using Input_Systems;
+using MLAPI;
+using MLAPI.NetworkVariable;
 using UnityEngine;
 
 namespace Game_Systems.Equipment {
-    public class SwitchEquipment : MonoBehaviour {
+    public class SwitchEquipment : NetworkBehaviour {
         [SerializeField] private List<GameObject> equipment;
-        private int currentlyEquipped = 0;
+        
+        [SerializeField] NetworkVariableInt currentlyEquipped = new NetworkVariableInt(
+            new NetworkVariableSettings {WritePermission = NetworkVariablePermission.OwnerOnly},
+            0
+        );
 
         private void Start() {
-            var input = CharacterInputManager.Instance;
-            input.SwitchEquipment += SwitchEquipmentCallback;
+            if (IsOwner) {
+                var input = CharacterInputManager.Instance;
+                input.SwitchEquipment += SwitchEquipmentLocalCallback;
+            }
+            currentlyEquipped.OnValueChanged += SwitchEquipmentsCallback;
+            equipment[currentlyEquipped.Value].SetActive(true);
         }
 
-        private void SwitchEquipmentCallback(int index) {
-            if (index == currentlyEquipped)
-                return;
+        private void SwitchEquipmentLocalCallback(int index) {
             if (index > equipment.Count) {
                 Debug.LogWarning($"No equipment with index {index}");
                 return;
             }
-            equipment[currentlyEquipped].SetActive(false);
-            equipment[index].SetActive(true);
-            currentlyEquipped = index;
+            currentlyEquipped.Value = index;
+
+        }
+
+        private void SwitchEquipmentsCallback(int prev, int current) {
+            equipment[prev].SetActive(false);
+            equipment[current].SetActive(true);
         }
     }
 }
