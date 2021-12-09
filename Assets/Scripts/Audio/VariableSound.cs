@@ -5,7 +5,7 @@ using Utility;
 using Random = System.Random;
 
 namespace Audio {
-    public class VariableSound : MonoBehaviour {
+    public class VariableSound : SoundPlayer {
         private AudioSource audioSource;
         [SerializeField] private List<AudioClip> sounds;
         private Random rnd = new Random();
@@ -14,9 +14,12 @@ namespace Audio {
             audioSource = GetComponent<AudioSource>();
         }
 
-        public void Play() {
+        public override void Play() {
             audioSource.clip = sounds.RandomElement();
             audioSource.Play();
+        }
+        public override void Stop() {
+            audioSource.Stop();
         }
 
         private void OnDisable() {

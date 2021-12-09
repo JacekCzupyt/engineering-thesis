@@ -7,6 +7,7 @@ using MLAPI.Messaging;
 using MLAPI.Spawning;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Scripting;
 
 namespace Game_Systems.Equipment {
     public class HitscanWeapon : NetworkBehaviour {
@@ -19,14 +20,18 @@ namespace Game_Systems.Equipment {
 
         [SerializeField] private bool fullAuto;
         [SerializeField] private float fireRate;
+        [SerializeField] private int maxAmmoCount;
+        [SerializeField] private int currentAmmoCount;
 
         [SerializeField] private int damage;
 
-        [SerializeField] private VariableSound fireAudio;
+        [SerializeField] private SoundPlayer fireAudio;
+        [SerializeField] private SoundPlayer misfireAudio;
         
         private CharacterInputManager input;
         private ParticleSystem particles;
-        private bool firing = false;
+        private bool firedDuringAction = false;
+        private bool misfiredDuringAction = false;
         private float lastShotTime = float.NegativeInfinity;
 
         private void OnEnable() {
@@ -50,6 +55,7 @@ namespace Game_Systems.Equipment {
         private void Start() {
             input = CharacterInputManager.Instance;
             particles = GetComponentInChildren<ParticleSystem>();
+            currentAmmoCount = maxAmmoCount;
         }
 
         // Update is called once per frame
@@ -62,17 +68,31 @@ namespace Game_Systems.Equipment {
 
         private void CheckFiringState() {
             var fireAction = input.GetFireAction() == InputActionPhase.Started;
-            if (fireAction && (!firing || fullAuto)) {
-                firing = true;
+            if (fireAction && !misfiredDuringAction && (!firedDuringAction || fullAuto)) {
                 if (Time.time - lastShotTime >= 1f / fireRate) {
-                    FireWeapon();
+                    AttemptFireWeapon();
                 }
             }
-            firing = fireAction;
+            if (!fireAction) {
+                firedDuringAction = false;
+                misfiredDuringAction = false;
+            }
+
+        }
+
+        private void AttemptFireWeapon() {
+            firedDuringAction = true;
+            if(currentAmmoCount > 0)
+                FireWeapon();
+            else {
+                misfiredDuringAction = true;
+                misfireAudio.Play();
+            }
         }
 
         private void FireWeapon() {
             lastShotTime = Time.time;
+            currentAmmoCount--;
             
             FireWeaponPresentation();
             
