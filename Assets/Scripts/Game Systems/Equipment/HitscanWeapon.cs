@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Audio;
 using Input_Systems;
@@ -14,6 +15,7 @@ namespace Game_Systems.Equipment {
         //TODO: variable pitch depending on ammo
 
         [SerializeField] private Camera cam;
+        [SerializeField] private GameObject gunModel;
 
         [SerializeField] private bool fullAuto;
         [SerializeField] private float fireRate;
@@ -26,6 +28,14 @@ namespace Game_Systems.Equipment {
         private ParticleSystem particles;
         private bool firing = false;
         private float lastShotTime = float.NegativeInfinity;
+
+        private void OnEnable() {
+            gunModel.SetActive(true);
+        }
+
+        private void OnDisable() {
+            gunModel.SetActive(false);
+        }
 
         private ClientRpcParams NonOwnerClientParams =>
             new ClientRpcParams

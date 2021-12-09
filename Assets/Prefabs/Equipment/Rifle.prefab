@@ -5077,6 +5077,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
+  gunModel: {fileID: 6312640891720423668}
   fullAuto: 0
   fireRate: 2
   damage: 40

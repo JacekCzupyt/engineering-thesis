@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Game_Systems.Equipment {
     public class SwitchEquipment : NetworkBehaviour {
-        [SerializeField] private List<GameObject> equipment;
+        [SerializeField] private List<HitscanWeapon> equipment;
         
         [SerializeField] NetworkVariableInt currentlyEquipped = new NetworkVariableInt(
             new NetworkVariableSettings {WritePermission = NetworkVariablePermission.OwnerOnly},
@@ -15,12 +15,15 @@ namespace Game_Systems.Equipment {
         );
 
         private void Start() {
+            foreach(var item in equipment) {
+                item.enabled = false;
+            }
             if (IsOwner) {
                 var input = CharacterInputManager.Instance;
                 input.SwitchEquipment += SwitchEquipmentLocalCallback;
             }
             currentlyEquipped.OnValueChanged += SwitchEquipmentsCallback;
-            equipment[currentlyEquipped.Value].SetActive(true);
+            equipment[currentlyEquipped.Value].enabled = true;
         }
 
         private void SwitchEquipmentLocalCallback(int index) {
@@ -33,8 +36,8 @@ namespace Game_Systems.Equipment {
         }
 
         private void SwitchEquipmentsCallback(int prev, int current) {
-            equipment[prev].SetActive(false);
-            equipment[current].SetActive(true);
+            equipment[prev].enabled = false;
+            equipment[current].enabled = true;
         }
     }
 }
