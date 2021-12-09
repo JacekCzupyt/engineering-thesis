@@ -11,7 +11,7 @@ using UnityEngine.Scripting;
 
 namespace Game_Systems.Equipment {
     public class HitscanWeapon : NetworkBehaviour {
-        //TODO: recoil, bloom, damage falloff?, physics recoil?, ammo
+        //TODO: recoil, bloom, damage falloff?, physics recoil?
         
         //TODO: variable pitch depending on ammo
 
@@ -23,8 +23,8 @@ namespace Game_Systems.Equipment {
 
         [SerializeField] private int damage;
         
-        [SerializeField] private int maxAmmoCount;
-        [SerializeField] private int currentAmmoCount;
+        [SerializeField] public int maxAmmoCount;
+        [SerializeField] public int currentAmmoCount;
 
         [SerializeField] private float reloadTime;
 
