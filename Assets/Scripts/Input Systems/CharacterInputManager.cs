@@ -13,7 +13,8 @@ namespace Input_Systems {
                 return _instance;
             }
         }
-        PlayerControls controls;
+        private PlayerControls controls;
+        public PlayerControls.PlayerActions Controls => controls.Player;
 
         private void Awake() {
             if (_instance != null && _instance != this) {

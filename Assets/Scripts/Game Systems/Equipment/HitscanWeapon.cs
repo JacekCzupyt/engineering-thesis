@@ -20,25 +20,34 @@ namespace Game_Systems.Equipment {
 
         [SerializeField] private bool fullAuto;
         [SerializeField] private float fireRate;
+
+        [SerializeField] private int damage;
+        
         [SerializeField] private int maxAmmoCount;
         [SerializeField] private int currentAmmoCount;
 
-        [SerializeField] private int damage;
+        [SerializeField] private float reloadTime;
 
         [SerializeField] private SoundPlayer fireAudio;
         [SerializeField] private SoundPlayer misfireAudio;
+        [SerializeField] private SoundPlayer reloadAudio;
         
         private CharacterInputManager input;
         private ParticleSystem particles;
         private bool firedDuringAction = false;
         private bool misfiredDuringAction = false;
         private float lastShotTime = float.NegativeInfinity;
+        
+        private bool reloading = false;
+        private float reloadStartTime;
 
         private void OnEnable() {
             gunModel.SetActive(true);
         }
 
         private void OnDisable() {
+            if(reloading)
+                CancelReload();
             gunModel.SetActive(false);
         }
 
@@ -56,6 +65,7 @@ namespace Game_Systems.Equipment {
             input = CharacterInputManager.Instance;
             particles = GetComponentInChildren<ParticleSystem>();
             currentAmmoCount = maxAmmoCount;
+            input.Controls.Reload.performed += Reload;
         }
 
         // Update is called once per frame
@@ -67,6 +77,9 @@ namespace Game_Systems.Equipment {
         }
 
         private void CheckFiringState() {
+            if (reloading && Time.time - reloadStartTime >= reloadTime) {
+                CompleteReload();
+            }
             var fireAction = input.GetFireAction() == InputActionPhase.Started;
             if (fireAction && !misfiredDuringAction && (!firedDuringAction || fullAuto)) {
                 if (Time.time - lastShotTime >= 1f / fireRate) {
@@ -84,7 +97,7 @@ namespace Game_Systems.Equipment {
             firedDuringAction = true;
             if(currentAmmoCount > 0)
                 FireWeapon();
-            else {
+            else if(!reloading) {
                 misfiredDuringAction = true;
                 misfireAudio.Play();
             }
@@ -93,6 +106,9 @@ namespace Game_Systems.Equipment {
         private void FireWeapon() {
             lastShotTime = Time.time;
             currentAmmoCount--;
+            
+            if(reloading)
+                CancelReload();
             
             FireWeaponPresentation();
             
@@ -112,6 +128,25 @@ namespace Game_Systems.Equipment {
             ShotServerRPC(ray,  hitPlayerId);
         }
 
+        private void Reload(InputAction.CallbackContext context) {
+            if (currentAmmoCount == maxAmmoCount || reloading || !enabled)
+                return;
+
+            reloading = true;
+            reloadStartTime = Time.time;
+            reloadAudio.Play();
+        }
+
+        private void CancelReload() {
+            reloading = false;
+            reloadAudio.Stop();
+        }
+
+        private void CompleteReload() {
+            reloading = false;
+            currentAmmoCount = maxAmmoCount;
+        }
+
         private void FireWeaponPresentation() {
             fireAudio.Play();
             particles.Emit(new ParticleSystem.EmitParams(), 1);
@@ -119,8 +154,8 @@ namespace Game_Systems.Equipment {
 
         [ServerRpc]
         private void ShotServerRPC(Ray shot, ulong playerHitId, ServerRpcParams rpcParams = default) {
-            // if (!enabled)
-            //     return;
+            if (!enabled)
+                return;
 
             if (playerHitId != ulong.MaxValue) {
                 var playerHit = NetworkSpawnManager.SpawnedObjects[playerHitId];
