@@ -10,6 +10,8 @@ using UnityEngine.InputSystem;
 namespace Game_Systems.Equipment {
     public class HitscanWeapon : NetworkBehaviour {
         //TODO: recoil, bloom, damage falloff?, physics recoil?, ammo
+        
+        //TODO: variable pitch depending on ammo
 
         [SerializeField] private Camera cam;
 
