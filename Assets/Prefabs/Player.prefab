@@ -2447,7 +2447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    m_InternalValue: 100
+    m_InternalValue: 0
   bar: {fileID: 1662205532299446409}
 --- !u!114 &6209342840715338704
 MonoBehaviour:
@@ -2464,7 +2464,6 @@ MonoBehaviour:
   scripts:
   - {fileID: 3677255792734329779}
   - {fileID: 2532869666853082425}
-  - {fileID: 0}
   - {fileID: 5971295356278041402}
   canvas: {fileID: 2781009344651921778}
 --- !u!1 &3857362805943963503

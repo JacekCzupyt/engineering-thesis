@@ -10,11 +10,11 @@ namespace Visuals {
         [SerializeField] private Gradient colorGradient;
 
         private TextMeshPro text;
-        private Light light;
+        private Light textLight;
 
         private void Start() {
             text = GetComponent<TextMeshPro>();
-            light = GetComponent<Light>();
+            textLight = GetComponent<Light>();
         }
 
         private void Update() {
@@ -24,7 +24,7 @@ namespace Visuals {
             text.text = ammo.ToString();
             var color = colorGradient.Evaluate(1f-(float)ammo / maxAmmo);
             text.color = color;
-            light.color = color;
+            textLight.color = color;
         }
     }
 }
