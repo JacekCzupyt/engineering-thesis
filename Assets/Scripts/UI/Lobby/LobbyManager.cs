@@ -187,6 +187,5 @@ public class LobbyManager : NetworkBehaviour
     {
         playerCountText.GetComponent<Text>().text = "Players("+lobbyPlayers.Count+"/10)";
     }
-
 }
 
