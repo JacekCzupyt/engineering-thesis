@@ -2447,7 +2447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    m_InternalValue: 0
+    m_InternalValue: 100
   bar: {fileID: 1662205532299446409}
 --- !u!114 &6209342840715338704
 MonoBehaviour:
