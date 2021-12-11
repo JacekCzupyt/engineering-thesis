@@ -1,18 +1,24 @@
 using System.Collections;
+using System.Collections.Generic;
 using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
 using UI;
 using UnityEngine;
+using Game_Systems.Utility;
 
 namespace Game_Systems {
     public class PlayerRespawn : NetworkBehaviour
     {
+        
         private PlayerController cc;
         private Renderer[] renderers;
         [SerializeField] Behaviour[] scripts;
         [SerializeField] private GameObject canvas;
         CapsuleCollider playerCollider;
+
+        
+
         // Start is called before the first frame update
         void Start()
         {
@@ -44,7 +50,9 @@ namespace Game_Systems {
         }
         private Vector3 RandomPos()
         {
-            return new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
+            List<Vector3> li= RespawnPointGenerator.generatePoints(NetworkManager.Singleton.ConnectedClients.Count);
+            int r = RespawnPointGenerator.rnd.Next(li.Count);
+            return new Vector3(li[r].x, li[r].y, li[r].z);
         }
 
         IEnumerator WaitForRespawn(Vector3 randomPos)
