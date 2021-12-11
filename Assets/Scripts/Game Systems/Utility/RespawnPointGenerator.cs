@@ -9,7 +9,7 @@ namespace Game_Systems.Utility
     public static class RespawnPointGenerator
     {
         public static System.Random rnd = new System.Random();
-        public static  List<Vector3> generatePoints(int num, int sphereRad = 50)
+        public static  List<Vector3> generatePoints(int num, int sphereRad = 10)
         {
             List<Vector3> points = new List<Vector3>();
             double phi = Math.PI * (3 - Math.Sqrt(5));

@@ -50,8 +50,12 @@ namespace Game_Systems {
         }
         private Vector3 RandomPos()
         {
-            List<Vector3> li= RespawnPointGenerator.generatePoints(NetworkManager.Singleton.ConnectedClients.Count);
+            int numPlayers = NetworkManager.Singleton.ConnectedClients.Count;
+            if (numPlayers == 2)
+                return new Vector3(0, 0, 0);
+            List<Vector3> li= RespawnPointGenerator.generatePoints(numPlayers);
             int r = RespawnPointGenerator.rnd.Next(li.Count);
+            
             return new Vector3(li[r].x, li[r].y, li[r].z);
         }
 
