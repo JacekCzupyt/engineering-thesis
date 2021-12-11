@@ -40,7 +40,7 @@ namespace Input_Systems {
         }
 
         public Vector3 InputMovement() {
-            Debug.Log(currentState);
+            // Debug.Log(currentState);
 
             if (input.GetGripAction() != InputActionPhase.Started)
                 gripActionUsed = false;

@@ -6,14 +6,12 @@ using MLAPI;
 public class PauseMenu : NetworkBehaviour
 {
     [SerializeField] GameObject pauseMenu;
-    [SerializeField] Behaviour script;
     [SerializeField] GameObject settingsMenu;
     private CharacterInputManager characterInput;
 
 
     
-    void Start()
-    {
+    void Start() {
         characterInput = CharacterInputManager.Instance;
     }
 
@@ -32,7 +30,6 @@ public class PauseMenu : NetworkBehaviour
     void Pause()
     {
         pauseMenu.SetActive(true);
-        script.enabled = false;
         characterInput.enabled = false;
         Cursor.lockState = CursorLockMode.None;
 
@@ -48,7 +45,6 @@ public class PauseMenu : NetworkBehaviour
         //Debug.Log("is work");
         pauseMenu.SetActive(false);
         settingsMenu.SetActive(false);
-        script.enabled = true;
         characterInput.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
     }

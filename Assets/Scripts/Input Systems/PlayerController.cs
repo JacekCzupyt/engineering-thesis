@@ -5,11 +5,6 @@ using Utility;
 
 namespace Input_Systems {
     public class PlayerController : NetworkBehaviour {
-        
-        public float snapDistance = 3;
-        public float networkPullModifier = 1;
-        private int Itemindex;
-        private int? tickDelta = null;
 
         [SerializeField] Canvas barHealth;
 
@@ -21,9 +16,6 @@ namespace Input_Systems {
                     }
                 }
             }
-            // EquipItem(0);
-
-            // em = bulletSystem.emission;
         }
     }
 }

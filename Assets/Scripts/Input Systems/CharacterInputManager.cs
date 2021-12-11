@@ -13,7 +13,8 @@ namespace Input_Systems {
                 return _instance;
             }
         }
-        PlayerControls controls;
+        private PlayerControls controls;
+        public PlayerControls.PlayerActions Controls => controls.Player;
 
         private void Awake() {
             if (_instance != null && _instance != this) {
@@ -23,7 +24,13 @@ namespace Input_Systems {
                 _instance = this;
             }
             controls = new PlayerControls();
+            SetupCallbacks();
             DontDestroyOnLoad(this.gameObject);
+        }
+
+        private void SetupCallbacks() {
+            controls.Player.EquipWeapon1.performed += context => {SwitchEquipment?.Invoke(0);};
+            controls.Player.EquipWeapon2.performed += context => {SwitchEquipment?.Invoke(1);};
         }
 
         private void OnEnable() {
@@ -33,6 +40,8 @@ namespace Input_Systems {
         private void OnDisable() {
             controls.Disable();
         }
+
+        public event Action<int> SwitchEquipment;
 
         public Vector3 GetPlayerMovement() {
             var vertical = controls.Player.VerticalMovement.ReadValue<float>();

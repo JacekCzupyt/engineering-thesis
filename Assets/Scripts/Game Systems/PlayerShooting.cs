@@ -10,6 +10,7 @@ namespace Game_Systems {
     public class PlayerShooting : NetworkBehaviour
 
     {
+        private AudioSource myAudio;
         [SerializeField] private float tickRate = 20;
 
         [SerializeField] Camera cam;
@@ -34,6 +35,7 @@ namespace Game_Systems {
         // Start is called before the first frame update
         void Start()
         {
+            myAudio = GetComponent<AudioSource>();
             //  par = new NetworkVariable<ParticleSystem>(bulletSystem);
             em = bulletSystem.emission;
             input = CharacterInputManager.Instance;
@@ -49,20 +51,25 @@ namespace Game_Systems {
             } 
         }
         void SendData()
-        {       
-            if (input.GetFireAction() == InputActionPhase.Started) {
+        {
+            if (input.GetFireAction() == InputActionPhase.Started)
+            {
+                if(!firing)
+                    myAudio.Play();
                 firing = true;
-                ShootServerRPC(true);
             }
-            else if(firing) {
+            else
+            {
                 firing = false;
-                ShootServerRPC(false);
+                myAudio.Stop();
             }
+                
         }
         [ServerRpc]
-        private void ShootServerRPC(bool isShoot,ServerRpcParams rpcParams = default)
+        private void ShootServerRPC(ServerRpcParams rpcParams = default)
         {
-            if (!(NetworkManager.Singleton.NetworkTime - lastSendTime >= (1f / tickRate)) && isShoot)
+
+            if (!(NetworkManager.Singleton.NetworkTime - lastSendTime >= (1f / tickRate)))
                 return;
             lastSendTime = NetworkManager.Singleton.NetworkTime;
             // Debug.Log("HI" + isShoot);
@@ -77,17 +84,18 @@ namespace Game_Systems {
                 }
 
             }
-            ShootClientRPC(isShoot,NonOwnerClientParams);
+            ShootClientRPC(NonOwnerClientParams);
 
         }
 
-        [ClientRpc]
-        private void ShootClientRPC(bool isShoot,ClientRpcParams rpcParams = default)
+        [ClientRpc(Delivery =RpcDelivery.Unreliable)]
+        private void ShootClientRPC(ClientRpcParams rpcParams = default)
         {
-            if (isShoot)
-                em.rateOverTime = 10f;
-            else
-                em.rateOverTime = 0f;
+            //var p=Instantiate(bulletSystem, transform.position, transform.rotation);
+            var sound = Instantiate(myAudio, transform.position, transform.rotation);
+
+            //p.Play();
+            //p.Stop();
         }
    
     }
