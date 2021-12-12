@@ -1,16 +1,18 @@
-public class DisconnectReason
-{
-    public ConnectStatus Reason { get; private set; } = ConnectStatus.Undefined;
-
-    public void SetDisconnectReason(ConnectStatus reason)
+namespace NetPortals {
+    public class DisconnectReason
     {
-        Reason = reason;
-    }
+        public ConnectStatus Reason { get; private set; } = ConnectStatus.Undefined;
 
-    public void Clear()
-    {
-        Reason = ConnectStatus.Undefined;
-    }
+        public void SetDisconnectReason(ConnectStatus reason)
+        {
+            Reason = reason;
+        }
 
-    public bool HasTransitionReason => Reason != ConnectStatus.Undefined;
+        public void Clear()
+        {
+            Reason = ConnectStatus.Undefined;
+        }
+
+        public bool HasTransitionReason => Reason != ConnectStatus.Undefined;
+    }
 }
