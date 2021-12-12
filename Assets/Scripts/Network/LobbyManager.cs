@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using MLAPI;
 using MLAPI.NetworkVariable.Collections;
 using MLAPI.Connection;
@@ -9,31 +8,22 @@ using MLAPI.Messaging;
 
 public class LobbyManager : NetworkBehaviour
 {
-    [Header("References")]
-    [SerializeField] private Button readyUpButton;
-    [SerializeField] private Button startGameButton;
+    [SerializeField] private GameObject lobbyUIObject; 
     [SerializeField] private GameObject playerManager;
-    [SerializeField] private GameObject playerCardPrefab;
-    [SerializeField] private GameObject playerCardPanel;
-    [SerializeField] private GameObject playerCountText;
     private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
-    private List<LobbyPlayerCard> playerCards = new List<LobbyPlayerCard>();
-
-    private bool IsPlayerReadyUI;
-
+    private LobbyUI lobbyUI;
     public override void NetworkStart()
     {
-        IsPlayerReadyUI = false;
+        lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
         if(IsClient)
         {
-            lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
+            lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;            
             SpawnPlayerManagerServerRpc(NetworkManager.Singleton.LocalClientId);
         }
         
         if(IsServer)
         {
-            startGameButton.gameObject.SetActive(true);
-
+            lobbyUI.startGameButton.gameObject.SetActive(true);
             NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
 
@@ -121,71 +111,39 @@ public class LobbyManager : NetworkBehaviour
         ServerGameNetPortal.Instance.StartGame();
     }
 
-    public void OnLeaveButtonClicked()
+    public void LeaveGame()
     {
         GameNetPortal.Instance.RequestDisconnect();
     }
 
-    public void OnStartGameButtonClicked(){
+    public void StartGame(){
         StartGameServerRpc();
     }
 
-    public void OnReadyUpButtonClicked(){
+    public void ReadyUp(){
         ToggleReadyServerRpc();
-        ToggleReadyUpButtonText();
     }
 
     private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
     {
-        DestroyCards();
+        
+        lobbyUI.DestroyCards();
         for(int i = 0; i < lobbyPlayers.Count; i++)
         {
             float position = -(30*i + 20*(i+1));
-            InitializePlayerCard(lobbyPlayers[i], position);
+            lobbyUI.CreateListItem(lobbyPlayers[i], position);
         }
         UpdatePlayerCount();
         
         if(IsHost)
         {
-            startGameButton.interactable = IsEveryoneReady();
+            lobbyUI.startGameButton.interactable = IsEveryoneReady();
         }
-    }
-
-    private void ToggleReadyUpButtonText()
-    {
-        if(IsPlayerReadyUI)
-        {
-            readyUpButton.GetComponentInChildren<Text>().text =  "Ready Up!";
-            IsPlayerReadyUI = false;
-        }
-        else
-        {
-            readyUpButton.GetComponentInChildren<Text>().text =  "Cancel";
-            IsPlayerReadyUI = true;
-        }
-    }
-
-    private void InitializePlayerCard(LobbyPlayerState state, float position)
-    {
-        GameObject obj = Instantiate(playerCardPrefab, new Vector3(0, position, 0), Quaternion.identity) as GameObject;
-        LobbyPlayerCard card = new LobbyPlayerCard(obj, state);
-        card.SetParent(playerCardPanel);
-        card.SetActive(true);
-        playerCards.Add(card);
-    }
-
-    private void DestroyCards()
-    {
-        foreach(LobbyPlayerCard card in playerCards)
-        {
-            Destroy(card.playerCard);
-        }
-        playerCards.Clear();
     }
 
     private void UpdatePlayerCount()
     {
-        playerCountText.GetComponent<Text>().text = "Players("+lobbyPlayers.Count+"/10)";
+        lobbyUI.UpdatePlayerCount(lobbyPlayers.Count);
     }
 }
 

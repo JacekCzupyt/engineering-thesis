@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ListItem : MonoBehaviour
+public class ListItem 
 {
-    protected GameObject listitemObject;
+    private GameObject listitemObject;
+    public GameObject ListitemObject => listitemObject;
 
     public ListItem(GameObject obj)
     {
@@ -25,10 +26,5 @@ public class ListItem : MonoBehaviour
     {
         listitemObject.transform.position = new Vector3(pos.x, pos.y, pos.z);
         listitemObject.transform.localScale = new Vector3(1, 1, 1);
-    }
-
-    public void DestroyGameObject()
-    {
-        Destroy(listitemObject);
     }
 }

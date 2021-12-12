@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class ListView : MonoBehaviour
 {
-    [SerializeField] GameObject panel;
-    [SerializeField] GameObject prefab;
+    [SerializeField] public GameObject panel;
+    [SerializeField] public GameObject prefab;
 
     private List<ListItem> listItems;
 
-    private void Start()
+    private void Awake()
     {
         listItems = new List<ListItem>();
     }
 
     public void AddItem(ListItem item)
     {
+        item.SetParent(panel);
+        item.SetActive(true);
         listItems.Add(item);
     }
 
@@ -23,7 +25,7 @@ public class ListView : MonoBehaviour
     {
         foreach(ListItem item in listItems)
         {
-            item.DestroyGameObject();
+            Destroy(item.ListitemObject);
         }
         listItems.Clear();
     }
