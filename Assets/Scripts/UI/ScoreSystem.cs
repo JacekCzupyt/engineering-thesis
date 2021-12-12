@@ -4,11 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using MLAPI;
 using MLAPI.NetworkVariable;
+using MLAPI.Messaging;
 
 public class ScoreSystem : NetworkBehaviour
 {
     public NetworkVariableInt userScore = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
     [SerializeField] Text Score;
+    [SerializeField] CheckGameState checkState;
+    // Start is called before the first frame update
 
     void Start()
     {
@@ -22,6 +25,8 @@ public class ScoreSystem : NetworkBehaviour
     public void AddPoint()
     {
         userScore.Value += 1;
+        if(IsOwner)
+            checkState.checkUserScoreServerRPC();
     }
 
     public int GetPlayerScore()
