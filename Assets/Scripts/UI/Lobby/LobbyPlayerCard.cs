@@ -2,14 +2,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Animations;
 
-public class LobbyPlayerCard
+public class LobbyPlayerCard : ListItem
 {
-    public GameObject playerCard;
-    public LobbyPlayerCard(GameObject pcard, LobbyPlayerState state)
+        public LobbyPlayerCard(GameObject playerCard, LobbyPlayerState state) : base(playerCard)
     {
-        playerCard = pcard;
-        playerCard.transform.GetChild(0).gameObject.GetComponent<Text>().text = state.PlayerName;
-        playerCard.transform.GetChild(1).gameObject.GetComponent<Image>().color = GetReadyIndicatorColor(state.IsReady);
+        listitemObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = state.PlayerName;
+        listitemObject.transform.GetChild(1).gameObject.GetComponent<Image>().color = GetReadyIndicatorColor(state.IsReady);
     }
 
     private Color GetReadyIndicatorColor(bool val)
@@ -18,25 +16,9 @@ public class LobbyPlayerCard
         else return Color.red;
     }
 
-    public void SetActive(bool active)
-    {
-        playerCard.SetActive(active);
-    }
-
-    public void SetParent(GameObject obj)
-    {
-        playerCard.transform.SetParent(obj.transform, false);
-    }
-
-    public void SetPostion(float pos)
-    {
-        playerCard.transform.position = new Vector3(0, pos, 0);
-        playerCard.transform.localScale = new Vector3(1, 1, 1);
-    }
-
     public void UpdateCard(LobbyPlayerState state)
     {
-        playerCard.transform.GetChild(0).gameObject.GetComponent<Text>().text = state.PlayerName;
-        playerCard.transform.GetChild(1).gameObject.GetComponent<Image>().color = GetReadyIndicatorColor(state.IsReady);
+        listitemObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = state.PlayerName;
+        listitemObject.transform.GetChild(1).gameObject.GetComponent<Image>().color = GetReadyIndicatorColor(state.IsReady);
     }
 }

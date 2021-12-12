@@ -232,7 +232,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &409910741
 GameObject:
@@ -438,7 +438,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2031190818}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
         m_MethodName: OnReadyUpButtonClicked
         m_Mode: 1
@@ -683,7 +683,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &671343191
 GameObject:
@@ -860,7 +860,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &873104326
 GameObject:
@@ -945,7 +945,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2031190818}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
         m_MethodName: OnStartGameButtonClicked
         m_Mode: 1
@@ -1076,7 +1076,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1052965329
 GameObject:
@@ -1106,7 +1106,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1119313547
 GameObject:
@@ -1199,7 +1199,7 @@ GameObject:
   - component: {fileID: 1127431055}
   - component: {fileID: 1127431054}
   m_Layer: 0
-  m_Name: PlayerListView
+  m_Name: PlayersView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1370,6 +1370,36 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1296984199
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1296984200}
+  m_Layer: 0
+  m_Name: LobbyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1296984200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296984199}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.162349, y: -4.543448, z: -9.598515}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1462598629
 GameObject:
   m_ObjectHideFlags: 0
@@ -1461,7 +1491,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1491532454
 GameObject:
@@ -1546,7 +1576,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2031190818}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
         m_MethodName: OnLeaveButtonClicked
         m_Mode: 1
@@ -1764,8 +1794,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1883642915}
   - component: {fileID: 1883642917}
+  - component: {fileID: 1883642916}
   m_Layer: 0
-  m_Name: PlayerCardsListView
+  m_Name: LobbyListView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1790,6 +1821,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -22.499756}
   m_SizeDelta: {x: 950, y: -95.0005}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1883642916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1883642914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e89e34840f506914488912dcf52066d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 1883642914}
+  prefab: {fileID: 1751235744415227745, guid: 22dbfddea2fdd7649b0a62d942022999, type: 3}
 --- !u!222 &1883642917
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1808,9 +1853,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2031190817}
   - component: {fileID: 2031190818}
-  - component: {fileID: 2031190819}
   m_Layer: 0
-  m_Name: UI_Lobby
+  m_Name: LobbyUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1829,7 +1873,7 @@ Transform:
   m_Children:
   - {fileID: 1237214288}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2031190818
 MonoBehaviour:
@@ -1840,32 +1884,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2031190816}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5591631a8eecca4fb94a13d4c3f1598, type: 3}
+  m_Script: {fileID: 11500000, guid: 938c1076084c0394a94687d8fbc91811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   readyUpButton: {fileID: 429451036}
   startGameButton: {fileID: 873104328}
-  playerManager: {fileID: 4405543599418297458, guid: d2fd60207659abc4e892e442f59c62d4, type: 3}
-  playerCardPrefab: {fileID: 1751235744415227745, guid: 22dbfddea2fdd7649b0a62d942022999, type: 3}
-  playerCardPanel: {fileID: 1883642914}
+  lobbyManager: {fileID: 0}
   playerCountText: {fileID: 476606205}
---- !u!114 &2031190819
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2031190816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NetworkInstanceId: 0
-  PrefabHash: 2004643045546826850
-  PrefabHashGenerator: UI_Lobby
-  AlwaysReplicateAsRoot: 0
-  DontDestroyWithOwner: 0
+  lobbyListView: {fileID: 1883642914}
 --- !u!224 &1081416915257001791
 RectTransform:
   m_ObjectHideFlags: 0

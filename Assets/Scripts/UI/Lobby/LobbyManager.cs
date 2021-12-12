@@ -6,7 +6,6 @@ using MLAPI;
 using MLAPI.NetworkVariable.Collections;
 using MLAPI.Connection;
 using MLAPI.Messaging;
-using Network;
 
 public class LobbyManager : NetworkBehaviour
 {
