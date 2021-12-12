@@ -393,6 +393,7 @@ MonoBehaviour:
   userScore:
     m_InternalValue: 0
   Score: {fileID: 4009618780752795497}
+  checkState: {fileID: 1557097674526762527}
 --- !u!114 &7589496400887434914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2532,7 +2533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    m_InternalValue: 0
+    m_InternalValue: 100
   bar: {fileID: 1662205532299446409}
 --- !u!114 &6209342840715338704
 MonoBehaviour:

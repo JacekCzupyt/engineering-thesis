@@ -40,7 +40,7 @@ namespace Game_Systems {
                 shooter=NetworkManager.Singleton.ConnectedClients[player].PlayerObject
                     .GetComponent<PlayerManager>().playerCharacter.Value;
                 score = shooter.GetComponentInChildren<ScoreSystem>();
-                score.AddPoint();
+                score.AddPoint();              
             }
         }
         public void takeDemage(int damage)

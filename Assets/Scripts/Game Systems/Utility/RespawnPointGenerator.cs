@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
+
 
 namespace Game_Systems.Utility
 {
@@ -12,6 +13,11 @@ namespace Game_Systems.Utility
         public static  List<Vector3> generatePoints(int num, int sphereRad = 10)
         {
             List<Vector3> points = new List<Vector3>();
+            if (num == 1)
+            {
+                points.Add(new Vector3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f)));
+                return points;
+            }
             double phi = Math.PI * (3 - Math.Sqrt(5));
             double y, x, z, r, theta, newRad, norm;
             for (int i = 0; i < num; i++)

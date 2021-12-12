@@ -19,32 +19,26 @@ public class CheckGameState : NetworkBehaviour
     [SerializeField] ScoreSystem score;
     [SerializeField] Text can;
     // Start is called before the first frame update
-
-
     // Update is called once per frame
-    
-    void Update()
+
+    void Start()
     {
-        checkUserScoreServerRPC();
+        playerCollider = GetComponentInParent<CapsuleCollider>();
+        cc = GetComponentInParent<PlayerController>();
+        renderers = transform.parent.GetComponentsInChildren<Renderer>();
     }
     [ServerRpc]
-    private void checkUserScoreServerRPC()
+    public void checkUserScoreServerRPC()
     {
-        if (score.userScore.Value >= 5)
-        {
-            
-           var d = NetworkManager.Singleton.ConnectedClients[NetworkManager.Singleton.LocalClientId].PlayerObject
-                    .GetComponent<PlayerManager>().playerCharacter.Value.GetComponentInChildren<ScoreSystem>().userScore.Value;
-            endGameClientRPC(d);
-        }
-            
-       
+            if (score.userScore.Value >= 1)
+            {
+                endGameClientRPC(5);
+            }
     }
     [ClientRpc]
     private void endGameClientRPC(int clientId)
     {
-        //string win = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.GetComponent <>
-        StartCoroutine(WaitForGameEnd("dupa",clientId));
+        StartCoroutine(WaitForGameEnd("nic",clientId));
     }
     IEnumerator WaitForGameEnd(string winner,int score)
     {
@@ -59,6 +53,7 @@ public class CheckGameState : NetworkBehaviour
         can.enabled = true;
         yield return new WaitForSeconds(5);
         can.enabled = false;
+        Cursor.lockState = CursorLockMode.None;
         GameNetPortal.Instance.RequestDisconnect();
     }
     private void PlayerState(bool state)
