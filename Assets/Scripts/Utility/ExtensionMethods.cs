@@ -10,6 +10,10 @@ namespace Utility {
         public static bool In<T>(this T x, params T[] set) {
             return set.Contains(x);
         }
+        
+        public static bool In<T>(this T x, IEnumerable<T> list) {
+            return list.Contains(x);
+        }
 
         public static T RandomElement<T>(this IList<T> list) {
             return list[rng.Next(list.Count)];
