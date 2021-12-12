@@ -64,7 +64,6 @@ public class ServerGameNetPortal : MonoBehaviour
 
     public PlayerData? GetPlayerData(ulong clientId)
     {
-        //Debug.Log(clientId);
         if (clientIdToGuid.TryGetValue(clientId, out string clientGuid))
         {
             if (clientData.TryGetValue(clientGuid, out PlayerData playerData))

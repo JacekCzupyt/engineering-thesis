@@ -19,5 +19,9 @@ namespace Network {
             playerCharacter.Value = character;
             return character;
         }
+
+        public void PrintData(){
+            Debug.Log("Player");
+        }
     }
 }

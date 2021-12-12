@@ -6,6 +6,7 @@ using MLAPI;
 using MLAPI.NetworkVariable.Collections;
 using MLAPI.Connection;
 using MLAPI.Messaging;
+using Network;
 
 public class LobbyManager : NetworkBehaviour
 {
@@ -93,6 +94,7 @@ public class LobbyManager : NetworkBehaviour
     private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
         var manager = Instantiate(playerManager);
         manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        PlayerDataManager.Instance.AddPlayerManager(clientId, manager.GetComponent<PlayerManager>());
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -9,10 +9,12 @@ public class GameManager : MonoBehaviour {
     void Start()
     {
         if (NetworkManager.Singleton.IsServer) {
-            foreach(var playerManager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
-                PlayerManager manager = playerManager.GetComponent<PlayerManager>();
-                manager.SpawnCharacter();
-            }
+            // foreach(var playerManager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
+            //     PlayerManager manager = playerManager.GetComponent<PlayerManager>();
+            //     manager.SpawnCharacter();
+            // }
+            PlayerDataManager.Instance.SpawnPlayers();
+            PlayerDataManager.Instance.PrintPlayerManagerData();
         }
     }
 }
