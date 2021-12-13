@@ -3,6 +3,7 @@ using System.Text;
 using MLAPI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MLAPI.Transports.UNET;
 
 namespace NetPortals {
     [RequireComponent(typeof(GameNetPortal))]
@@ -133,6 +134,16 @@ namespace NetPortals {
                     OnNetworkTimedOut?.Invoke();
                 }
             }
+        }
+    }
+
+    public void SetConnectAddress(string address)
+    {
+        UNetTransport transport = NetworkManager.Singleton.GetComponent<UNetTransport>();
+        if(address.Length > 0)
+        {
+            transport.ConnectAddress = address;
+            //Debug.Log(transport.ConnectAddress);
         }
     }
 }

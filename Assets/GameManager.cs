@@ -1,18 +1,23 @@
-using System.Collections;
 using System.Collections.Generic;
 using MLAPI;
 using Network;
 using UnityEngine;
-using UnityEngine.InputSystem;
-
+using Game_Systems.Utility;
 public class GameManager : MonoBehaviour {
-    void Start()
+
+    [SerializeField] private GameObject scoreboardManagerObject;
+    private void Start()
     {
         if (NetworkManager.Singleton.IsServer) {
-            foreach(var playerManager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
+            List<Vector3> pos = RespawnPointGenerator.generatePoints(GameObject.FindGameObjectsWithTag("PlayerManager").Length);
+            foreach (var playerManager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
                 PlayerManager manager = playerManager.GetComponent<PlayerManager>();
-                manager.SpawnCharacter();
+                manager.SetScoreBoardManager(scoreboardManagerObject.GetComponent<ScoreboardManager>());
+                int rand=RespawnPointGenerator.rnd.Next(pos.Count);
+                manager.SpawnCharacter(pos[rand]);
+                pos.RemoveAt(rand);
             }
+            Debug.Log("Game Manager End");
         }
     }
 }

@@ -1,31 +1,48 @@
-using NetPortals;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI.MainMenu {
-    public class PlayMenuManager : MonoBehaviour
+public class PlayMenuManager : MonoBehaviour
+{
+    [SerializeField] private InputField playerNameInput;
+    [SerializeField] private InputField ipAddressTextInput;
+    [SerializeField] private GameObject nameErrorText;
+
+    public void HostGame(){
+        if(NameValidation()) GameNetPortal.Instance.StartHost();
+    }
+
+    public void ClientConnect(){
+        if(NameValidation()) 
+        {
+            ClientGameNetPortal.Instance.SetConnectAddress(ipAddressTextInput.text);
+            ClientGameNetPortal.Instance.StartClient();
+        }
+    }
+
+    private bool PlayMenuValidation()
     {
-        [SerializeField] private InputField playerNameInput;
-        [SerializeField] private GameObject nameErrorText;
+        if(NameValidation() && AddressValidation()) return true;
+        
+        return false;
+    }
 
-        public void HostGame(){
-            if(NameValidation()) GameNetPortal.Instance.StartHost();
+    private bool NameValidation(){
+        string playerName = playerNameInput.text;
+        if(playerName.Length <= 0)
+        {
+            nameErrorText.SetActive(true);
+            return false;
         }
+        nameErrorText.SetActive(false);
+        PlayerPrefs.SetString("PlayerName", playerName);
+        return true;
+    }
 
-        public void ClientConnect(){
-            if(NameValidation()) ClientGameNetPortal.Instance.StartClient();
-        }
+    private bool AddressValidation()
+    {
+        string ipAddress = ipAddressTextInput.text;
+        if(ipAddress.Length <= 0) return false;
 
-        private bool NameValidation(){
-            string playerName = playerNameInput.text;
-            if(playerName.Length <= 0)
-            {
-                nameErrorText.SetActive(true);
-                return false;
-            }
-            nameErrorText.SetActive(false);
-            PlayerPrefs.SetString("PlayerName", playerName);
-            return true;
-        }
+        return true;
     }
 }

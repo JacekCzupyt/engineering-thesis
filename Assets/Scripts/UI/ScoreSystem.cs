@@ -1,28 +1,57 @@
-using MLAPI;
-using MLAPI.NetworkVariable;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
+using MLAPI;
+using MLAPI.NetworkVariable;
+using MLAPI.Messaging;
+using Network;
 
-namespace UI {
-    public class ScoreSystem : NetworkBehaviour
+public class ScoreSystem : NetworkBehaviour
+{
+    public event Action PlayerKill;
+    public NetworkVariableInt userScore = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
+    public NetworkVariableInt playerDeaths = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
+    [SerializeField] Text Score;
+    [SerializeField] CheckGameState checkState;
+
+    private PlayerManager playerManager;
+    // Start is called before the first frame update
+
+    void Start()
     {
-        public NetworkVariableInt userScore = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
-        [SerializeField] Text Score;
-        // Start is called before the first frame update
+        Score.text = userScore.Value.ToString();
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        Score.text = userScore.Value.ToString();
+    }
+    public void AddPoint()
+    {
+        userScore.Value += 1;
+        if(IsOwner)
+            checkState.checkUserScoreServerRPC();
+        
+        OnPlayerKill();
+    }
 
-        void Start()
-        {
-            Score.text = userScore.Value.ToString();
-        }
-        // Update is called once per frame
-        void Update()
-        {
-            Score.text = userScore.Value.ToString();
-        }
-        public void AddPoint()
-        {
-            userScore.Value += 1;
-        }
+    public void AddDeathCount()
+    {
+        playerDeaths.Value += 1;
+    }
 
+    public int GetPlayerKill()
+    {
+        return userScore.Value;
+    }
+
+    public virtual void OnPlayerKill()
+    {
+        PlayerKill?.Invoke();
+    }
+
+    public void AssignPlayerManager(PlayerManager manager)
+    {
+        playerManager = manager;
     }
 }
