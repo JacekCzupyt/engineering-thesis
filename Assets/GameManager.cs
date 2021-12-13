@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
                 manager.SpawnCharacter(pos[rand]);
                 pos.RemoveAt(rand);
             }
+            Debug.Log("Game Manager End");
         }
     }
 }

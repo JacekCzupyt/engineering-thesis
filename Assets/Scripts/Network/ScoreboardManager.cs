@@ -11,25 +11,23 @@ public class ScoreboardManager : NetworkBehaviour
     [SerializeField] private GameObject scoreboardUIObject;
     private NetworkList<ScorePlayerState> scoreboardPlayers = new NetworkList<ScorePlayerState>();
     private PlayerScoreUI playerScoreUI;
-
-    public override void NetworkStart()
-    {
+    public void Start() {
         playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
+        playerScoreUI.gameObject.SetActive(false);                  
         if(IsClient)
         {
-            scoreboardPlayers.OnListChanged += HandlePlayerScoreboardStateChange;            
+            scoreboardPlayers.OnListChanged += HandlePlayerScoreboardStateChange;
         }
         
         if(IsServer)
         {
             NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
-
             foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
             {
                 HandleClientConnected(client.ClientId);
             }
-        }       
+        } 
     }
 
     private void OnDestroy() {

@@ -7,12 +7,7 @@ public class ListView : MonoBehaviour
     [SerializeField] public GameObject panel;
     [SerializeField] public GameObject prefab;
 
-    private List<ListItem> listItems;
-
-    private void Awake()
-    {
-        listItems = new List<ListItem>();
-    }
+    private List<ListItem> listItems = new List<ListItem>();
 
     public void AddItem(ListItem item)
     {

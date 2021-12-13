@@ -4,10 +4,15 @@ public class PlayerScoreUI : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject scoreListViewObject;
-    [SerializeField] private GameObject gameManager;
+    [SerializeField] private GameObject scoreboardManager;
     private ListView scoreListView;
 
     private void Awake()
+    {
+        scoreListView = scoreListViewObject.GetComponent<ListView>();
+    }
+
+    private void InitializeScoreListView()
     {
         scoreListView = scoreListViewObject.GetComponent<ListView>();
     }
