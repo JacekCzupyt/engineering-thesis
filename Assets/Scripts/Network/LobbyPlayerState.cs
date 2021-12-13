@@ -1,6 +1,6 @@
 using MLAPI.Serialization;
 
-namespace UI.Lobby {
+namespace Network {
     public struct LobbyPlayerState : INetworkSerializable
     {
         public ulong ClientId;

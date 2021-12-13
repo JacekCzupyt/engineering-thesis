@@ -1,33 +1,36 @@
+using Network;
 using UnityEngine;
 
-public class PlayerScoreUI : MonoBehaviour
-{
-    [Header("References")]
-    [SerializeField] private GameObject scoreListViewObject;
-    [SerializeField] private GameObject scoreboardManager;
-    private ListView scoreListView;
-
-    private void Awake()
+namespace UI.Game {
+    public class PlayerScoreUI : MonoBehaviour
     {
-        scoreListView = scoreListViewObject.GetComponent<ListView>();
-    }
+        [Header("References")]
+        [SerializeField] private GameObject scoreListViewObject;
+        [SerializeField] private GameObject scoreboardManager;
+        private ListView.ListView scoreListView;
 
-    private void InitializeScoreListView()
-    {
-        scoreListView = scoreListViewObject.GetComponent<ListView>();
-    }
+        private void Awake()
+        {
+            scoreListView = scoreListViewObject.GetComponent<ListView.ListView>();
+        }
 
-    public void CreateListItem(ScorePlayerState state, float position)
-    {
-        GameObject obj = Instantiate(scoreListView.prefab, new Vector3(0, position, 0), 
-                                        Quaternion.identity) as GameObject;
+        private void InitializeScoreListView()
+        {
+            scoreListView = scoreListViewObject.GetComponent<ListView.ListView>();
+        }
 
-        ScoreListItem item = new ScoreListItem(obj, state);
-        scoreListView.AddItem(item);
-    }
+        public void CreateListItem(ScorePlayerState state, float position)
+        {
+            GameObject obj = Instantiate(scoreListView.prefab, new Vector3(0, position, 0), 
+                Quaternion.identity) as GameObject;
 
-    public void DestroyCards()
-    {
-        scoreListView.ClearList();
+            ScoreListItem item = new ScoreListItem(obj, state);
+            scoreListView.AddItem(item);
+        }
+
+        public void DestroyCards()
+        {
+            scoreListView.ClearList();
+        }
     }
 }

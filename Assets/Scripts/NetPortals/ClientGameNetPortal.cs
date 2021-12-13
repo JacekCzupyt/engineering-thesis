@@ -135,15 +135,17 @@ namespace NetPortals {
                 }
             }
         }
-    }
-
-    public void SetConnectAddress(string address)
-    {
-        UNetTransport transport = NetworkManager.Singleton.GetComponent<UNetTransport>();
-        if(address.Length > 0)
+        
+        public void SetConnectAddress(string address)
         {
-            transport.ConnectAddress = address;
-            //Debug.Log(transport.ConnectAddress);
+            UNetTransport transport = NetworkManager.Singleton.GetComponent<UNetTransport>();
+            if(address.Length > 0)
+            {
+                transport.ConnectAddress = address;
+                //Debug.Log(transport.ConnectAddress);
+            }
         }
     }
+
+    
 }

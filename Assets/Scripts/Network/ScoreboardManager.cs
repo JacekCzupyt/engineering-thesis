@@ -1,133 +1,134 @@
-using System.Linq;
-using UnityEngine;
 using MLAPI;
-using MLAPI.NetworkVariable.Collections;
 using MLAPI.Connection;
 using MLAPI.Messaging;
-using Network;
+using MLAPI.NetworkVariable.Collections;
+using UI.Game;
+using UnityEngine;
 
-public class ScoreboardManager : NetworkBehaviour
-{
-    [SerializeField] private GameObject scoreboardUIObject;
-    private NetworkList<ScorePlayerState> scoreboardPlayers = new NetworkList<ScorePlayerState>();
-    private PlayerScoreUI playerScoreUI;
-    public void Start() {
-        playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
-        playerScoreUI.gameObject.SetActive(false);                  
-        if(IsClient)
-        {
-            scoreboardPlayers.OnListChanged += HandlePlayerScoreboardStateChange;
-        }
-        
-        if(IsServer)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
-            foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
-            {
-                HandleClientConnected(client.ClientId);
-            }
-        } 
-    }
-
-    private void OnDestroy() {
-        scoreboardPlayers.OnListChanged -= HandlePlayerScoreboardStateChange;
-
-        if(NetworkManager.Singleton)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnect;
-        }
-    }
-
-    private void HandleClientConnected(ulong clientId)
+namespace Network {
+    public class ScoreboardManager : NetworkBehaviour
     {
-        PlayerManager playerManager = null;
-        foreach (var manager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
+        [SerializeField] private GameObject scoreboardUIObject;
+        private NetworkList<ScorePlayerState> scoreboardPlayers = new NetworkList<ScorePlayerState>();
+        private PlayerScoreUI playerScoreUI;
+        public void Start() {
+            playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
+            playerScoreUI.gameObject.SetActive(false);                  
+            if(IsClient)
+            {
+                scoreboardPlayers.OnListChanged += HandlePlayerScoreboardStateChange;
+            }
+        
+            if(IsServer)
+            {
+                NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
+                NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
+                foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
+                {
+                    HandleClientConnected(client.ClientId);
+                }
+            } 
+        }
+
+        private void OnDestroy() {
+            scoreboardPlayers.OnListChanged -= HandlePlayerScoreboardStateChange;
+
+            if(NetworkManager.Singleton)
+            {
+                NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
+                NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnect;
+            }
+        }
+
+        private void HandleClientConnected(ulong clientId)
+        {
+            PlayerManager playerManager = null;
+            foreach (var manager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
                 playerManager = manager.GetComponent<PlayerManager>();
                 if(playerManager.GetClientId() == clientId) break;
             }
 
-        if(!playerManager) return;
+            if(!playerManager) return;
 
-        scoreboardPlayers.Add(playerManager.ToPlayerScoreState());
-    }
+            scoreboardPlayers.Add(playerManager.ToPlayerScoreState());
+        }
     
-    private void HandleClientDisconnect(ulong clientId)
-    {
-        for(int i = 0; i < scoreboardPlayers.Count; i++)
+        private void HandleClientDisconnect(ulong clientId)
         {
-            if(scoreboardPlayers[i].ClientId == clientId)
+            for(int i = 0; i < scoreboardPlayers.Count; i++)
             {
-                scoreboardPlayers.RemoveAt(i);
-                break;
+                if(scoreboardPlayers[i].ClientId == clientId)
+                {
+                    scoreboardPlayers.RemoveAt(i);
+                    break;
+                }
             }
         }
-    }
     
-    [ServerRpc(RequireOwnership = false)]
-    private void PlayerKillServerRpc(ServerRpcParams serverRpcParams = default)
-    {
-        for(int i = 0; i < scoreboardPlayers.Count; i++)
+        [ServerRpc(RequireOwnership = false)]
+        private void PlayerKillServerRpc(ServerRpcParams serverRpcParams = default)
         {
-            if(scoreboardPlayers[i].ClientId == serverRpcParams.Receive.SenderClientId)
+            for(int i = 0; i < scoreboardPlayers.Count; i++)
             {
-                scoreboardPlayers[i] = new ScorePlayerState(
-                    scoreboardPlayers[i].ClientId,
-                    scoreboardPlayers[i].PlayerName,
-                    scoreboardPlayers[i].PlayerKills + 1,
-                    scoreboardPlayers[i].PlayerDeaths
-                );
+                if(scoreboardPlayers[i].ClientId == serverRpcParams.Receive.SenderClientId)
+                {
+                    scoreboardPlayers[i] = new ScorePlayerState(
+                        scoreboardPlayers[i].ClientId,
+                        scoreboardPlayers[i].PlayerName,
+                        scoreboardPlayers[i].PlayerKills + 1,
+                        scoreboardPlayers[i].PlayerDeaths
+                    );
+                }
             }
         }
-    }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void PlayerDeathServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
-    {
-        for(int i = 0; i < scoreboardPlayers.Count; i++)
+        [ServerRpc(RequireOwnership = false)]
+        private void PlayerDeathServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
         {
-            if(scoreboardPlayers[i].ClientId == clientId)
+            for(int i = 0; i < scoreboardPlayers.Count; i++)
             {
-                scoreboardPlayers[i] = new ScorePlayerState(
-                    scoreboardPlayers[i].ClientId,
-                    scoreboardPlayers[i].PlayerName,
-                    scoreboardPlayers[i].PlayerKills,
-                    scoreboardPlayers[i].PlayerDeaths + 1
-                );
+                if(scoreboardPlayers[i].ClientId == clientId)
+                {
+                    scoreboardPlayers[i] = new ScorePlayerState(
+                        scoreboardPlayers[i].ClientId,
+                        scoreboardPlayers[i].PlayerName,
+                        scoreboardPlayers[i].PlayerKills,
+                        scoreboardPlayers[i].PlayerDeaths + 1
+                    );
+                }
             }
         }
-    }
 
-    private void HandlePlayerScoreboardStateChange(NetworkListEvent<ScorePlayerState> scoreboardState)
-    {
-        playerScoreUI.DestroyCards();
-        for(int i = 0; i < scoreboardPlayers.Count; i++)
+        private void HandlePlayerScoreboardStateChange(NetworkListEvent<ScorePlayerState> scoreboardState)
         {
-            float position = -(30*i + 30*(i+1));
-            playerScoreUI.CreateListItem(scoreboardPlayers[i], position);
+            playerScoreUI.DestroyCards();
+            for(int i = 0; i < scoreboardPlayers.Count; i++)
+            {
+                float position = -(30*i + 30*(i+1));
+                playerScoreUI.CreateListItem(scoreboardPlayers[i], position);
+            }
         }
-    }
 
-    private void Update() {
-        if(Input.GetKeyDown(KeyCode.Tab))
+        private void Update() {
+            if(Input.GetKeyDown(KeyCode.Tab))
+            {
+                scoreboardUIObject.SetActive(true);
+            }
+            if(Input.GetKeyUp(KeyCode.Tab))
+            {
+                scoreboardUIObject.SetActive(false);
+            }
+        }
+
+        public void PlayerKillUpdate()
         {
-            scoreboardUIObject.SetActive(true);
+            PlayerKillServerRpc();
         }
-        if(Input.GetKeyUp(KeyCode.Tab))
+
+        public void PlayerDeathUpdate(ulong clientId)
         {
-            scoreboardUIObject.SetActive(false);
+            PlayerDeathServerRpc(clientId);
         }
-    }
 
-    public void PlayerKillUpdate()
-    {
-        PlayerKillServerRpc();
     }
-
-    public void PlayerDeathUpdate(ulong clientId)
-    {
-        PlayerDeathServerRpc(clientId);
-    }
-
 }
