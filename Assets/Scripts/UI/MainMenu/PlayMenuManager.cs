@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class PlayMenuManager : MonoBehaviour
 {
     [SerializeField] private InputField playerNameInput;
+    [SerializeField] private InputField ipAddressTextInput;
     [SerializeField] private GameObject nameErrorText;
 
     public void HostGame(){
@@ -11,7 +12,18 @@ public class PlayMenuManager : MonoBehaviour
     }
 
     public void ClientConnect(){
-        if(NameValidation()) ClientGameNetPortal.Instance.StartClient();
+        if(NameValidation()) 
+        {
+            ClientGameNetPortal.Instance.SetConnectAddress(ipAddressTextInput.text);
+            ClientGameNetPortal.Instance.StartClient();
+        }
+    }
+
+    private bool PlayMenuValidation()
+    {
+        if(NameValidation() && AddressValidation()) return true;
+        
+        return false;
     }
 
     private bool NameValidation(){
@@ -23,6 +35,14 @@ public class PlayMenuManager : MonoBehaviour
         }
         nameErrorText.SetActive(false);
         PlayerPrefs.SetString("PlayerName", playerName);
+        return true;
+    }
+
+    private bool AddressValidation()
+    {
+        string ipAddress = ipAddressTextInput.text;
+        if(ipAddress.Length <= 0) return false;
+
         return true;
     }
 }
