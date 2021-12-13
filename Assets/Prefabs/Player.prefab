@@ -392,6 +392,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   userScore:
     m_InternalValue: 0
+  playerDeaths:
+    m_InternalValue: 0
   Score: {fileID: 4009618780752795497}
   checkState: {fileID: 1557097674526762527}
 --- !u!114 &7589496400887434914
@@ -3335,7 +3337,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5408957164379920646
 RectTransform:
   m_ObjectHideFlags: 0

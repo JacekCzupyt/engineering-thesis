@@ -10,7 +10,7 @@ namespace Network {
         [FormerlySerializedAs("playerCharacter")] [SerializeField] private GameObject playerCharacterPrefab;
         private ScoreboardManager scoreboardManager;
         public NetworkVariable<GameObject> playerCharacter;
-        private string playerName;
+        public string playerName;
         private ulong clientId;
         private int playerKills;
         private int playerDeaths;

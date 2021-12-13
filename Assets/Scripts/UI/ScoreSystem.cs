@@ -29,8 +29,7 @@ public class ScoreSystem : NetworkBehaviour
     public void AddPoint()
     {
         userScore.Value += 1;
-        if(IsOwner)
-            checkState.checkUserScoreServerRPC();
+        checkState.checkUserScore(playerManager.playerName);
         
         OnPlayerKill();
     }
@@ -54,4 +53,5 @@ public class ScoreSystem : NetworkBehaviour
     {
         playerManager = manager;
     }
+
 }

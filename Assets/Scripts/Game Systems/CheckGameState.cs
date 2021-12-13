@@ -27,32 +27,27 @@ public class CheckGameState : NetworkBehaviour
         cc = GetComponentInParent<PlayerController>();
         renderers = transform.parent.GetComponentsInChildren<Renderer>();
     }
-    [ServerRpc]
-    public void checkUserScoreServerRPC()
+    
+    public void checkUserScore(string player_name)
     {
-            if (score.userScore.Value >= 5)
+            if (score.userScore.Value >= 2)
             {
-                endGameClientRPC(5);
+                endGameClientRPC(player_name);
             }
     }
     [ClientRpc]
-    private void endGameClientRPC(int clientId)
+    private void endGameClientRPC(string name)
     {
-        StartCoroutine(WaitForGameEnd("nic",clientId));
+        StartCoroutine(WaitForGameEnd(name));
     }
-    IEnumerator WaitForGameEnd(string winner,int score)
+    IEnumerator WaitForGameEnd(string winner)
     {
-        can.text = "Player " + winner + " win a game "+score;
+        can.text = "Player " + winner + " win a game.";
         cc.enabled = false;
         playerCollider.enabled = false;
-        if (IsOwner)
-        {
-            canvas.SetActive(false);
-        }
         PlayerState(false);
         can.enabled = true;
         yield return new WaitForSeconds(5);
-        can.enabled = false;
         Cursor.lockState = CursorLockMode.None;
         GameNetPortal.Instance.RequestDisconnect();
     }
