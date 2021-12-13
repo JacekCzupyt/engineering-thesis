@@ -76,7 +76,6 @@ public class LobbyManager : NetworkBehaviour
                 break;
             }
         }
-
     }
     
     [ServerRpc(RequireOwnership = false)]

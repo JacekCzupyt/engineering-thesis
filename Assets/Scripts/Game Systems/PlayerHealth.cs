@@ -37,10 +37,12 @@ namespace Game_Systems {
             health.Value -= damage; 
             if(health.Value<=0)
             {
-                shooter=NetworkManager.Singleton.ConnectedClients[player].PlayerObject
-                    .GetComponent<PlayerManager>().playerCharacter.Value;
+                var shooterPlayerManager = NetworkManager.Singleton.ConnectedClients[player].PlayerObject
+                    .GetComponent<PlayerManager>();
+                shooter = shooterPlayerManager.playerCharacter.Value;
                 score = shooter.GetComponentInChildren<ScoreSystem>();
-                score.AddPoint();              
+                score.AddPoint(); 
+                shooterPlayerManager.SetPlayerKills(score.GetPlayerScore());       
             }
         }
         public void takeDemage(int damage)

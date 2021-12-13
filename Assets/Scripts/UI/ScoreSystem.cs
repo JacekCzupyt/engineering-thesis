@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using MLAPI;
@@ -8,6 +7,7 @@ using MLAPI.Messaging;
 
 public class ScoreSystem : NetworkBehaviour
 {
+    public event Action PlayerKill;
     public NetworkVariableInt userScore = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
     [SerializeField] Text Score;
     [SerializeField] CheckGameState checkState;
@@ -27,6 +27,8 @@ public class ScoreSystem : NetworkBehaviour
         userScore.Value += 1;
         if(IsOwner)
             checkState.checkUserScoreServerRPC();
+        
+        OnPlayerKill();
     }
 
     public int GetPlayerScore()
@@ -34,4 +36,8 @@ public class ScoreSystem : NetworkBehaviour
         return userScore.Value;
     }
 
+    public virtual void OnPlayerKill()
+    {
+        PlayerKill?.Invoke();
+    }
 }

@@ -8,11 +8,21 @@ using UnityEngine.Serialization;
 namespace Network {
     public class PlayerManager : NetworkBehaviour {
         [FormerlySerializedAs("playerCharacter")] [SerializeField] private GameObject playerCharacterPrefab;
+        private ScoreboardManager scoreboardManager;
         public NetworkVariable<GameObject> playerCharacter;
         private string playerName;
         private ulong clientId;
         private int playerKills;
         private int playerDeaths;
+
+        private void OnDestroy() {
+            playerCharacter.Value.GetComponent<ScoreSystem>().PlayerKill -= PlayerKillHandler;
+        }
+
+        private void SubscribeMethods()
+        {
+            playerCharacter.Value.GetComponent<ScoreSystem>().PlayerKill += PlayerKillHandler;
+        }
 
         public GameObject SpawnCharacter(Vector3 pos) {
             if (!IsServer)
@@ -21,7 +31,13 @@ namespace Network {
             var character = GameObject.Instantiate(playerCharacterPrefab, pos, Quaternion.identity);
             character.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, null, true);
             playerCharacter.Value = character;
+            SubscribeMethods();
             return character;
+        }
+
+        public void SetScoreBoardManager(ScoreboardManager manager)
+        {
+            scoreboardManager = manager;
         }
 
         public void SetPlayerData(ulong clientId, string playerName)
@@ -42,5 +58,20 @@ namespace Network {
             );
         }
 
+        public void SetPlayerKills(int kills)
+        {
+            playerKills = kills;
+        }
+
+        public ulong GetClientId()
+        {
+            return clientId;
+        }
+
+        public void PlayerKillHandler()
+        {
+            Debug.Log("Player Kill Event has been raised");
+            scoreboardManager.PlayerKillUpdate();
+        }
     }
 }
