@@ -5563,6 +5563,7 @@ GameObject:
   m_Component:
   - component: {fileID: 951744430}
   - component: {fileID: 951744431}
+  - component: {fileID: 951744432}
   m_Layer: 0
   m_Name: ScoreboardManager
   m_TagString: Untagged
@@ -5597,6 +5598,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreboardUIObject: {fileID: 38413747}
+--- !u!114 &951744432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951744429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkInstanceId: 0
+  PrefabHash: 2054231070914508792
+  PrefabHashGenerator: ScoreboardManager
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
 --- !u!1 &952227784
 GameObject:
   m_ObjectHideFlags: 0

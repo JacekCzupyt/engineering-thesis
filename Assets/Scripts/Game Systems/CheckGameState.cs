@@ -30,7 +30,7 @@ public class CheckGameState : NetworkBehaviour
     [ServerRpc]
     public void checkUserScoreServerRPC()
     {
-            if (score.userScore.Value >= 1)
+            if (score.userScore.Value >= 5)
             {
                 endGameClientRPC(5);
             }

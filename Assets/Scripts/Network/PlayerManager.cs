@@ -15,15 +15,6 @@ namespace Network {
         private int playerKills;
         private int playerDeaths;
 
-        private void OnDestroy() {
-            playerCharacter.Value.GetComponent<ScoreSystem>().PlayerKill -= PlayerKillHandler;
-        }
-
-        private void SubscribeMethods()
-        {
-            playerCharacter.Value.GetComponent<ScoreSystem>().PlayerKill += PlayerKillHandler;
-        }
-
         public GameObject SpawnCharacter(Vector3 pos) {
             if (!IsServer)
                 throw new InvalidOperationException("This method can only be run on the server");
@@ -31,6 +22,7 @@ namespace Network {
             var character = GameObject.Instantiate(playerCharacterPrefab, pos, Quaternion.identity);
             character.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, null, true);
             playerCharacter.Value = character;
+            character.GetComponent<ScoreSystem>().AssignPlayerManager(this);
             return character;
         }
 
@@ -57,9 +49,16 @@ namespace Network {
             );
         }
 
-        public void SetPlayerKills(int kills)
+        public void AddPlayerKills()
         {
-            playerKills = kills;
+            playerKills += 1;
+            scoreboardManager.PlayerKillUpdate();
+        }
+
+        public void AddPlayerDeaths(ulong clientId)
+        {
+            //playerDeaths += 1;
+            scoreboardManager.PlayerDeathUpdate(clientId);
         }
 
         public ulong GetClientId()
@@ -67,10 +66,10 @@ namespace Network {
             return clientId;
         }
 
-        public void PlayerKillHandler()
-        {
-            Debug.Log("Player Kill Event has been raised");
-            scoreboardManager.PlayerKillUpdate();
-        }
+        // public void PlayerKillHandler()
+        // {
+        //     Debug.Log("Player Kill Event has been raised");
+        //     scoreboardManager.PlayerKillUpdate();
+        // }
     }
 }

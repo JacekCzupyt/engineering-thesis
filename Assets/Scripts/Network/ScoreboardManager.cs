@@ -82,6 +82,23 @@ public class ScoreboardManager : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void PlayerDeathServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
+    {
+        for(int i = 0; i < scoreboardPlayers.Count; i++)
+        {
+            if(scoreboardPlayers[i].ClientId == clientId)
+            {
+                scoreboardPlayers[i] = new ScorePlayerState(
+                    scoreboardPlayers[i].ClientId,
+                    scoreboardPlayers[i].PlayerName,
+                    scoreboardPlayers[i].PlayerKills,
+                    scoreboardPlayers[i].PlayerDeaths + 1
+                );
+            }
+        }
+    }
+
     private void HandlePlayerScoreboardStateChange(NetworkListEvent<ScorePlayerState> scoreboardState)
     {
         playerScoreUI.DestroyCards();
@@ -106,6 +123,11 @@ public class ScoreboardManager : NetworkBehaviour
     public void PlayerKillUpdate()
     {
         PlayerKillServerRpc();
+    }
+
+    public void PlayerDeathUpdate(ulong clientId)
+    {
+        PlayerDeathServerRpc(clientId);
     }
 
 }

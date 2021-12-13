@@ -41,8 +41,16 @@ namespace Game_Systems {
                     .GetComponent<PlayerManager>();
                 shooter = shooterPlayerManager.playerCharacter.Value;
                 score = shooter.GetComponentInChildren<ScoreSystem>();
-                score.AddPoint(); 
-                shooterPlayerManager.SetPlayerKills(score.GetPlayerScore());       
+                score.AddPoint();
+
+                var receiverPlayerManager = NetworkManager.Singleton.ConnectedClients[OwnerClientId]
+                    .PlayerObject.GetComponent<PlayerManager>();
+
+                Debug.Log("Shooter : " + player + ", Reciever : " + OwnerClientId);
+                receiverPlayerManager.AddPlayerDeaths(OwnerClientId);
+                
+
+                shooterPlayerManager.AddPlayerKills();  
             }
         }
         public void takeDemage(int damage)
