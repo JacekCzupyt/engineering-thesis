@@ -1,13 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Animations;
 
 public class LobbyListItem : ListItem
 {
     public LobbyListItem(GameObject playerCard, LobbyPlayerState state) : base(playerCard)
     {
-        ListitemObject.transform.GetChild(0).gameObject.GetComponent<Text>().text = state.PlayerName;
-        ListitemObject.transform.GetChild(1).gameObject.GetComponent<Image>().color = GetReadyIndicatorColor(state.IsReady);
+        UpdateCard(state);
     }
 
     private Color GetReadyIndicatorColor(bool val)

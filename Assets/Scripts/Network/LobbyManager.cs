@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using MLAPI;
 using MLAPI.NetworkVariable.Collections;
 using MLAPI.Connection;
 using MLAPI.Messaging;
+using Network;
 
 public class LobbyManager : NetworkBehaviour
 {
@@ -83,6 +83,8 @@ public class LobbyManager : NetworkBehaviour
     private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
         var manager = Instantiate(playerManager);
         manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        manager.GetComponent<PlayerManager>().SetPlayerData(clientId, 
+            lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault().PlayerName);
     }
 
     [ServerRpc(RequireOwnership = false)]

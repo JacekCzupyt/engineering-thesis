@@ -215,12 +215,12 @@ GameObject:
   - component: {fileID: 38413748}
   - component: {fileID: 38413749}
   m_Layer: 0
-  m_Name: PlayerScore
+  m_Name: PlayerScoreUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &38413748
 Transform:
   m_ObjectHideFlags: 0
@@ -234,7 +234,7 @@ Transform:
   m_Children:
   - {fileID: 286294550}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &38413749
 MonoBehaviour:
@@ -245,11 +245,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 38413747}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8a0c02a411b1b449ab923a533f8e342, type: 3}
+  m_Script: {fileID: 11500000, guid: 5267ce3a90f81874bb81d6ecc62de4a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScorePanel: {fileID: 745254748}
-  playerScoreCard: {fileID: 7967854494131307977, guid: 7bfd033f1f6cbd340bbb8f3e5426971c, type: 3}
+  scoreListViewObject: {fileID: 1318487367}
+  gameManager: {fileID: 1501253575}
+--- !u!1 &59832331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 59832332}
+  m_Layer: 0
+  m_Name: ----- SYSTEM ------
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &59832332
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59832331}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.001995, y: 4.8710604, z: -27.159607}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &63291172
 GameObject:
   m_ObjectHideFlags: 0
@@ -4113,7 +4143,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 28, z: 0}
 --- !u!1 &745254748
 GameObject:
@@ -4132,7 +4162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &745254749
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4987,7 +5017,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &893458906
 GameObject:
@@ -5252,6 +5282,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 1bc5efd8-3adf-4b7d-9fdb-ab24e00f7309
     m_ActionName: Player/Ability[/Keyboard/f,/Mouse/forwardButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c1f2a476-0e1e-4fe5-b906-4620bfa759e5
+    m_ActionName: Player/EquipWeapon1[/Keyboard/1]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 53882fc7-1d0b-4167-8670-d892594aab66
+    m_ActionName: Player/EquipWeapon2[/Keyboard/2]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 43ae6a52-371b-4499-abfa-887470fb41c1
+    m_ActionName: Player/Reload[/Keyboard/r]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -5269,7 +5311,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &910042366
 MonoBehaviour:
@@ -5347,7 +5389,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &932882312
 GameObject:
@@ -6949,7 +6991,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1221591262
 GameObject:
@@ -7504,6 +7546,36 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266139971}
   m_Mesh: {fileID: 4300000, guid: 4fc98ba1e54e0f64aa2c95885ef7026e, type: 3}
+--- !u!1 &1267823075
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1267823076}
+  m_Layer: 0
+  m_Name: ------ ENVIRONMENT -----
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1267823076
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1267823075}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.001995, y: 4.8710604, z: -27.159607}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1318487367
 GameObject:
   m_ObjectHideFlags: 0
@@ -7515,8 +7587,9 @@ GameObject:
   - component: {fileID: 1318487368}
   - component: {fileID: 1318487370}
   - component: {fileID: 1318487369}
+  - component: {fileID: 1318487371}
   m_Layer: 0
-  m_Name: PlayerScoreListPanel
+  m_Name: PlayerScoreListView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7579,6 +7652,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1318487367}
   m_CullTransparentMesh: 1
+--- !u!114 &1318487371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318487367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e89e34840f506914488912dcf52066d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 1318487367}
+  prefab: {fileID: 7967854494131307977, guid: 7bfd033f1f6cbd340bbb8f3e5426971c, type: 3}
 --- !u!1 &1331568355
 GameObject:
   m_ObjectHideFlags: 0
@@ -9136,6 +9223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65eadb0ffb8c8c8469fb6308fb349776, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerScoreUIObject: {fileID: 38413747}
 --- !u!4 &1501253577
 Transform:
   m_ObjectHideFlags: 0
@@ -9766,7 +9854,7 @@ Transform:
   - {fileID: 398133158}
   - {fileID: 1849937158}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1565939003
 GameObject:
@@ -14269,7 +14357,7 @@ Transform:
   - {fileID: 1935930560}
   - {fileID: 1398911710}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2125392776
 MonoBehaviour:

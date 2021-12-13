@@ -9,6 +9,10 @@ namespace Network {
     public class PlayerManager : NetworkBehaviour {
         [FormerlySerializedAs("playerCharacter")] [SerializeField] private GameObject playerCharacterPrefab;
         public NetworkVariable<GameObject> playerCharacter;
+        private string playerName;
+        private ulong clientId;
+        private int playerKills;
+        private int playerDeaths;
 
         public GameObject SpawnCharacter(Vector3 pos) {
             if (!IsServer)
@@ -20,8 +24,23 @@ namespace Network {
             return character;
         }
 
-        public void PrintData(){
-            Debug.Log("Player");
+        public void SetPlayerData(ulong clientId, string playerName)
+        {
+            this.clientId = clientId;
+            this.playerName = playerName;
+            playerKills = 0;
+            playerDeaths = 0;
         }
+
+        public ScorePlayerState ToPlayerScoreState()
+        {
+            return new ScorePlayerState(
+                clientId,
+                playerName,
+                playerKills,
+                playerDeaths
+            );
+        }
+
     }
 }

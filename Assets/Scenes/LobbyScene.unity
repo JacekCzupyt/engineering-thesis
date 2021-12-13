@@ -1924,7 +1924,7 @@ MonoBehaviour:
   startGameButton: {fileID: 873104328}
   lobbyManager: {fileID: 1296984201}
   playerCountText: {fileID: 476606205}
-  lobbyListView: {fileID: 1883642914}
+  lobbyListViewObject: {fileID: 1883642914}
 --- !u!224 &1081416915257001791
 RectTransform:
   m_ObjectHideFlags: 0
