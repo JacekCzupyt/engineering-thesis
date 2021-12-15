@@ -11,7 +11,7 @@ namespace Game_Systems {
         private void Start()
         {
             if (NetworkManager.Singleton.IsServer) {
-                List<Vector3> pos = RespawnPointGenerator.generatePoints(GameObject.FindGameObjectsWithTag("PlayerManager").Length);
+                List<Vector3> pos = RespawnPointGenerator.generatePoints(GameObject.FindGameObjectsWithTag("PlayerManager").Length, 70);
                 foreach (var playerManager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
                     PlayerManager manager = playerManager.GetComponent<PlayerManager>();
                     manager.SetScoreBoardManager(scoreboardManagerObject.GetComponent<ScoreboardManager>());

@@ -43,7 +43,7 @@ namespace Game_Systems {
         {
             
             int numPlayers = NetworkManager.Singleton.ConnectedClients.Count;
-            List<Vector3> li = RespawnPointGenerator.generatePoints(numPlayers);
+            List<Vector3> li = RespawnPointGenerator.generatePoints(numPlayers, 70);
             int r = RespawnPointGenerator.rnd.Next(li.Count);
             RespawnClientRpc(li[r]);
         }
