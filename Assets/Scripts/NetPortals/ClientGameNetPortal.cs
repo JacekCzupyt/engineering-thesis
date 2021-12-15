@@ -141,7 +141,7 @@ public class ClientGameNetPortal : MonoBehaviour
         if(address.Length > 0)
         {
             transport.ConnectAddress = address;
-            //Debug.Log(transport.ConnectAddress);
+            Debug.Log(transport.ConnectAddress);
         }
     }
 }
