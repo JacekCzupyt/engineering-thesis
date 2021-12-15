@@ -30,7 +30,7 @@ namespace Tests.PlayMode {
     
             var thrownObject = ObjectThrower.StaticThrow(gameObject.transform, Vector3.forward, prefab, 1);
     
-            yield return null;
+            yield return new WaitForFixedUpdate();
         
             Assert.AreEqual(Vector3.forward, thrownObject.GetComponent<Rigidbody>().velocity);
         }
