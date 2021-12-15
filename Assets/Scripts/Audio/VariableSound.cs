@@ -7,8 +7,7 @@ using Random = System.Random;
 namespace Audio {
     public class VariableSound : SoundPlayer {
         private AudioSource audioSource;
-        [SerializeField] private List<AudioClip> sounds;
-        private Random rnd = new Random();
+        [SerializeField] public List<AudioClip> sounds;
 
         private void Start() {
             audioSource = GetComponent<AudioSource>();
