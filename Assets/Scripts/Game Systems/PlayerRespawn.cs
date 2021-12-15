@@ -76,8 +76,11 @@ namespace Game_Systems {
             cc.enabled = true;
             playerCollider.enabled = true;
             PlayerState(true);
-            if(IsOwner)
+            if (IsOwner) {
                 canvas.SetActive(true);
+                GetComponentInParent<Rigidbody>().velocity = Vector3.zero;
+            }
+
         }
     
         private void PlayerState(bool state)
