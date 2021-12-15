@@ -34,14 +34,29 @@ namespace Game_Systems {
         public void takeDemage(int damage, ulong player)
         {
             Debug.Log($"Apply {damage} Damage");
-            health.Value -= damage;
+            health.Value -= damage; 
             if(health.Value<=0)
             {
-                shooter=NetworkManager.Singleton.ConnectedClients[player].PlayerObject
-                    .GetComponent<PlayerManager>().playerCharacter.Value;
+                var shooterPlayerManager = NetworkManager.Singleton.ConnectedClients[player].PlayerObject
+                    .GetComponent<PlayerManager>();
+                shooter = shooterPlayerManager.playerCharacter.Value;
                 score = shooter.GetComponentInChildren<ScoreSystem>();
                 score.AddPoint();
+
+                var receiverPlayerManager = NetworkManager.Singleton.ConnectedClients[OwnerClientId]
+                    .PlayerObject.GetComponent<PlayerManager>();
+
+                Debug.Log("Shooter : " + player + ", Reciever : " + OwnerClientId);
+                receiverPlayerManager.AddPlayerDeaths(OwnerClientId);
+                
+
+                shooterPlayerManager.AddPlayerKills();  
             }
+        }
+        public void takeDemage(int damage)
+        {
+            Debug.Log($"Apply {damage} Damage");
+            health.Value -= damage;
         }
     }
 }

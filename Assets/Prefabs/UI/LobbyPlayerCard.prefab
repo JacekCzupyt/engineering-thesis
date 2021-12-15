@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5197668151663159637}
   m_Layer: 0
-  m_Name: ListItem
+  m_Name: LobbyPlayerCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 7505488047533829844}
   - component: {fileID: 4040163924472381646}
   m_Layer: 0
-  m_Name: Image
+  m_Name: IsReadyIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

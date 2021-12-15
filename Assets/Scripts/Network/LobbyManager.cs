@@ -1,39 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using MLAPI;
 using MLAPI.NetworkVariable.Collections;
 using MLAPI.Connection;
 using MLAPI.Messaging;
+using Network;
 
 public class LobbyManager : NetworkBehaviour
 {
-    [Header("References")]
-    [SerializeField] private Button readyUpButton;
-    [SerializeField] private Button startGameButton;
+    [SerializeField] private GameObject lobbyUIObject; 
     [SerializeField] private GameObject playerManager;
-    [SerializeField] private GameObject ListItemPrefab;
-    [SerializeField] private GameObject listItemsPanel;
     private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
-    private List<GameObject> playerItems = new List<GameObject>();
-
-    private bool IsPlayerReadyUI;
-
+    private LobbyUI lobbyUI;
     public override void NetworkStart()
     {
-        InitializePlayerItems();
-        IsPlayerReadyUI = false;
+        lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
         if(IsClient)
         {
-            lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
+            lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;            
             SpawnPlayerManagerServerRpc(NetworkManager.Singleton.LocalClientId);
         }
         
         if(IsServer)
         {
-            startGameButton.gameObject.SetActive(true);
-
+            lobbyUI.startGameButton.gameObject.SetActive(true);
             NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
 
@@ -41,18 +31,6 @@ public class LobbyManager : NetworkBehaviour
             {
                 HandleClientConnected(client.ClientId);
             }
-        }
-    }
-
-    private void InitializePlayerItems()
-    {
-        for(int i = 0; i < 10; i++)
-        {
-            int position = -(30*i + 20*(i+1));
-            GameObject listItem = Instantiate(ListItemPrefab, new Vector3(0, position, 0), Quaternion.identity) as GameObject;
-            listItem.transform.SetParent(listItemsPanel.transform, false);
-            listItem.SetActive(false);
-            playerItems.Add(listItem);
         }
     }
 
@@ -104,6 +82,8 @@ public class LobbyManager : NetworkBehaviour
     private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
         var manager = Instantiate(playerManager);
         manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        manager.GetComponent<PlayerManager>().SetPlayerData(clientId, 
+            lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault().PlayerName);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -132,69 +112,39 @@ public class LobbyManager : NetworkBehaviour
         ServerGameNetPortal.Instance.StartGame();
     }
 
-    public void OnLeaveButtonClicked()
+    public void LeaveGame()
     {
         GameNetPortal.Instance.RequestDisconnect();
     }
 
-    public void OnStartGameButtonClicked(){
+    public void StartGame(){
         StartGameServerRpc();
     }
 
-    public void OnReadyUpButtonClicked(){
+    public void ReadyUp(){
         ToggleReadyServerRpc();
-        ToggleReadyUpButtonText();
     }
 
     private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
     {
-        ClearItemListPanel();
+        
+        lobbyUI.DestroyCards();
         for(int i = 0; i < lobbyPlayers.Count; i++)
         {
-            UpdateListItem(playerItems[i], lobbyPlayers[i]);
+            float position = -(30*i + 20*(i+1));
+            lobbyUI.CreateListItem(lobbyPlayers[i], position);
         }
-
+        UpdatePlayerCount();
+        
         if(IsHost)
         {
-            startGameButton.interactable = IsEveryoneReady();
+            lobbyUI.startGameButton.interactable = IsEveryoneReady();
         }
     }
 
-    private void UpdateListItem(GameObject listItem, LobbyPlayerState lobbyPlayerState)
+    private void UpdatePlayerCount()
     {
-        Text playerTextbox = listItem.transform.GetChild(0).gameObject.GetComponent<Text>();
-        playerTextbox.text = lobbyPlayerState.PlayerName;
-        Image playerIsReadyIndicator = listItem.transform.GetChild(1).gameObject.GetComponent<Image>();
-        if(lobbyPlayerState.IsReady)
-        {
-            playerIsReadyIndicator.color = Color.green;
-        }else
-        {
-            playerIsReadyIndicator.color = Color.red;
-        }
-        listItem.SetActive(true);
-    }
-
-    private void ClearItemListPanel()
-    {
-        foreach(var item in playerItems)
-        {
-            item.SetActive(false);
-        }
-    }
-
-    private void ToggleReadyUpButtonText()
-    {
-        if(IsPlayerReadyUI)
-        {
-            readyUpButton.GetComponentInChildren<Text>().text =  "Ready Up!";
-            IsPlayerReadyUI = false;
-        }
-        else
-        {
-            readyUpButton.GetComponentInChildren<Text>().text =  "Cancel";
-            IsPlayerReadyUI = true;
-        }
+        lobbyUI.UpdatePlayerCount(lobbyPlayers.Count);
     }
 }
 
