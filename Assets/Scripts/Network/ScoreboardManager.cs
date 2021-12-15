@@ -13,12 +13,15 @@ namespace Network {
         private PlayerScoreUI playerScoreUI;
         public void Start() {
             playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
-            playerScoreUI.gameObject.SetActive(false);                  
+            playerScoreUI.gameObject.SetActive(false);                 
             if(IsClient)
             {
                 scoreboardPlayers.OnListChanged += HandlePlayerScoreboardStateChange;
+                if(scoreboardPlayers.Count > 0)
+                {
+                    HandlePlayerScoreboardStateChange(new NetworkListEvent<ScorePlayerState>());
+                }
             }
-        
             if(IsServer)
             {
                 NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
@@ -49,7 +52,6 @@ namespace Network {
             }
 
             if(!playerManager) return;
-
             scoreboardPlayers.Add(playerManager.ToPlayerScoreState());
         }
     
@@ -66,11 +68,11 @@ namespace Network {
         }
     
         [ServerRpc(RequireOwnership = false)]
-        private void PlayerKillServerRpc(ServerRpcParams serverRpcParams = default)
+        private void PlayerKillServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
         {
             for(int i = 0; i < scoreboardPlayers.Count; i++)
             {
-                if(scoreboardPlayers[i].ClientId == serverRpcParams.Receive.SenderClientId)
+                if(scoreboardPlayers[i].ClientId == clientId)
                 {
                     scoreboardPlayers[i] = new ScorePlayerState(
                         scoreboardPlayers[i].ClientId,
@@ -120,15 +122,14 @@ namespace Network {
             }
         }
 
-        public void PlayerKillUpdate()
+        public void PlayerKillUpdate(ulong clientId)
         {
-            PlayerKillServerRpc();
+            PlayerKillServerRpc(clientId);
         }
 
         public void PlayerDeathUpdate(ulong clientId)
         {
             PlayerDeathServerRpc(clientId);
         }
-
     }
 }

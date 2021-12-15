@@ -50,15 +50,15 @@ namespace Network {
             );
         }
 
-        public void AddPlayerKills()
+        public void AddPlayerKills(ulong clientId)
         {
             playerKills += 1;
-            scoreboardManager.PlayerKillUpdate();
+            scoreboardManager.PlayerKillUpdate(clientId);
         }
 
         public void AddPlayerDeaths(ulong clientId)
         {
-            //playerDeaths += 1;
+            playerDeaths += 1;
             scoreboardManager.PlayerDeathUpdate(clientId);
         }
 

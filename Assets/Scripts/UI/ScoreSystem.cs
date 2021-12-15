@@ -9,7 +9,6 @@ using UnityEngine.UI;
 namespace UI {
     public class ScoreSystem : NetworkBehaviour
     {
-        public event Action PlayerKill;
         public NetworkVariableInt userScore = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
         public NetworkVariableInt playerDeaths = new NetworkVariableInt(new NetworkVariableSettings { WritePermission = NetworkVariablePermission.Everyone }, 0);
         [SerializeField] Text Score;
@@ -31,8 +30,6 @@ namespace UI {
         {
             userScore.Value += 1;
             checkState.checkUserScore(playerManager.playerName);
-        
-            OnPlayerKill();
         }
 
         public void AddDeathCount()
@@ -43,11 +40,6 @@ namespace UI {
         public int GetPlayerKill()
         {
             return userScore.Value;
-        }
-
-        public virtual void OnPlayerKill()
-        {
-            PlayerKill?.Invoke();
         }
 
         public void AssignPlayerManager(PlayerManager manager)
