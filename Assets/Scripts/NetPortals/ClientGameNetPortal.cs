@@ -7,8 +7,7 @@ using MLAPI.Transports.UNET;
 
 namespace NetPortals {
     [RequireComponent(typeof(GameNetPortal))]
-    public class ClientGameNetPortal : MonoBehaviour
-    {
+    public class ClientGameNetPortal : MonoBehaviour {
         public static ClientGameNetPortal Instance => instance;
         private static ClientGameNetPortal instance;
 
@@ -20,10 +19,8 @@ namespace NetPortals {
 
         private GameNetPortal gameNetPortal;
 
-        private void Awake()
-        {
-            if (instance != null && instance != this)
-            {
+        private void Awake() {
+            if (instance != null && instance != this) {
                 Destroy(gameObject);
                 return;
             }
@@ -32,8 +29,7 @@ namespace NetPortals {
             DontDestroyOnLoad(gameObject);
         }
 
-        private void Start()
-        {
+        private void Start() {
             gameNetPortal = GetComponent<GameNetPortal>();
 
             gameNetPortal.OnNetworkReadied += HandleNetworkReadied;
@@ -42,27 +38,30 @@ namespace NetPortals {
             NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
         }
 
-        private void OnDestroy()
-        {
-            if (gameNetPortal == null) { return; }
+        private void OnDestroy() {
+            if (gameNetPortal == null) {
+                return;
+            }
 
             gameNetPortal.OnNetworkReadied -= HandleNetworkReadied;
             gameNetPortal.OnConnectionFinished -= HandleConnectionFinished;
             gameNetPortal.OnDisconnectReasonReceived -= HandleDisconnectReasonReceived;
 
-            if (NetworkManager.Singleton == null) { return; }
+            if (NetworkManager.Singleton == null) {
+                return;
+            }
 
             NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnect;
         }
 
-        public void StartClient()
-        {
-            var payload = JsonUtility.ToJson(new ConnectionPayload()
-            {
-                clientGUID = Guid.NewGuid().ToString(),
-                clientScene = SceneManager.GetActiveScene().buildIndex,
-                playerName = PlayerPrefs.GetString("PlayerName", "Missing Name")
-            });
+        public void StartClient() {
+            var payload = JsonUtility.ToJson(
+                new ConnectionPayload() {
+                    clientGUID = Guid.NewGuid().ToString(),
+                    clientScene = SceneManager.GetActiveScene().buildIndex,
+                    playerName = PlayerPrefs.GetString("PlayerName", "Missing Name")
+                }
+            );
 
             byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
@@ -71,25 +70,23 @@ namespace NetPortals {
             NetworkManager.Singleton.StartClient();
         }
 
-        private void HandleNetworkReadied()
-        {
-            if (!NetworkManager.Singleton.IsClient) { return; }
+        private void HandleNetworkReadied() {
+            if (!NetworkManager.Singleton.IsClient) {
+                return;
+            }
 
-            if (!NetworkManager.Singleton.IsHost)
-            {
+            if (!NetworkManager.Singleton.IsHost) {
                 gameNetPortal.OnUserDisconnectRequested += HandleUserDisconnectRequested;
             }
 
             SceneManager.sceneLoaded += HandleSceneLoaded;
         }
 
-        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
+        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode) {
             gameNetPortal.ClientToServerSceneChanged(SceneManager.GetActiveScene().buildIndex);
         }
 
-        private void HandleUserDisconnectRequested()
-        {
+        private void HandleUserDisconnectRequested() {
             DisconnectReason.SetDisconnectReason(ConnectStatus.UserRequestedDisconnect);
             NetworkManager.Singleton.StopClient();
 
@@ -98,54 +95,42 @@ namespace NetPortals {
             SceneManager.LoadScene("MenuScene");
         }
 
-        private void HandleConnectionFinished(ConnectStatus status)
-        {
-            if (status != ConnectStatus.Success)
-            {
+        private void HandleConnectionFinished(ConnectStatus status) {
+            if (status != ConnectStatus.Success) {
                 DisconnectReason.SetDisconnectReason(status);
             }
 
             OnConnectionFinished?.Invoke(status);
         }
 
-        private void HandleDisconnectReasonReceived(ConnectStatus status)
-        {
+        private void HandleDisconnectReasonReceived(ConnectStatus status) {
             DisconnectReason.SetDisconnectReason(status);
         }
 
-        private void HandleClientDisconnect(ulong clientId)
-        {
-            if (!NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsHost)
-            {
+        private void HandleClientDisconnect(ulong clientId) {
+            if (!NetworkManager.Singleton.IsConnectedClient && !NetworkManager.Singleton.IsHost) {
                 SceneManager.sceneLoaded -= HandleSceneLoaded;
                 gameNetPortal.OnUserDisconnectRequested -= HandleUserDisconnectRequested;
 
-                if (SceneManager.GetActiveScene().name != "MenuScene")
-                {
-                    if (!DisconnectReason.HasTransitionReason)
-                    {
+                if (SceneManager.GetActiveScene().name != "MenuScene") {
+                    if (!DisconnectReason.HasTransitionReason) {
                         DisconnectReason.SetDisconnectReason(ConnectStatus.GenericDisconnect);
                     }
 
                     SceneManager.LoadScene("MenuScene");
                 }
-                else
-                {
+                else {
                     OnNetworkTimedOut?.Invoke();
                 }
             }
         }
-        
-        public void SetConnectAddress(string address)
-        {
+
+        public void SetConnectAddress(string address) {
             UNetTransport transport = NetworkManager.Singleton.GetComponent<UNetTransport>();
-            if(address.Length > 0)
-            {
+            if (address.Length > 0) {
                 transport.ConnectAddress = address;
-                //Debug.Log(transport.ConnectAddress);
+                Debug.Log(transport.ConnectAddress);
             }
         }
     }
-
-    
 }

@@ -30,8 +30,7 @@ namespace UI {
         public void AddPoint()
         {
             userScore.Value += 1;
-            if(IsOwner)
-                checkState.checkUserScoreServerRPC();
+            checkState.checkUserScore(playerManager.playerName);
         
             OnPlayerKill();
         }
@@ -55,5 +54,6 @@ namespace UI {
         {
             playerManager = manager;
         }
+
     }
 }
