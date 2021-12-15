@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game_Systems {
     public class PlayerHealth : NetworkBehaviour {
-        [SerializeField] NetworkVariableInt health = new NetworkVariableInt(
+        [SerializeField] public NetworkVariableInt health = new NetworkVariableInt(
             new NetworkVariableSettings {WritePermission = NetworkVariablePermission.OwnerOnly},
             100
         );

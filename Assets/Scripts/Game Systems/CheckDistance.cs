@@ -5,32 +5,32 @@ using MLAPI;
 
 namespace Game_Systems
 {
-    public class CheckDistance : NetworkBehaviour
+    public class CheckDistance : MonoBehaviour
     {
-        [SerializeField] GameObject warning_UI;
-        // Start is called before the first frame update
-        private float lastShootTime = float.NegativeInfinity;
-        PlayerHealth heal;
-        void Start()
+        [SerializeField] public GameObject warningUI;
+        [SerializeField] private float maxDistance = 100;
+        private float lastDamageInstanceTime = float.NegativeInfinity;
+        PlayerHealth health;
+        private void Start()
         {
-            heal = GetComponent<PlayerHealth>();
+            health = GetComponent<PlayerHealth>();
         }
 
         // Update is called once per frame
-        void Update()
+        public void Update()
         {
-            if (Vector3.Distance(transform.position, new Vector3(0, 0, 0)) >= 100)
+            if (Vector3.Distance(transform.position, Vector3.zero) >= maxDistance)
             {
-                warning_UI.SetActive(true);
-                if (Time.time - lastShootTime >= 1)
+                warningUI.SetActive(true);
+                if (Time.time - lastDamageInstanceTime >= 1)
                 {
-                    lastShootTime = Time.time;
-                    heal.takeDemage(10);
+                    lastDamageInstanceTime = Time.time;
+                    health?.takeDemage(10);
                 }
             }
             else
             {
-                warning_UI.SetActive(false);
+                warningUI.SetActive(false);
             }
         }
     }
