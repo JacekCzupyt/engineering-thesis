@@ -9,7 +9,7 @@ namespace Network {
     public class ScoreboardManager : NetworkBehaviour
     {
         [SerializeField] private GameObject scoreboardUIObject;
-        private NetworkList<ScorePlayerState> scoreboardPlayers = new NetworkList<ScorePlayerState>();
+        public NetworkList<ScorePlayerState> scoreboardPlayers = new NetworkList<ScorePlayerState>();
         private PlayerScoreUI playerScoreUI;
         public void Start() {
             playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();

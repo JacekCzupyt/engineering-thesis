@@ -69,15 +69,15 @@ namespace Game_Systems {
             cc.enabled = false;
             playerCollider.enabled = false;
             PlayerState(false);
-            if(IsOwner)
-                canvas.SetActive(false);
+            //if(IsOwner)
+               // canvas.SetActive(false);
             yield return new WaitForSeconds(5);
             transform.parent.position = randomPos;
             cc.enabled = true;
             playerCollider.enabled = true;
             PlayerState(true);
             if (IsOwner) {
-                canvas.SetActive(true);
+               // canvas.SetActive(true);
                 GetComponentInParent<Rigidbody>().velocity = Vector3.zero;
             }
 

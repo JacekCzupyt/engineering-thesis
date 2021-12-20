@@ -8,6 +8,7 @@ namespace Game_Systems {
     public class GameManager : MonoBehaviour {
 
         [SerializeField] private GameObject scoreboardManagerObject;
+        [SerializeField] private GameObject gamestateManagerObject;
         private void Start()
         {
             if (NetworkManager.Singleton.IsServer) {
@@ -15,6 +16,7 @@ namespace Game_Systems {
                 foreach (var playerManager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
                     PlayerManager manager = playerManager.GetComponent<PlayerManager>();
                     manager.SetScoreBoardManager(scoreboardManagerObject.GetComponent<ScoreboardManager>());
+                    manager.SetGameStateManager(gamestateManagerObject.GetComponent<GameStateManager>());
                     int rand=RespawnPointGenerator.rnd.Next(pos.Count);
                     manager.SpawnCharacter(pos[rand]);
                     pos.RemoveAt(rand);
