@@ -18,9 +18,6 @@ namespace Game_Systems {
 
         [SerializeField] ScoreSystem score;
 
-        [SerializeField] Text can;
-        [SerializeField] GameObject winM;
-        [SerializeField] Text can;
         // Start is called before the first frame update
         // Update is called once per frame
 
@@ -40,9 +37,9 @@ namespace Game_Systems {
             StartCoroutine(WaitForGameEnd(name));
         }
         IEnumerator WaitForGameEnd(string winner) {          
-            can.text = "Player " + winner + " win a game.";
-            winM.SetActive(true);
             cc.enabled = false;
+            if (IsOwner)
+                canvas.SetActive(false);
             //playerCollider.enabled = false;
             PlayerState(false);
             GetComponentInParent<Rigidbody>().velocity = Vector3.zero;

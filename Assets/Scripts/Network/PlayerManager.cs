@@ -58,7 +58,7 @@ namespace Network {
         public void AddPlayerKills(ulong clientId)
         {
             playerKills += 1;
-            scoreboardManager.PlayerKillUpdate();
+            scoreboardManager.PlayerKillUpdate(clientId);
             gamestateManager.CheckPlayerScore();
         }
 

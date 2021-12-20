@@ -13,12 +13,12 @@ namespace Network
         // Start is called before the first frame update
         [SerializeField] GameObject sc;
         private ScoreboardManager score;
-        [SerializeField]  int NumOfKillsToWin;
+        [SerializeField] int NumOfKillsToWin;
         [SerializeField] GameObject EndGameUIobject;
 
         private Canvas can;
         private Text winMessage;
-        
+
         void Start()
         {
             score = sc.GetComponent<ScoreboardManager>();
@@ -26,6 +26,7 @@ namespace Network
             winMessage = can.GetComponentInChildren<Text>();
             EndGameUIobject.SetActive(false);
         }
+
         public void CheckPlayerScore()
         {
             foreach (var player in score.scoreboardPlayers)
@@ -33,11 +34,10 @@ namespace Network
                 if (player.PlayerKills >= NumOfKillsToWin)
                 {
                     winMessage.text = "Player " + player.PlayerName + " win a game";
+                    EndGameUIobject.SetActive(true);
                     break;
                 }
             }
-            EndGameUIobject.SetActive(true);
-
         }
     }
 }
