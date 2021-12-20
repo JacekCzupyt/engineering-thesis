@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,15 +30,22 @@ namespace Network
 
         public void CheckPlayerScore()
         {
+            if(!IsServer)
+                throw new InvalidOperationException("This method can only be run on the server");
+
             foreach (var player in score.scoreboardPlayers)
             {
-                if (player.PlayerKills >= NumOfKillsToWin)
-                {
-                    winMessage.text = "Player " + player.PlayerName + " win a game";
-                    EndGameUIobject.SetActive(true);
+                if (player.PlayerKills >= NumOfKillsToWin) {
+                    GameEndedClientRpc(player.PlayerName);
                     break;
                 }
             }
+        }
+
+        [ClientRpc]
+        private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default) {
+            winMessage.text = "Player " + playerName + " win a game";
+            EndGameUIobject.SetActive(true);
         }
     }
 }
