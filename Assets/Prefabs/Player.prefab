@@ -5876,6 +5876,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 94830311284520283}
     - target: {fileID: 7868692278534635022, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 94830311501573989}
+    - target: {fileID: 7868692278534635022, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
       propertyPath: fireRate
       value: 10
       objectReference: {fileID: 0}
@@ -5960,6 +5964,10 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 94830311284520283}
+    - target: {fileID: 8109845766521867371, guid: 7b581f2015e053a4899c3fa482727262, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 94830311501573989}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b581f2015e053a4899c3fa482727262, type: 3}
 --- !u!4 &7490337482335601858 stripped

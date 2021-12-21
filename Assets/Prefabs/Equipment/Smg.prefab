@@ -5027,6 +5027,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21f2cedc0a7f1104c8c4de2395b42572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   cam: {fileID: 0}
   gunModel: {fileID: 5342326200344668817}
   fullAuto: 1
@@ -5038,6 +5039,7 @@ MonoBehaviour:
   fireAudio: {fileID: 5652983142558833822}
   misfireAudio: {fileID: 2891449820321026157}
   reloadAudio: {fileID: 1436143218299252778}
+  knockBackForce: 0.1
 --- !u!1 &5342326200344668817
 GameObject:
   m_ObjectHideFlags: 0

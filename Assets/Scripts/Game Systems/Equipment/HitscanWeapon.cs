@@ -15,6 +15,7 @@ namespace Game_Systems.Equipment {
         
         //TODO: variable pitch depending on ammo
 
+        [SerializeField] private GameObject player;
         [SerializeField] private Camera cam;
         [SerializeField] private GameObject gunModel;
 
@@ -31,6 +32,8 @@ namespace Game_Systems.Equipment {
         [SerializeField] private SoundPlayer fireAudio;
         [SerializeField] private SoundPlayer misfireAudio;
         [SerializeField] private SoundPlayer reloadAudio;
+
+        [SerializeField] private float knockBackForce;
         
         private CharacterInputManager input;
         private ParticleSystem particles;
@@ -66,6 +69,7 @@ namespace Game_Systems.Equipment {
             particles = GetComponentInChildren<ParticleSystem>();
             currentAmmoCount = maxAmmoCount;
             input.Controls.Reload.performed += Reload;
+            playerRb = player.GetComponent<Rigidbody>();
         }
 
         // Update is called once per frame
@@ -111,6 +115,7 @@ namespace Game_Systems.Equipment {
                 CancelReload();
             
             FireWeaponPresentation();
+            KnockBackPlayer();
             
             var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             ray.origin = cam.transform.position;
@@ -126,6 +131,11 @@ namespace Game_Systems.Equipment {
             }
 
             ShotServerRPC(ray,  hitPlayerId);
+        }
+
+        private Rigidbody playerRb;
+        private void KnockBackPlayer() {
+            playerRb.AddForce(- player.transform.forward * knockBackForce, ForceMode.VelocityChange);
         }
 
         private void Reload(InputAction.CallbackContext context) {
