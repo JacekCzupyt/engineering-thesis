@@ -5,14 +5,15 @@ using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.Spawning;
+using Unity.Plastic.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Scripting;
+using Random = UnityEngine.Random;
 
 namespace Game_Systems.Equipment {
     public class HitscanWeapon : NetworkBehaviour {
         //TODO: recoil, bloom, damage falloff?, physics recoil?
-        
+
         //TODO: variable pitch depending on ammo
 
         [SerializeField] private GameObject player;
@@ -23,24 +24,35 @@ namespace Game_Systems.Equipment {
         [SerializeField] private float fireRate;
 
         [SerializeField] private int damage;
-        
-        [SerializeField] public int maxAmmoCount;
-        [SerializeField] public int currentAmmoCount;
 
+        [Header("Ammo")] [SerializeField] public int maxAmmoCount;
+        [SerializeField] public int currentAmmoCount;
         [SerializeField] private float reloadTime;
 
-        [SerializeField] private SoundPlayer fireAudio;
+        [Header("Audio")] [SerializeField] private SoundPlayer fireAudio;
         [SerializeField] private SoundPlayer misfireAudio;
         [SerializeField] private SoundPlayer reloadAudio;
 
-        [SerializeField] private float knockBackForce;
-        
+        [Header("Knock-back")] [SerializeField]
+        private float knockBackForce;
+
+
+        [Header("Recoil")] [SerializeField] private bool simulateRecoil;
+        [SerializeField] private Vector2 standardRecoil;
+        [SerializeField] private float minRecoilDeviation;
+        [SerializeField] private float maxRecoilDeviation;
+        [SerializeField] private float deviationIncreasePerShot;
+        [SerializeField] private float deviationDecreasePerSecond;
+
+        private float currentRecoilDeviation;
+        private Rigidbody playerRb;
+
         private CharacterInputManager input;
         private ParticleSystem particles;
         private bool firedDuringAction = false;
         private bool misfiredDuringAction = false;
         private float lastShotTime = float.NegativeInfinity;
-        
+
         private bool reloading = false;
         private float reloadStartTime;
 
@@ -49,16 +61,14 @@ namespace Game_Systems.Equipment {
         }
 
         private void OnDisable() {
-            if(reloading)
+            if (reloading)
                 CancelReload();
             gunModel.SetActive(false);
         }
 
         private ClientRpcParams NonOwnerClientParams =>
-            new ClientRpcParams
-            {
-                Send = new ClientRpcSendParams
-                {
+            new ClientRpcParams {
+                Send = new ClientRpcSendParams {
                     TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId != OwnerClientId)
                         .Select(c => c.ClientId).ToArray()
                 }
@@ -73,9 +83,9 @@ namespace Game_Systems.Equipment {
         }
 
         // Update is called once per frame
-        private void Update()
-        {
+        private void Update() {
             if (IsOwner) {
+                ReduceRecoilDeviation();
                 CheckFiringState();
             }
         }
@@ -94,14 +104,13 @@ namespace Game_Systems.Equipment {
                 firedDuringAction = false;
                 misfiredDuringAction = false;
             }
-
         }
 
         private void AttemptFireWeapon() {
             firedDuringAction = true;
-            if(currentAmmoCount > 0)
+            if (currentAmmoCount > 0)
                 FireWeapon();
-            else if(!reloading) {
+            else if (!reloading) {
                 misfiredDuringAction = true;
                 misfireAudio.Play();
             }
@@ -110,32 +119,46 @@ namespace Game_Systems.Equipment {
         private void FireWeapon() {
             lastShotTime = Time.time;
             currentAmmoCount--;
-            
-            if(reloading)
+
+            if (reloading)
                 CancelReload();
-            
+
             FireWeaponPresentation();
             KnockBackPlayer();
-            
+
             var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             ray.origin = cam.transform.position;
-            GameObject hitPlayer = null;
             var hitPlayerId = ulong.MaxValue;
-            
-            if (Physics.Raycast(ray,out RaycastHit hit, float.PositiveInfinity, LayerMask.GetMask("Player", "Terrain")))
-            {
+
+            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, LayerMask.GetMask("Player", "Terrain"))) {
                 if (hit.collider.gameObject.CompareTag("Player")) {
-                    hitPlayer = hit.collider.gameObject;
+                    var hitPlayer = hit.collider.gameObject;
                     hitPlayerId = hitPlayer.GetComponent<NetworkObject>().NetworkObjectId;
                 }
             }
 
-            ShotServerRPC(ray,  hitPlayerId);
+            ShotServerRPC(ray, hitPlayerId);
+
+            SimulateRecoil();
         }
 
-        private Rigidbody playerRb;
+        private void SimulateRecoil() {
+            if (!simulateRecoil)
+                return;
+
+            var deviation = Mathf.Lerp(minRecoilDeviation, maxRecoilDeviation, currentRecoilDeviation);
+            var currentRecoil = standardRecoil + Random.insideUnitCircle * deviation;
+            player.transform.Rotate(new Vector3(-currentRecoil.y, currentRecoil.x, 0));
+
+            currentRecoilDeviation = Mathf.Min(currentRecoilDeviation + deviationIncreasePerShot, 1f);
+        }
+
+        private void ReduceRecoilDeviation() {
+            currentRecoilDeviation = Mathf.Max(currentRecoilDeviation - deviationDecreasePerSecond * Time.deltaTime, 0f);
+        }
+
         private void KnockBackPlayer() {
-            playerRb.AddForce(- player.transform.forward * knockBackForce, ForceMode.VelocityChange);
+            playerRb.AddForce(-player.transform.forward * knockBackForce, ForceMode.VelocityChange);
         }
 
         private void Reload(InputAction.CallbackContext context) {
@@ -171,17 +194,16 @@ namespace Game_Systems.Equipment {
                 var playerHit = NetworkSpawnManager.SpawnedObjects[playerHitId];
 
                 //TODO: validate hit
-            
+
                 var enemyHealth = playerHit.transform.GetComponentInChildren<PlayerHealth>();
-                if (enemyHealth!=null)
-                {
+                if (enemyHealth != null) {
                     enemyHealth.takeDemage(damage, OwnerClientId);
                 }
             }
 
             ShootClientRPC(shot);
         }
-        
+
         [ClientRpc]
         private void ShootClientRPC(Ray shot, ClientRpcParams rpcParams = default) {
             if (!enabled || IsOwner)

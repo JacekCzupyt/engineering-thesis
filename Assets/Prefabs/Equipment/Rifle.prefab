@@ -5265,6 +5265,12 @@ MonoBehaviour:
   misfireAudio: {fileID: 2840989016466185122}
   reloadAudio: {fileID: 8713372572891840822}
   knockBackForce: 1
+  simulateRecoil: 1
+  standardRecoil: {x: 0, y: 20}
+  minRecoilDeviation: 0
+  maxRecoilDeviation: 0
+  deviationIncreasePerShot: 0
+  deviationDecreasePerSecond: 0
 --- !u!1 &7211015766324054858
 GameObject:
   m_ObjectHideFlags: 0
