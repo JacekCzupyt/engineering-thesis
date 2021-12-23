@@ -1,22 +1,20 @@
-using System;
 using System.Linq;
 using Audio;
 using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.Spawning;
-using Unity.Plastic.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
-namespace Game_Systems.Equipment {
+namespace Game_Systems.Equipment.Weapons {
     public class HitscanWeapon : NetworkBehaviour {
-        //TODO: recoil, bloom, damage falloff?, physics recoil?
+        //TODO: spread, damage falloff?
 
         //TODO: variable pitch depending on ammo
 
-        [SerializeField] private GameObject player;
+        [SerializeField] public GameObject player;
         [SerializeField] private Camera cam;
         [SerializeField] private GameObject gunModel;
 
@@ -37,14 +35,10 @@ namespace Game_Systems.Equipment {
         private float knockBackForce;
 
 
-        [Header("Recoil")] [SerializeField] private bool simulateRecoil;
-        [SerializeField] private Vector2 standardRecoil;
-        [SerializeField] private float minRecoilDeviation;
-        [SerializeField] private float maxRecoilDeviation;
-        [SerializeField] private float deviationIncreasePerShot;
-        [SerializeField] private float deviationDecreasePerSecond;
+        [SerializeField] private bool simulateRecoil;
 
-        private float currentRecoilDeviation;
+        // private float currentRecoilDeviation;
+        private WeaponRecoil recoilManager;
         private Rigidbody playerRb;
 
         private CharacterInputManager input;
@@ -80,12 +74,12 @@ namespace Game_Systems.Equipment {
             currentAmmoCount = maxAmmoCount;
             input.Controls.Reload.performed += Reload;
             playerRb = player.GetComponent<Rigidbody>();
+            recoilManager = GetComponent<WeaponRecoil>();
         }
 
         // Update is called once per frame
         private void Update() {
             if (IsOwner) {
-                ReduceRecoilDeviation();
                 CheckFiringState();
             }
         }
@@ -138,23 +132,9 @@ namespace Game_Systems.Equipment {
             }
 
             ShotServerRPC(ray, hitPlayerId);
-
-            SimulateRecoil();
-        }
-
-        private void SimulateRecoil() {
-            if (!simulateRecoil)
-                return;
-
-            var deviation = Mathf.Lerp(minRecoilDeviation, maxRecoilDeviation, currentRecoilDeviation);
-            var currentRecoil = standardRecoil + Random.insideUnitCircle * deviation;
-            player.transform.Rotate(new Vector3(-currentRecoil.y, currentRecoil.x, 0));
-
-            currentRecoilDeviation = Mathf.Min(currentRecoilDeviation + deviationIncreasePerShot, 1f);
-        }
-
-        private void ReduceRecoilDeviation() {
-            currentRecoilDeviation = Mathf.Max(currentRecoilDeviation - deviationDecreasePerSecond * Time.deltaTime, 0f);
+            
+            if(simulateRecoil && recoilManager)
+                recoilManager.AddRecoil();
         }
 
         private void KnockBackPlayer() {

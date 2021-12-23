@@ -4992,6 +4992,7 @@ GameObject:
   m_Component:
   - component: {fileID: 984521477969044482}
   - component: {fileID: 7868692278534635022}
+  - component: {fileID: 109713274594850822}
   m_Layer: 7
   m_Name: Smg
   m_TagString: Untagged
@@ -5041,11 +5042,22 @@ MonoBehaviour:
   reloadAudio: {fileID: 1436143218299252778}
   knockBackForce: 0.1
   simulateRecoil: 1
-  standardRecoil: {x: 0, y: 1}
-  minRecoilDeviation: 0
-  maxRecoilDeviation: 0
-  deviationIncreasePerShot: 0
-  deviationDecreasePerSecond: 0
+--- !u!114 &109713274594850822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4624637393124916215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9ebf25f87c31684aa544c58f9e0fabe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  standardRecoil: {x: -2, y: 0}
+  recoilDeviation: {x: 0.5, y: 1}
+  snapSpeed: 20
+  returnSpeed: 4
 --- !u!1 &5342326200344668817
 GameObject:
   m_ObjectHideFlags: 0

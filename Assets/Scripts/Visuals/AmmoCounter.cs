@@ -1,5 +1,4 @@
-using System;
-using Game_Systems.Equipment;
+using Game_Systems.Equipment.Weapons;
 using TMPro;
 using UnityEngine;
 
