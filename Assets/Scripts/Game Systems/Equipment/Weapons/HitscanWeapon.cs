@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 namespace Game_Systems.Equipment.Weapons {
     public class HitscanWeapon : NetworkBehaviour {
-        //TODO: spread, damage falloff?
+        //TODO: damage falloff?
 
         //TODO: variable pitch depending on ammo
 
@@ -143,9 +143,6 @@ namespace Game_Systems.Equipment.Weapons {
             if (reloading)
                 CancelReload();
 
-            FireWeaponPresentation();
-            KnockBackPlayer();
-
             var shotDirection = cam.transform.rotation;
             
             if (weaponSpread)
@@ -162,6 +159,9 @@ namespace Game_Systems.Equipment.Weapons {
             }
 
             ShotServerRPC(ray, hitPlayerId);
+            
+            KnockBackPlayer();
+            FireWeaponPresentation(ray);
 
             if (simulateRecoil)
                 RecoilManager.AddRecoil();
@@ -190,9 +190,11 @@ namespace Game_Systems.Equipment.Weapons {
             currentAmmoCount = maxAmmoCount;
         }
 
-        private void FireWeaponPresentation() {
+        private void FireWeaponPresentation(Ray shot) {
             fireAudio.Play();
-            particles.Emit(new ParticleSystem.EmitParams(), 1);
+            var emitParams = new ParticleSystem.EmitParams();
+            emitParams.velocity = shot.direction * particles.main.startSpeedMultiplier;
+            particles.Emit(emitParams, 1);
         }
 
         [ServerRpc]
@@ -219,7 +221,7 @@ namespace Game_Systems.Equipment.Weapons {
             if (!enabled || IsOwner)
                 return;
 
-            FireWeaponPresentation();
+            FireWeaponPresentation(shot);
         }
     }
 }

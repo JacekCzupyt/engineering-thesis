@@ -25,7 +25,7 @@ namespace UI.Game {
             if (cam == null)
                 throw new NullReferenceException("SetSpreadFromAngle can't be used if camera is not assigned");
 
-            var screenSpacePoint = cam.ViewportToScreenPoint(new Vector3(angle / cam.fieldOfView, 0, 0)).x;
+            var screenSpacePoint = cam.ViewportToScreenPoint(new Vector3(0, angle / cam.fieldOfView, 0)).y;
             SetSpread(screenSpacePoint);
         }
     }

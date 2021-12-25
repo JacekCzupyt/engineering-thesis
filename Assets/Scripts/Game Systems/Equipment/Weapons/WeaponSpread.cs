@@ -26,9 +26,9 @@ namespace Game_Systems.Equipment.Weapons {
 
         //Technically not uniform distribution, but for small angles it's good enough
         public Quaternion ApplySpread() {
-            var rand = Random.insideUnitCircle;
+            var rand = Random.insideUnitCircle.normalized;
             var magnitude = rand.magnitude;
-            var angle = Mathf.Atan2(rand.y, rand.x);
+            var angle = Mathf.Rad2Deg * Mathf.Atan2(rand.y, rand.x);
 
             var res = Quaternion.AngleAxis(magnitude * currentSpread, Vector3.up);
             res = Quaternion.AngleAxis(angle, Vector3.forward) * res;
