@@ -36,9 +36,31 @@ namespace Game_Systems.Equipment.Weapons {
 
 
         [SerializeField] private bool simulateRecoil;
+        [SerializeField] private bool weaponSpread;
 
         // private float currentRecoilDeviation;
         private WeaponRecoil recoilManager;
+        public WeaponRecoil RecoilManager {
+            get {
+                if (!recoilManager)
+                    recoilManager = GetComponent<WeaponRecoil>();
+                if (!recoilManager)
+                    throw new MissingComponentException("No weapon recoil component");
+                return recoilManager;
+            }
+        }
+
+        private WeaponSpread spreadManager;
+        public WeaponSpread SpreadManager {
+            get {
+                if (!spreadManager)
+                    spreadManager = GetComponent<WeaponSpread>();
+                if (!spreadManager)
+                    throw new MissingComponentException("No weapon spread component");
+                return spreadManager;
+            }
+        }
+
         private Rigidbody playerRb;
 
         private CharacterInputManager input;
@@ -52,12 +74,16 @@ namespace Game_Systems.Equipment.Weapons {
 
         private void OnEnable() {
             gunModel.SetActive(true);
+            if (weaponSpread)
+                SpreadManager.enabled = true;
         }
 
         private void OnDisable() {
             if (reloading)
                 CancelReload();
             gunModel.SetActive(false);
+            if(weaponSpread)
+                SpreadManager.enabled = false;
         }
 
         private ClientRpcParams NonOwnerClientParams =>
@@ -68,13 +94,13 @@ namespace Game_Systems.Equipment.Weapons {
                 }
             };
 
+
         private void Start() {
             input = CharacterInputManager.Instance;
             particles = GetComponentInChildren<ParticleSystem>();
             currentAmmoCount = maxAmmoCount;
             input.Controls.Reload.performed += Reload;
             playerRb = player.GetComponent<Rigidbody>();
-            recoilManager = GetComponent<WeaponRecoil>();
         }
 
         // Update is called once per frame
@@ -120,8 +146,12 @@ namespace Game_Systems.Equipment.Weapons {
             FireWeaponPresentation();
             KnockBackPlayer();
 
-            var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
-            ray.origin = cam.transform.position;
+            var shotDirection = cam.transform.rotation;
+            
+            if (weaponSpread)
+                shotDirection *= SpreadManager.ApplySpread();
+
+            var ray = new Ray(cam.transform.position, shotDirection * Vector3.forward);
             var hitPlayerId = ulong.MaxValue;
 
             if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, LayerMask.GetMask("Player", "Terrain"))) {
@@ -132,9 +162,9 @@ namespace Game_Systems.Equipment.Weapons {
             }
 
             ShotServerRPC(ray, hitPlayerId);
-            
-            if(simulateRecoil && recoilManager)
-                recoilManager.AddRecoil();
+
+            if (simulateRecoil)
+                RecoilManager.AddRecoil();
         }
 
         private void KnockBackPlayer() {

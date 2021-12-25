@@ -2647,7 +2647,6 @@ MonoBehaviour:
   crosshairBottom: {fileID: 2680028055689449720}
   minDistance: 8
   cam: {fileID: 94830311284520283}
-  angle: 10
 --- !u!1 &4036397013072949675
 GameObject:
   m_ObjectHideFlags: 0
@@ -5872,6 +5871,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1143508925468536954, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
+      propertyPath: crosshair
+      value: 
+      objectReference: {fileID: 7829328381669134342}
     - target: {fileID: 2028776427474789762, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
       value: 200
@@ -5973,6 +5976,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2638628287837889608, guid: 7b581f2015e053a4899c3fa482727262, type: 3}
+      propertyPath: crosshair
+      value: 
+      objectReference: {fileID: 7829328381669134342}
     - target: {fileID: 6743792011765434770, guid: 7b581f2015e053a4899c3fa482727262, type: 3}
       propertyPath: m_Name
       value: Rifle

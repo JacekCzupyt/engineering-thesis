@@ -5218,6 +5218,7 @@ GameObject:
   - component: {fileID: 1157839891845994087}
   - component: {fileID: 8109845766521867371}
   - component: {fileID: -8714135953736522274}
+  - component: {fileID: 2638628287837889608}
   m_Layer: 7
   m_Name: Rifle
   m_TagString: Untagged
@@ -5267,6 +5268,7 @@ MonoBehaviour:
   reloadAudio: {fileID: 8713372572891840822}
   knockBackForce: 1
   simulateRecoil: 1
+  weaponSpread: 1
 --- !u!114 &-8714135953736522274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5283,6 +5285,23 @@ MonoBehaviour:
   recoilDeviation: {x: 2, y: 5}
   snapSpeed: 15
   returnSpeed: 3
+--- !u!114 &2638628287837889608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6743792011765434770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e6b6818b162cf44b06f41d726278b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minimumSpread: 0
+  spreadPerShot: 5
+  returnSpeed: 4
+  crosshair: {fileID: 0}
+  currentSpread: 0
 --- !u!1 &7211015766324054858
 GameObject:
   m_ObjectHideFlags: 0
