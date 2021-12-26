@@ -34,10 +34,11 @@ namespace Game_Systems.Equipment.Weapons {
 
         [Header("Knock-back")] [SerializeField]
         private float knockBackForce;
-
+        
 
         [SerializeField] private bool simulateRecoil;
         [SerializeField] private bool weaponSpread;
+        [SerializeField] private HitMarker hitMarker;
 
         // private float currentRecoilDeviation;
         private WeaponRecoil recoilManager;
@@ -104,7 +105,7 @@ namespace Game_Systems.Equipment.Weapons {
             playerRb = player.GetComponent<Rigidbody>();
         }
 
-        // Update is called once per frame
+
         private void Update() {
             if (IsOwner) {
                 CheckFiringState();
@@ -214,13 +215,17 @@ namespace Game_Systems.Equipment.Weapons {
                 }
             }
 
-            ShootClientRPC(shot);
+            ShootClientRPC(shot, playerHitId != ulong.MaxValue);
         }
 
         [ClientRpc]
-        private void ShootClientRPC(Ray shot, ClientRpcParams rpcParams = default) {
-            if (!enabled || IsOwner)
+        private void ShootClientRPC(Ray shot, bool hit, ClientRpcParams rpcParams = default) {
+            if (!enabled)
                 return;
+            if (IsOwner && hit) {
+                hitMarker.Trigger();
+                return;
+            }
 
             FireWeaponPresentation(shot);
         }
