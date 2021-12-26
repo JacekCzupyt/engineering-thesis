@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace Input_Systems {
-    public class @PlayerControls : IInputActionCollection, IDisposable
+public class @PlayerControls : IInputActionCollection, IDisposable
+{
+    public InputActionAsset asset { get; }
+    public @PlayerControls()
     {
-        public InputActionAsset asset { get; }
-        public @PlayerControls()
-        {
-            asset = InputActionAsset.FromJson(@"{
+        asset = InputActionAsset.FromJson(@"{
     ""name"": ""PlayerControls"",
     ""maps"": [
         {
@@ -103,6 +102,14 @@ namespace Input_Systems {
                     ""name"": ""Reload"",
                     ""type"": ""Button"",
                     ""id"": ""43ae6a52-371b-4499-abfa-887470fb41c1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""ZoomIn"",
+                    ""type"": ""Button"",
+                    ""id"": ""a8616ad7-8d71-4ce6-b405-3786f55c6668"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -306,196 +313,216 @@ namespace Input_Systems {
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""684469d2-6172-4dc5-b49b-849c2496826f"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ZoomIn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
     ],
     ""controlSchemes"": []
 }");
-            // Player
-            m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-            m_Player_HorizontalMovement = m_Player.FindAction("HorizontalMovement", throwIfNotFound: true);
-            m_Player_VerticalMovement = m_Player.FindAction("VerticalMovement", throwIfNotFound: true);
-            m_Player_CameraMovement = m_Player.FindAction("CameraMovement", throwIfNotFound: true);
-            m_Player_CameraRollMod = m_Player.FindAction("CameraRollMod", throwIfNotFound: true);
-            m_Player_Grip = m_Player.FindAction("Grip", throwIfNotFound: true);
-            m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-            m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
-            m_Player_Ability = m_Player.FindAction("Ability", throwIfNotFound: true);
-            m_Player_EquipWeapon1 = m_Player.FindAction("EquipWeapon1", throwIfNotFound: true);
-            m_Player_EquipWeapon2 = m_Player.FindAction("EquipWeapon2", throwIfNotFound: true);
-            m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
-        }
-
-        public void Dispose()
-        {
-            UnityEngine.Object.Destroy(asset);
-        }
-
-        public InputBinding? bindingMask
-        {
-            get => asset.bindingMask;
-            set => asset.bindingMask = value;
-        }
-
-        public ReadOnlyArray<InputDevice>? devices
-        {
-            get => asset.devices;
-            set => asset.devices = value;
-        }
-
-        public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
-
-        public bool Contains(InputAction action)
-        {
-            return asset.Contains(action);
-        }
-
-        public IEnumerator<InputAction> GetEnumerator()
-        {
-            return asset.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public void Enable()
-        {
-            asset.Enable();
-        }
-
-        public void Disable()
-        {
-            asset.Disable();
-        }
-
         // Player
-        private readonly InputActionMap m_Player;
-        private IPlayerActions m_PlayerActionsCallbackInterface;
-        private readonly InputAction m_Player_HorizontalMovement;
-        private readonly InputAction m_Player_VerticalMovement;
-        private readonly InputAction m_Player_CameraMovement;
-        private readonly InputAction m_Player_CameraRollMod;
-        private readonly InputAction m_Player_Grip;
-        private readonly InputAction m_Player_Jump;
-        private readonly InputAction m_Player_Fire;
-        private readonly InputAction m_Player_Ability;
-        private readonly InputAction m_Player_EquipWeapon1;
-        private readonly InputAction m_Player_EquipWeapon2;
-        private readonly InputAction m_Player_Reload;
-        public struct PlayerActions
+        m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+        m_Player_HorizontalMovement = m_Player.FindAction("HorizontalMovement", throwIfNotFound: true);
+        m_Player_VerticalMovement = m_Player.FindAction("VerticalMovement", throwIfNotFound: true);
+        m_Player_CameraMovement = m_Player.FindAction("CameraMovement", throwIfNotFound: true);
+        m_Player_CameraRollMod = m_Player.FindAction("CameraRollMod", throwIfNotFound: true);
+        m_Player_Grip = m_Player.FindAction("Grip", throwIfNotFound: true);
+        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_Ability = m_Player.FindAction("Ability", throwIfNotFound: true);
+        m_Player_EquipWeapon1 = m_Player.FindAction("EquipWeapon1", throwIfNotFound: true);
+        m_Player_EquipWeapon2 = m_Player.FindAction("EquipWeapon2", throwIfNotFound: true);
+        m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+        m_Player_ZoomIn = m_Player.FindAction("ZoomIn", throwIfNotFound: true);
+    }
+
+    public void Dispose()
+    {
+        UnityEngine.Object.Destroy(asset);
+    }
+
+    public InputBinding? bindingMask
+    {
+        get => asset.bindingMask;
+        set => asset.bindingMask = value;
+    }
+
+    public ReadOnlyArray<InputDevice>? devices
+    {
+        get => asset.devices;
+        set => asset.devices = value;
+    }
+
+    public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
+
+    public bool Contains(InputAction action)
+    {
+        return asset.Contains(action);
+    }
+
+    public IEnumerator<InputAction> GetEnumerator()
+    {
+        return asset.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public void Enable()
+    {
+        asset.Enable();
+    }
+
+    public void Disable()
+    {
+        asset.Disable();
+    }
+
+    // Player
+    private readonly InputActionMap m_Player;
+    private IPlayerActions m_PlayerActionsCallbackInterface;
+    private readonly InputAction m_Player_HorizontalMovement;
+    private readonly InputAction m_Player_VerticalMovement;
+    private readonly InputAction m_Player_CameraMovement;
+    private readonly InputAction m_Player_CameraRollMod;
+    private readonly InputAction m_Player_Grip;
+    private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_Ability;
+    private readonly InputAction m_Player_EquipWeapon1;
+    private readonly InputAction m_Player_EquipWeapon2;
+    private readonly InputAction m_Player_Reload;
+    private readonly InputAction m_Player_ZoomIn;
+    public struct PlayerActions
+    {
+        private @PlayerControls m_Wrapper;
+        public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @HorizontalMovement => m_Wrapper.m_Player_HorizontalMovement;
+        public InputAction @VerticalMovement => m_Wrapper.m_Player_VerticalMovement;
+        public InputAction @CameraMovement => m_Wrapper.m_Player_CameraMovement;
+        public InputAction @CameraRollMod => m_Wrapper.m_Player_CameraRollMod;
+        public InputAction @Grip => m_Wrapper.m_Player_Grip;
+        public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        public InputAction @Ability => m_Wrapper.m_Player_Ability;
+        public InputAction @EquipWeapon1 => m_Wrapper.m_Player_EquipWeapon1;
+        public InputAction @EquipWeapon2 => m_Wrapper.m_Player_EquipWeapon2;
+        public InputAction @Reload => m_Wrapper.m_Player_Reload;
+        public InputAction @ZoomIn => m_Wrapper.m_Player_ZoomIn;
+        public InputActionMap Get() { return m_Wrapper.m_Player; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+        public void SetCallbacks(IPlayerActions instance)
         {
-            private @PlayerControls m_Wrapper;
-            public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-            public InputAction @HorizontalMovement => m_Wrapper.m_Player_HorizontalMovement;
-            public InputAction @VerticalMovement => m_Wrapper.m_Player_VerticalMovement;
-            public InputAction @CameraMovement => m_Wrapper.m_Player_CameraMovement;
-            public InputAction @CameraRollMod => m_Wrapper.m_Player_CameraRollMod;
-            public InputAction @Grip => m_Wrapper.m_Player_Grip;
-            public InputAction @Jump => m_Wrapper.m_Player_Jump;
-            public InputAction @Fire => m_Wrapper.m_Player_Fire;
-            public InputAction @Ability => m_Wrapper.m_Player_Ability;
-            public InputAction @EquipWeapon1 => m_Wrapper.m_Player_EquipWeapon1;
-            public InputAction @EquipWeapon2 => m_Wrapper.m_Player_EquipWeapon2;
-            public InputAction @Reload => m_Wrapper.m_Player_Reload;
-            public InputActionMap Get() { return m_Wrapper.m_Player; }
-            public void Enable() { Get().Enable(); }
-            public void Disable() { Get().Disable(); }
-            public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
-            public void SetCallbacks(IPlayerActions instance)
+            if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
             {
-                if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
-                {
-                    @HorizontalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
-                    @HorizontalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
-                    @HorizontalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
-                    @VerticalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
-                    @VerticalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
-                    @VerticalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
-                    @CameraMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
-                    @CameraMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
-                    @CameraMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
-                    @CameraRollMod.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
-                    @CameraRollMod.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
-                    @CameraRollMod.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
-                    @Grip.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
-                    @Grip.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
-                    @Grip.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
-                    @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-                    @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-                    @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
-                    @Fire.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
-                    @Fire.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
-                    @Fire.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
-                    @Ability.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbility;
-                    @Ability.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbility;
-                    @Ability.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbility;
-                    @EquipWeapon1.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon1;
-                    @EquipWeapon1.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon1;
-                    @EquipWeapon1.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon1;
-                    @EquipWeapon2.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
-                    @EquipWeapon2.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
-                    @EquipWeapon2.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
-                    @Reload.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
-                    @Reload.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
-                    @Reload.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
-                }
-                m_Wrapper.m_PlayerActionsCallbackInterface = instance;
-                if (instance != null)
-                {
-                    @HorizontalMovement.started += instance.OnHorizontalMovement;
-                    @HorizontalMovement.performed += instance.OnHorizontalMovement;
-                    @HorizontalMovement.canceled += instance.OnHorizontalMovement;
-                    @VerticalMovement.started += instance.OnVerticalMovement;
-                    @VerticalMovement.performed += instance.OnVerticalMovement;
-                    @VerticalMovement.canceled += instance.OnVerticalMovement;
-                    @CameraMovement.started += instance.OnCameraMovement;
-                    @CameraMovement.performed += instance.OnCameraMovement;
-                    @CameraMovement.canceled += instance.OnCameraMovement;
-                    @CameraRollMod.started += instance.OnCameraRollMod;
-                    @CameraRollMod.performed += instance.OnCameraRollMod;
-                    @CameraRollMod.canceled += instance.OnCameraRollMod;
-                    @Grip.started += instance.OnGrip;
-                    @Grip.performed += instance.OnGrip;
-                    @Grip.canceled += instance.OnGrip;
-                    @Jump.started += instance.OnJump;
-                    @Jump.performed += instance.OnJump;
-                    @Jump.canceled += instance.OnJump;
-                    @Fire.started += instance.OnFire;
-                    @Fire.performed += instance.OnFire;
-                    @Fire.canceled += instance.OnFire;
-                    @Ability.started += instance.OnAbility;
-                    @Ability.performed += instance.OnAbility;
-                    @Ability.canceled += instance.OnAbility;
-                    @EquipWeapon1.started += instance.OnEquipWeapon1;
-                    @EquipWeapon1.performed += instance.OnEquipWeapon1;
-                    @EquipWeapon1.canceled += instance.OnEquipWeapon1;
-                    @EquipWeapon2.started += instance.OnEquipWeapon2;
-                    @EquipWeapon2.performed += instance.OnEquipWeapon2;
-                    @EquipWeapon2.canceled += instance.OnEquipWeapon2;
-                    @Reload.started += instance.OnReload;
-                    @Reload.performed += instance.OnReload;
-                    @Reload.canceled += instance.OnReload;
-                }
+                @HorizontalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
+                @HorizontalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
+                @HorizontalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHorizontalMovement;
+                @VerticalMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
+                @VerticalMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
+                @VerticalMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnVerticalMovement;
+                @CameraMovement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
+                @CameraMovement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
+                @CameraMovement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraMovement;
+                @CameraRollMod.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
+                @CameraRollMod.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
+                @CameraRollMod.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCameraRollMod;
+                @Grip.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                @Grip.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                @Grip.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGrip;
+                @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Fire.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
+                @Fire.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
+                @Fire.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
+                @Ability.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbility;
+                @Ability.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbility;
+                @Ability.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAbility;
+                @EquipWeapon1.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon1;
+                @EquipWeapon1.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon1;
+                @EquipWeapon1.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon1;
+                @EquipWeapon2.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
+                @EquipWeapon2.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
+                @EquipWeapon2.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
+                @Reload.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
+                @Reload.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
+                @Reload.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
+                @ZoomIn.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoomIn;
+                @ZoomIn.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoomIn;
+                @ZoomIn.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoomIn;
+            }
+            m_Wrapper.m_PlayerActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @HorizontalMovement.started += instance.OnHorizontalMovement;
+                @HorizontalMovement.performed += instance.OnHorizontalMovement;
+                @HorizontalMovement.canceled += instance.OnHorizontalMovement;
+                @VerticalMovement.started += instance.OnVerticalMovement;
+                @VerticalMovement.performed += instance.OnVerticalMovement;
+                @VerticalMovement.canceled += instance.OnVerticalMovement;
+                @CameraMovement.started += instance.OnCameraMovement;
+                @CameraMovement.performed += instance.OnCameraMovement;
+                @CameraMovement.canceled += instance.OnCameraMovement;
+                @CameraRollMod.started += instance.OnCameraRollMod;
+                @CameraRollMod.performed += instance.OnCameraRollMod;
+                @CameraRollMod.canceled += instance.OnCameraRollMod;
+                @Grip.started += instance.OnGrip;
+                @Grip.performed += instance.OnGrip;
+                @Grip.canceled += instance.OnGrip;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
+                @Fire.started += instance.OnFire;
+                @Fire.performed += instance.OnFire;
+                @Fire.canceled += instance.OnFire;
+                @Ability.started += instance.OnAbility;
+                @Ability.performed += instance.OnAbility;
+                @Ability.canceled += instance.OnAbility;
+                @EquipWeapon1.started += instance.OnEquipWeapon1;
+                @EquipWeapon1.performed += instance.OnEquipWeapon1;
+                @EquipWeapon1.canceled += instance.OnEquipWeapon1;
+                @EquipWeapon2.started += instance.OnEquipWeapon2;
+                @EquipWeapon2.performed += instance.OnEquipWeapon2;
+                @EquipWeapon2.canceled += instance.OnEquipWeapon2;
+                @Reload.started += instance.OnReload;
+                @Reload.performed += instance.OnReload;
+                @Reload.canceled += instance.OnReload;
+                @ZoomIn.started += instance.OnZoomIn;
+                @ZoomIn.performed += instance.OnZoomIn;
+                @ZoomIn.canceled += instance.OnZoomIn;
             }
         }
-        public PlayerActions @Player => new PlayerActions(this);
-        public interface IPlayerActions
-        {
-            void OnHorizontalMovement(InputAction.CallbackContext context);
-            void OnVerticalMovement(InputAction.CallbackContext context);
-            void OnCameraMovement(InputAction.CallbackContext context);
-            void OnCameraRollMod(InputAction.CallbackContext context);
-            void OnGrip(InputAction.CallbackContext context);
-            void OnJump(InputAction.CallbackContext context);
-            void OnFire(InputAction.CallbackContext context);
-            void OnAbility(InputAction.CallbackContext context);
-            void OnEquipWeapon1(InputAction.CallbackContext context);
-            void OnEquipWeapon2(InputAction.CallbackContext context);
-            void OnReload(InputAction.CallbackContext context);
-        }
+    }
+    public PlayerActions @Player => new PlayerActions(this);
+    public interface IPlayerActions
+    {
+        void OnHorizontalMovement(InputAction.CallbackContext context);
+        void OnVerticalMovement(InputAction.CallbackContext context);
+        void OnCameraMovement(InputAction.CallbackContext context);
+        void OnCameraRollMod(InputAction.CallbackContext context);
+        void OnGrip(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
+        void OnFire(InputAction.CallbackContext context);
+        void OnAbility(InputAction.CallbackContext context);
+        void OnEquipWeapon1(InputAction.CallbackContext context);
+        void OnEquipWeapon2(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
+        void OnZoomIn(InputAction.CallbackContext context);
     }
 }

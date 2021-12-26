@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 94830311284520283}
   - component: {fileID: 94830311284520282}
   - component: {fileID: 3669082577767021151}
+  - component: {fileID: 1804004853132312889}
   m_Layer: 7
   m_Name: Player Camera
   m_TagString: ClientSide
@@ -225,6 +226,20 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94830311284520281}
   m_Enabled: 1
+--- !u!114 &1804004853132312889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94830311284520281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7063189d9ef4af8478008a7b68722674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultFov: 60
+  currentMultiplier: 1
 --- !u!1 &94830311501573989
 GameObject:
   m_ObjectHideFlags: 0
@@ -5897,6 +5912,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7703861469400641425, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 1804004853132312889}
     - target: {fileID: 7868692278534635022, guid: c0ae990f068d4644fb39db412ba7e467, type: 3}
       propertyPath: cam
       value: 
@@ -5978,6 +5997,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2631204683235029005, guid: 7b581f2015e053a4899c3fa482727262, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 1804004853132312889}
     - target: {fileID: 2638628287837889608, guid: 7b581f2015e053a4899c3fa482727262, type: 3}
       propertyPath: crosshair
       value: 

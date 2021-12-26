@@ -5219,6 +5219,7 @@ GameObject:
   - component: {fileID: 8109845766521867371}
   - component: {fileID: -8714135953736522274}
   - component: {fileID: 2638628287837889608}
+  - component: {fileID: 2631204683235029005}
   m_Layer: 7
   m_Name: Rifle
   m_TagString: Untagged
@@ -5302,6 +5303,22 @@ MonoBehaviour:
   returnSpeed: 4
   crosshair: {fileID: 0}
   currentSpread: 0
+--- !u!114 &2631204683235029005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6743792011765434770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96ea3a03882820d488a69dfe281f888e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleZoom: 1
+  cam: {fileID: 0}
+  zoomMultiplier: 4
+  zoomTime: 0.3
 --- !u!1 &7211015766324054858
 GameObject:
   m_ObjectHideFlags: 0

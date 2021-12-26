@@ -31,6 +31,8 @@ namespace Input_Systems {
         private void SetupCallbacks() {
             controls.Player.EquipWeapon1.performed += context => {SwitchEquipment?.Invoke(0);};
             controls.Player.EquipWeapon2.performed += context => {SwitchEquipment?.Invoke(1);};
+
+            controls.Player.ZoomIn.performed += context => { ToggleZoomIn?.Invoke(); };
         }
 
         private void OnEnable() {
@@ -42,6 +44,7 @@ namespace Input_Systems {
         }
 
         public event Action<int> SwitchEquipment;
+        public event Action ToggleZoomIn;
 
         public Vector3 GetPlayerMovement() {
             var vertical = controls.Player.VerticalMovement.ReadValue<float>();
@@ -70,5 +73,7 @@ namespace Input_Systems {
         }
 
         public InputAction AbilityAction => controls.Player.Ability;
+
+        public InputAction HoldZoomIn => controls.Player.ZoomIn;
     }
 }

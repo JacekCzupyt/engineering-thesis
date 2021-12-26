@@ -4994,6 +4994,7 @@ GameObject:
   - component: {fileID: 7868692278534635022}
   - component: {fileID: 109713274594850822}
   - component: {fileID: 1143508925468536954}
+  - component: {fileID: 7703861469400641425}
   m_Layer: 7
   m_Name: Smg
   m_TagString: Untagged
@@ -5077,6 +5078,23 @@ MonoBehaviour:
   returnSpeed: 5
   crosshair: {fileID: 0}
   currentSpread: 0
+--- !u!114 &7703861469400641425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4624637393124916215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96ea3a03882820d488a69dfe281f888e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleZoom: 1
+  cam: {fileID: 0}
+  zoomMultiplier: 1.5
+  zoomTime: 0.1
+  zoomTimeExponent: 2
 --- !u!1 &5342326200344668817
 GameObject:
   m_ObjectHideFlags: 0
