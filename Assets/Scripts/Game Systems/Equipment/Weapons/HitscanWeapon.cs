@@ -222,8 +222,9 @@ namespace Game_Systems.Equipment.Weapons {
         private void ShootClientRPC(Ray shot, bool hit, ClientRpcParams rpcParams = default) {
             if (!enabled)
                 return;
-            if (IsOwner && hit) {
-                hitMarker.Trigger();
+            if (IsOwner) {
+                if(hit)
+                    hitMarker.Trigger();
                 return;
             }
 
