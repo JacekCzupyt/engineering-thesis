@@ -9,12 +9,17 @@ namespace Input_Systems {
         [SerializeField] Canvas barHealth;
 
         private void Start() {
-            if (!IsOwner) {
+            if (!IsOwner)
+            {
                 foreach(Transform child in transform) {
                     if (child.CompareTag("ClientSide")) {
                         child.gameObject.SetActive(false);
                     }
                 }
+            }
+            else
+            {
+                gameObject.layer = LayerMask.NameToLayer("LocalPlayer");
             }
         }
     }
