@@ -5263,7 +5263,7 @@ MonoBehaviour:
   damage: 30
   maxAmmoCount: 10
   currentAmmoCount: 0
-  reloadTime: 2
+  reloadTime: 1.8
   fireAudio: {fileID: 6038111150118940411}
   misfireAudio: {fileID: 2840989016466185122}
   reloadAudio: {fileID: 8713372572891840822}

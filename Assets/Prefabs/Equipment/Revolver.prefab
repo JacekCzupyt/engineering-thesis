@@ -5300,8 +5300,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minimumSpread: 0
-  spreadPerShot: 5
-  returnSpeed: 3
+  spreadPerShot: 8
+  returnSpeed: 4
   crosshair: {fileID: 0}
   currentSpread: 0
 --- !u!114 &2631204683235029005
