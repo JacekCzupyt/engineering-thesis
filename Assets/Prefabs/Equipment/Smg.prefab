@@ -5035,7 +5035,7 @@ MonoBehaviour:
   gunModel: {fileID: 5342326200344668817}
   fullAuto: 1
   fireRate: 15
-  damage: 5
+  damage: 15
   maxAmmoCount: 40
   currentAmmoCount: 0
   reloadTime: 1.2
@@ -5045,6 +5045,7 @@ MonoBehaviour:
   knockBackForce: 0.1
   simulateRecoil: 1
   weaponSpread: 1
+  hitMarker: {fileID: 0}
 --- !u!114 &109713274594850822
 MonoBehaviour:
   m_ObjectHideFlags: 0
