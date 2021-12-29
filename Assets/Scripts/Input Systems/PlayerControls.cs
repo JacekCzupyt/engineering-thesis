@@ -99,6 +99,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
+                    ""name"": ""EquipWeapon3"",
+                    ""type"": ""Button"",
+                    ""id"": ""04122d0f-847e-46e3-b57e-d50766a4ba75"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""Reload"",
                     ""type"": ""Button"",
                     ""id"": ""43ae6a52-371b-4499-abfa-887470fb41c1"",
@@ -324,6 +332,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""ZoomIn"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0024ff52-13ff-4b0c-942b-4803fad26009"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EquipWeapon3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -342,6 +361,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Player_Ability = m_Player.FindAction("Ability", throwIfNotFound: true);
         m_Player_EquipWeapon1 = m_Player.FindAction("EquipWeapon1", throwIfNotFound: true);
         m_Player_EquipWeapon2 = m_Player.FindAction("EquipWeapon2", throwIfNotFound: true);
+        m_Player_EquipWeapon3 = m_Player.FindAction("EquipWeapon3", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_ZoomIn = m_Player.FindAction("ZoomIn", throwIfNotFound: true);
     }
@@ -403,6 +423,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Ability;
     private readonly InputAction m_Player_EquipWeapon1;
     private readonly InputAction m_Player_EquipWeapon2;
+    private readonly InputAction m_Player_EquipWeapon3;
     private readonly InputAction m_Player_Reload;
     private readonly InputAction m_Player_ZoomIn;
     public struct PlayerActions
@@ -419,6 +440,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Ability => m_Wrapper.m_Player_Ability;
         public InputAction @EquipWeapon1 => m_Wrapper.m_Player_EquipWeapon1;
         public InputAction @EquipWeapon2 => m_Wrapper.m_Player_EquipWeapon2;
+        public InputAction @EquipWeapon3 => m_Wrapper.m_Player_EquipWeapon3;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputAction @ZoomIn => m_Wrapper.m_Player_ZoomIn;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -460,6 +482,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @EquipWeapon2.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
                 @EquipWeapon2.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
                 @EquipWeapon2.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon2;
+                @EquipWeapon3.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon3;
+                @EquipWeapon3.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon3;
+                @EquipWeapon3.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon3;
                 @Reload.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
                 @Reload.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
                 @Reload.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
@@ -500,6 +525,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @EquipWeapon2.started += instance.OnEquipWeapon2;
                 @EquipWeapon2.performed += instance.OnEquipWeapon2;
                 @EquipWeapon2.canceled += instance.OnEquipWeapon2;
+                @EquipWeapon3.started += instance.OnEquipWeapon3;
+                @EquipWeapon3.performed += instance.OnEquipWeapon3;
+                @EquipWeapon3.canceled += instance.OnEquipWeapon3;
                 @Reload.started += instance.OnReload;
                 @Reload.performed += instance.OnReload;
                 @Reload.canceled += instance.OnReload;
@@ -522,6 +550,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnAbility(InputAction.CallbackContext context);
         void OnEquipWeapon1(InputAction.CallbackContext context);
         void OnEquipWeapon2(InputAction.CallbackContext context);
+        void OnEquipWeapon3(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
         void OnZoomIn(InputAction.CallbackContext context);
     }

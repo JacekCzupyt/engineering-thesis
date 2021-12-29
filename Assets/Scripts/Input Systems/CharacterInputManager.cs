@@ -31,6 +31,7 @@ namespace Input_Systems {
         private void SetupCallbacks() {
             controls.Player.EquipWeapon1.performed += context => {SwitchEquipment?.Invoke(0);};
             controls.Player.EquipWeapon2.performed += context => {SwitchEquipment?.Invoke(1);};
+            controls.Player.EquipWeapon3.performed += context => {SwitchEquipment?.Invoke(2);};
 
             controls.Player.ZoomIn.performed += context => { ToggleZoomIn?.Invoke(); };
         }
