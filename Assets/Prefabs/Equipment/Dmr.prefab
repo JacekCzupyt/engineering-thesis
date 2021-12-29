@@ -5260,7 +5260,7 @@ MonoBehaviour:
   gunModel: {fileID: 6312640891720423668}
   fullAuto: 0
   fireRate: 2
-  damage: 40
+  damage: 30
   maxAmmoCount: 10
   currentAmmoCount: 0
   reloadTime: 2
@@ -5270,6 +5270,7 @@ MonoBehaviour:
   knockBackForce: 1
   simulateRecoil: 1
   weaponSpread: 1
+  hitMarker: {fileID: 0}
 --- !u!114 &-8714135953736522274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5319,6 +5320,7 @@ MonoBehaviour:
   cam: {fileID: 0}
   zoomMultiplier: 4
   zoomTime: 0.3
+  zoomTimeExponent: 2
 --- !u!1 &7211015766324054858
 GameObject:
   m_ObjectHideFlags: 0
