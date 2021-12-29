@@ -33,6 +33,7 @@ namespace Input_Systems {
             controls.Player.EquipWeapon2.performed += context => {SwitchEquipment?.Invoke(1);};
             controls.Player.EquipWeapon3.performed += context => {SwitchEquipment?.Invoke(2);};
             controls.Player.EquipWeapon4.performed += context => {SwitchEquipment?.Invoke(3);};
+            controls.Player.EquipWeapon5.performed += context => {SwitchEquipment?.Invoke(4);};
 
             controls.Player.ZoomIn.performed += context => { ToggleZoomIn?.Invoke(); };
         }

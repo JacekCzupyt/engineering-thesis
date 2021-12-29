@@ -102,6 +102,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "EquipWeapon5",
+                    "type": "Button",
+                    "id": "c799f3f6-d98f-44c9-b7be-e1caad52c11c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Reload",
                     "type": "Button",
                     "id": "43ae6a52-371b-4499-abfa-887470fb41c1",
@@ -347,6 +355,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "EquipWeapon4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d70a398b-66d2-4894-8bb6-b50c4fc53d55",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "EquipWeapon5",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
