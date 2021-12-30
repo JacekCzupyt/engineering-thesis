@@ -1,4 +1,5 @@
 using System;
+using Game_Systems.Movement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,18 +7,20 @@ namespace Input_Systems {
     public class MovementControls : MonoBehaviour {
         private Rigidbody rb;
         private CharacterInputManager input;
-    
-        [SerializeField] private float driftAcceleration = 5f;
-
+        
+        [Header("Grip Movement")]
         [SerializeField] private float gripRadius = 1.5f;
         [SerializeField] private float gripAcceleration = 20f;
         [SerializeField] private float gripDrag = 4f;
         [SerializeField] private float gripDragExponent = 1.4f;
 
         private float jumpCharge = 0;
+        [Header("Jump Movement")]
         [SerializeField] private float jumpChargeTime = 1;
         [SerializeField] private float minJumpSpeed = 1f;
         [SerializeField] private float maxJumpSpeed = 10f;
+
+        private Jetpack jetpack;
 
 
         public enum MovementState {
@@ -26,6 +29,7 @@ namespace Input_Systems {
             Jump
         }
 
+        [Header("Active Values")]
         public MovementState currentState = MovementState.Drift;
 
         private bool gripActionUsed = false;
@@ -33,6 +37,7 @@ namespace Input_Systems {
         public void Start() {
             input = CharacterInputManager.Instance;
             rb = GetComponentInParent<Rigidbody>();
+            jetpack = GetComponent<Jetpack>();
         }
 
         private void FixedUpdate() {
@@ -47,9 +52,7 @@ namespace Input_Systems {
 
             switch (currentState) {
                 case MovementState.Drift: {
-                    Vector3 dir = transform.rotation * input.GetPlayerMovement();
-                    Vector3 acceleration = dir * driftAcceleration;
-                    rb.AddForce(acceleration);
+                    var force = jetpack.UseJetpack(input.GetPlayerMovement());
 
                     if (input.GetGripAction() == InputActionPhase.Started &&
                         !gripActionUsed &&
@@ -58,8 +61,8 @@ namespace Input_Systems {
                         gripActionUsed = true;
                         currentState = MovementState.Grip;
                     }
-                
-                    return acceleration;
+
+                    return force;
                 }
                 case MovementState.Grip: {
                     Vector3 dir = transform.rotation * input.GetPlayerMovement();

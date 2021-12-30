@@ -3013,6 +3013,7 @@ GameObject:
   - component: {fileID: 3762044865511022492}
   - component: {fileID: 2532869666853082425}
   - component: {fileID: 5971295356278041402}
+  - component: {fileID: 8572541587006371113}
   m_Layer: 7
   m_Name: Player Controls
   m_TagString: ClientSide
@@ -3071,6 +3072,27 @@ MonoBehaviour:
   minJumpSpeed: 1
   maxJumpSpeed: 10
   currentState: 0
+--- !u!114 &8572541587006371113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4348687244756954186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5b4f7214aaa9c641a1a8939e6c3c8b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jetpackForce: 5
+  maxFuel: 100
+  fuelResetThreshold: 20
+  fuelConsumptionRate: 10
+  fuelUseCooldown: 1
+  fuelReplenishRate: 20
+  currentFuel: 0
+  lastUseTime: -Infinity
+  isResetting: 0
 --- !u!1 &4478568771973419995
 GameObject:
   m_ObjectHideFlags: 0
@@ -6175,6 +6197,11 @@ PrefabInstance:
       objectReference: {fileID: 5872363930003404922}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3801297987192a943b54ddcedf2a59e3, type: 3}
+--- !u!4 &5218286206709093696 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1157839891845994087, guid: 3801297987192a943b54ddcedf2a59e3, type: 3}
+  m_PrefabInstance: {fileID: 6375525419327062823}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2950314425905270604 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8109845766521867371, guid: 3801297987192a943b54ddcedf2a59e3, type: 3}
@@ -6186,11 +6213,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21f2cedc0a7f1104c8c4de2395b42572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &5218286206709093696 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1157839891845994087, guid: 3801297987192a943b54ddcedf2a59e3, type: 3}
-  m_PrefabInstance: {fileID: 6375525419327062823}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7339717779143953672
 PrefabInstance:
   m_ObjectHideFlags: 0
