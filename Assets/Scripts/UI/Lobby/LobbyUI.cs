@@ -1,23 +1,36 @@
 using Network;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace UI.Lobby {
     public class LobbyUI : MonoBehaviour
     {
-        [Header("References")]
-    
+        [Header("Lobby Logic References")]
+        [SerializeField] private LobbyManager lobbyManager;
+        [SerializeField] private GameObject lobbyListViewObject;
+
+        [Header("Button References")]
         [SerializeField] private Button readyUpButton;
         [SerializeField] public Button startGameButton;
-        [SerializeField] private LobbyManager lobbyManager;
+        [SerializeField] public Button changeModeButton;
+        [SerializeField] public Button playTabButton;
+        [SerializeField] public Button weaponsTabButton;
+        [SerializeField] public Button settingsButton;
+
+        [Header("Text References")]
         [SerializeField] private GameObject playerCountText;
-        [SerializeField] private GameObject lobbyListViewObject;
+        [SerializeField] private GameObject gameModeText;
+
         private ListView.ListView lobbyListView;
         private bool IsPlayerReadyUI;
+        private GameObject[] lobbyPanels;
 
         private void Awake() {
             lobbyListView = lobbyListViewObject.GetComponent<ListView.ListView>();
             IsPlayerReadyUI = false;
+            lobbyPanels = GameObject.FindGameObjectsWithTag("LobbyPanel");
+            ChangeLobbyPanels(0);
         }
 
         public void OnLeaveButtonClicked()
@@ -48,6 +61,17 @@ namespace UI.Lobby {
                 readyUpButton.GetComponentInChildren<Text>().text =  "Cancel";
                 IsPlayerReadyUI = true;
             }
+        }
+
+        public void ChangeLobbyPanels(int index){
+            for(int i = 0; i < lobbyPanels.Length; i++){
+                if(i == index) lobbyPanels[i].SetActive(true);
+                else lobbyPanels[i].SetActive(false);
+            }
+        }
+
+        public void OnChangeModeClicked(){
+            
         }
 
         public void CreateListItem(LobbyPlayerState state, float position)

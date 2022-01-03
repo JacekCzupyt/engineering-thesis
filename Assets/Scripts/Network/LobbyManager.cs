@@ -14,9 +14,11 @@ namespace Network {
         [SerializeField] private GameObject playerManager;
         private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
         private LobbyUI lobbyUI;
+        private GameMode gameMode;
         public override void NetworkStart()
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
+            gameMode = GameMode.FreeForAll;
             if(IsClient)
             {
                 lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;            
@@ -26,6 +28,7 @@ namespace Network {
             if(IsServer)
             {
                 lobbyUI.startGameButton.gameObject.SetActive(true);
+                lobbyUI.changeModeButton.gameObject.SetActive(true);
                 NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
 
