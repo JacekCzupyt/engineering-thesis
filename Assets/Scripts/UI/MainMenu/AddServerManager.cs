@@ -1,9 +1,12 @@
 ﻿using NetPortals;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -24,23 +27,31 @@ public class AddServerManager : MonoBehaviour
     {
         if (!NameValidation())
             return;
-        string jsonData="{\"name\": \""+serverName.text+"\", \"ip\": \""+ipAddressTextInput.text+"\"}" ;
-        StartCoroutine(Send_Data_Coroutine(uri,jsonData));
+        string jsonData = "{\"name\": \"" + serverName.text + "\", \"ip\": \"" + ipAddressTextInput.text + "\"}";
+        StartCoroutine(Test_Connection(uri, jsonData));
     }
-    private IEnumerator Send_Data_Coroutine(string Uri, string data)
+    private IEnumerator Test_Connection(string uri, string data)
     {
-        using (UnityWebRequest www = UnityWebRequest.Post(uri,""))
+        using (UnityWebRequest www = UnityWebRequest.Post(uri, ""))
         {
+
             byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
             www.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
             www.SetRequestHeader("Content-Type", "application/json");
             addingPanel.SetActive(false);
             pleaseWaitMessage.SetActive(true);
+            Thread thread = new Thread(() => { StartTcpServerForConnectionTest(); });
+            thread.Start();
             yield return www.SendWebRequest();
-            pleaseWaitMessage.SetActive(false);
-
+            bool finished=thread.Join(1);
+            if (!finished)
+            {
+                thread.Abort();
+            }
             if (www.result != UnityWebRequest.Result.Success)
             {
+                pleaseWaitMessage.SetActive(false);
+                addingPanel.SetActive(true);
                 Debug.Log(www.error);
             }
             else
@@ -48,9 +59,21 @@ public class AddServerManager : MonoBehaviour
                 PlayerPrefs.SetString("PlayerName", playerName.text);
                 GameNetPortal.Instance.StartHost();
             }
-
         }
     }
+
+    private void StartTcpServerForConnectionTest()
+    {
+            Debug.Log("Waiting for connection");
+            TcpListener listener = new TcpListener(IPAddress.Any, 7777);
+            listener.Server.ReceiveTimeout=5000;
+            listener.Start();
+            TcpClient client = listener.AcceptTcpClient();
+            Debug.Log("Client accepted");
+            client.Close();
+            listener.Stop();            
+    }
+
     private bool NameValidation()
     {
         IPAddress Ip;
