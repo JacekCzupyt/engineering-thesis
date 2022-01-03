@@ -6,6 +6,7 @@ using MLAPI;
 using MLAPI.Messaging;
 using UI.Game;
 using UnityEngine.UI;
+using NetPortals;
 
 namespace Network
 {
@@ -43,9 +44,21 @@ namespace Network
         }
 
         [ClientRpc]
-        private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default) {
+        private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default) {           
+            StartCoroutine(WaitForRespawn(playerName));          
+        }
+
+        IEnumerator WaitForRespawn(string playerName)
+        {
+            
             winMessage.text = "Player " + playerName + " win a game";
             EndGameUIobject.SetActive(true);
+            yield return new WaitForSeconds(5);
+            Cursor.lockState = CursorLockMode.None;
+            GameNetPortal.Instance.RequestDisconnect();
+
         }
+
+
     }
 }

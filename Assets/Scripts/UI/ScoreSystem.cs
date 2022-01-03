@@ -29,7 +29,6 @@ namespace UI {
         public void AddPoint()
         {
             userScore.Value += 1;
-            checkState.checkUserScore(playerManager.playerName);
         }
 
         public void AddDeathCount()
