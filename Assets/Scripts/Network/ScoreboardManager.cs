@@ -1,3 +1,4 @@
+using System;
 using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Messaging;
@@ -9,7 +10,7 @@ namespace Network {
     public class ScoreboardManager : NetworkBehaviour
     {
         [SerializeField] private GameObject scoreboardUIObject;
-        private NetworkList<ScorePlayerState> scoreboardPlayers = new NetworkList<ScorePlayerState>();
+        public NetworkList<ScorePlayerState> scoreboardPlayers = new NetworkList<ScorePlayerState>();
         private PlayerScoreUI playerScoreUI;
         public void Start() {
             playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
@@ -66,10 +67,12 @@ namespace Network {
                 }
             }
         }
-    
-        [ServerRpc(RequireOwnership = false)]
-        private void PlayerKillServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
+        
+        private void PlayerKill(ulong clientId)
         {
+            if(!IsServer)
+                throw new InvalidOperationException("This method can only be run on the server");
+
             for(int i = 0; i < scoreboardPlayers.Count; i++)
             {
                 if(scoreboardPlayers[i].ClientId == clientId)
@@ -124,7 +127,7 @@ namespace Network {
 
         public void PlayerKillUpdate(ulong clientId)
         {
-            PlayerKillServerRpc(clientId);
+            PlayerKill(clientId);
         }
 
         public void PlayerDeathUpdate(ulong clientId)

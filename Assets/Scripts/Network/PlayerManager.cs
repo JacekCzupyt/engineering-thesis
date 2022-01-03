@@ -10,6 +10,7 @@ namespace Network {
     public class PlayerManager : NetworkBehaviour {
         [FormerlySerializedAs("playerCharacter")] [SerializeField] private GameObject playerCharacterPrefab;
         private ScoreboardManager scoreboardManager;
+        private GameStateManager gamestateManager;
         public NetworkVariable<GameObject> playerCharacter;
         public string playerName;
         private ulong clientId;
@@ -30,6 +31,10 @@ namespace Network {
         public void SetScoreBoardManager(ScoreboardManager manager)
         {
             scoreboardManager = manager;
+        }
+        public void SetGameStateManager(GameStateManager manager)
+        {
+            gamestateManager = manager;
         }
 
         public void SetPlayerData(ulong clientId, string playerName)
@@ -54,6 +59,7 @@ namespace Network {
         {
             playerKills += 1;
             scoreboardManager.PlayerKillUpdate(clientId);
+            gamestateManager.CheckPlayerScore();
         }
 
         public void AddPlayerDeaths(ulong clientId)

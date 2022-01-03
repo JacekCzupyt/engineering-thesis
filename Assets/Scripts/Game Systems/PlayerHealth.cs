@@ -46,7 +46,6 @@ namespace Game_Systems {
                 var receiverPlayerManager = NetworkManager.Singleton.ConnectedClients[OwnerClientId]
                     .PlayerObject.GetComponent<PlayerManager>();
 
-
                 receiverPlayerManager.AddPlayerDeaths(OwnerClientId);
                 shooterPlayerManager.AddPlayerKills(player);  
             }
