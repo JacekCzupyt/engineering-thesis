@@ -68,10 +68,6 @@ namespace UI.Lobby {
 
         public void ChangeLobbyPanels(int index)
         {
-            for(int i = 0; i < lobbyPanels.Length; i++){
-                if(i == index) lobbyPanels[i].SetActive(true);
-                else lobbyPanels[i].SetActive(false);
-            }
         }
 
         public void OnChangeModeClicked()
@@ -80,7 +76,7 @@ namespace UI.Lobby {
         }
 
         public void ChooseGameModeClicked(int mode){
-            lobbyManager.setGameMode((GameMode) mode);
+            lobbyManager.SetGameMode((GameMode) mode);
             changeGameModePanel.SetActive(false);
         }
 

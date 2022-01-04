@@ -3,6 +3,7 @@ using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Messaging;
 using MLAPI.NetworkVariable.Collections;
+using MLAPI.NetworkVariable;
 using NetPortals;
 using UI.Lobby;
 using UnityEngine;
@@ -13,23 +14,25 @@ namespace Network {
         [SerializeField] private GameObject lobbyUIObject; 
         [SerializeField] private GameObject playerManager;
         private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
+        private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private LobbyUI lobbyUI;
-        private GameMode gameMode;
         public override void NetworkStart()
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
-            gameMode = GameMode.FreeForAll;
-            lobbyUI.UpdateGameMode(gameMode);
+
             if(IsClient)
             {
-                lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;            
+                lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
+                gameMode.OnValueChanged += HandleGameModeChange;      
                 SpawnPlayerManagerServerRpc(NetworkManager.Singleton.LocalClientId);
+                UpdateGameMode();
             }
         
             if(IsServer)
             {
                 lobbyUI.startGameButton.gameObject.SetActive(true);
                 lobbyUI.changeModeButton.gameObject.SetActive(true);
+
                 NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
 
@@ -42,6 +45,7 @@ namespace Network {
 
         private void OnDestroy() {
             lobbyPlayers.OnListChanged -= HandleLobbyPlayersStateChanged;
+            gameMode.OnValueChanged -= HandleGameModeChange;
 
             if(NetworkManager.Singleton)
             {
@@ -118,6 +122,11 @@ namespace Network {
             ServerGameNetPortal.Instance.StartGame();
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        private void ChangeGameModeServerRpc(GameMode mode, ServerRpcParams serverRpcParams = default){
+            gameMode.Value = mode;
+        }
+
         public void LeaveGame()
         {
             GameNetPortal.Instance.RequestDisconnect();
@@ -131,9 +140,12 @@ namespace Network {
             ToggleReadyServerRpc();
         }
 
+        public void SetGameMode(GameMode mode){
+            ChangeGameModeServerRpc(mode);
+        }
+
         private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
         {
-        
             lobbyUI.DestroyCards();
             for(int i = 0; i < lobbyPlayers.Count; i++)
             {
@@ -148,22 +160,18 @@ namespace Network {
             }
         }
 
+        private void HandleGameModeChange(GameMode prevMode, GameMode newMode){
+            UpdateGameMode();
+        }
+
         private void UpdatePlayerCount()
         {
             lobbyUI.UpdatePlayerCount(lobbyPlayers.Count);
         }
 
-        public void setGameMode(GameMode mode){
-            if(IsServer) updateGameModeServerRpc(mode);
+        private void UpdateGameMode(){
+            lobbyUI.UpdateGameMode(gameMode.Value);
         }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void updateGameModeServerRpc(GameMode mode, ServerRpcParams serverRpcParams = default)
-        {
-            gameMode = mode;
-            lobbyUI.UpdateGameMode(gameMode);
-        }
-
     }
 }
 
