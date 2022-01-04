@@ -6706,7 +6706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxPlayers: 10
-  serv: {fileID: 980122615}
+  servert: {fileID: 980122615}
 --- !u!114 &2058638316
 MonoBehaviour:
   m_ObjectHideFlags: 0

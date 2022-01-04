@@ -31,8 +31,8 @@ namespace NetPortals {
         private string uri = "http://79.191.62.119:8080/servers";
         private int DbId;
         
-        [SerializeField] AddServerManager serv;
-
+        [SerializeField] AddServerManager servert;
+        bool isAdd;
 
         private void Awake()
         {
@@ -48,6 +48,7 @@ namespace NetPortals {
 
         private void Start()
         {
+            
             gameNetPortal = GetComponent<GameNetPortal>();
             gameNetPortal.OnNetworkReadied += HandleNetworkReadied;
 
@@ -152,7 +153,7 @@ namespace NetPortals {
 
         private void HandleUserDisconnectRequested()
         {
-            if (serv.IsAdd)
+            if (isAdd)
             {
                 CancelInvoke("Upload");               
             }
@@ -183,10 +184,12 @@ namespace NetPortals {
             
         private void HandleServerStarted()
         {
+            
             if (!NetworkManager.Singleton.IsHost) { return; }
-            if(serv.IsAdd)
+            isAdd = servert.IsAdd;
+            if (isAdd)
             {
-                string jsonData = "{\"name\": \"" + serv.name + "\", \"ip\": \"" + serv.ip + "\"}";
+                string jsonData = "{\"name\": \"" + servert.name + "\", \"ip\": \"" + servert.ip + "\"}";
                 StartCoroutine(AddServer(uri, jsonData));
                 InvokeRepeating("Upload", 5.0f, 10.0f);
             }            
@@ -206,7 +209,7 @@ namespace NetPortals {
                 if (www.result != UnityWebRequest.Result.Success)
                 {
                     Debug.Log(www.error);
-                    serv.IsAdd = false;
+                    isAdd = false;
                     CancelInvoke("Upload");
                 }
                 else
@@ -229,7 +232,7 @@ namespace NetPortals {
                 if (www.result != UnityWebRequest.Result.Success)
                 {
                     Debug.Log(www.error);
-                    serv.IsAdd = false;
+                    isAdd = false;
                     CancelInvoke("Upload");
                 }
                 else
