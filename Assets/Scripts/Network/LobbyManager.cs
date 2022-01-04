@@ -19,11 +19,11 @@ namespace Network {
 
         private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
         private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
+        private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
         private LobbyUI lobbyUI;
         public override void NetworkStart()
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
-
             if(IsClient)
             {
                 lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
@@ -126,14 +126,18 @@ namespace Network {
             if(!IsEveryoneReady()) return;
 
             if(gameMode.Value == GameMode.TeamDeathmatch){
-                if(lobbyPlayers.Count >= numberOfTeams) RandomizeTeams(lobbyPlayers.Count, numberOfTeams);
+                
+                if(lobbyPlayers.Count >= numberOfTeams)
+                {
+                    RandomizeTeams(lobbyPlayers.Count, numberOfTeams);
+                }
                 else{
                     Debug.Log("Number of teams cannot be more than the number of players");
                     return;
                 }
             }
 
-            ServerGameNetPortal.Instance.StartGame();
+            //ServerGameNetPortal.Instance.StartGame();
         }
 
         private void RandomizeTeams(int playersCount, int numOfTeams){
@@ -155,12 +159,18 @@ namespace Network {
             gameMode.Value = mode;
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        private void ToggleArrangeCardsServerRpc(ServerRpcParams serverRpcParams = default){
+            arrangeCards.Value = !arrangeCards.Value;
+        }
+
         public void LeaveGame()
         {
             GameNetPortal.Instance.RequestDisconnect();
         }
 
         public void StartGame(){
+            ToggleArrangeCardsServerRpc();
             StartGameServerRpc();
         }
 
@@ -175,10 +185,27 @@ namespace Network {
         private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
         {
             lobbyUI.DestroyCards();
-            for(int i = 0; i < lobbyPlayers.Count; i++)
+            if(gameMode.Value == GameMode.TeamDeathmatch && arrangeCards.Value == true)
             {
-                float position = -(30*i + 20*(i+1));
-                lobbyUI.CreateListItem(lobbyPlayers[i], position);
+                int k = 0;
+                for(int i = 1; i < numberOfTeams + 1; i++)
+                {
+                    for(int j = 0; j < lobbyPlayers.Count; j++)
+                    {
+                        if(lobbyPlayers[j].TeamId == i){
+                            float position = -(30*k + 20*(k+1));
+                            lobbyUI.CreateListItem(lobbyPlayers[j], position);
+                            k++;
+                        }
+                    }
+                }
+            }else
+            {
+                for(int i = 0; i < lobbyPlayers.Count; i++)
+                {
+                    float position = -(30*i + 20*(i+1));
+                    lobbyUI.CreateListItem(lobbyPlayers[i], position);
+                }
             }
             UpdatePlayerCount();
         
