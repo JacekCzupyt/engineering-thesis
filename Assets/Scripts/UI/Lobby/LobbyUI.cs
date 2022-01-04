@@ -1,7 +1,7 @@
 using Network;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 namespace UI.Lobby {
     public class LobbyUI : MonoBehaviour
@@ -9,6 +9,9 @@ namespace UI.Lobby {
         [Header("Lobby Logic References")]
         [SerializeField] private LobbyManager lobbyManager;
         [SerializeField] private GameObject lobbyListViewObject;
+
+        [Header("Lobby Panel References")]
+        [SerializeField] private GameObject changeGameModePanel;
 
         [Header("Button References")]
         [SerializeField] private Button readyUpButton;
@@ -63,15 +66,22 @@ namespace UI.Lobby {
             }
         }
 
-        public void ChangeLobbyPanels(int index){
+        public void ChangeLobbyPanels(int index)
+        {
             for(int i = 0; i < lobbyPanels.Length; i++){
                 if(i == index) lobbyPanels[i].SetActive(true);
                 else lobbyPanels[i].SetActive(false);
             }
         }
 
-        public void OnChangeModeClicked(){
-            
+        public void OnChangeModeClicked()
+        {
+            changeGameModePanel.SetActive(true);
+        }
+
+        public void ChooseGameModeClicked(int mode){
+            lobbyManager.setGameMode((GameMode) mode);
+            changeGameModePanel.SetActive(false);
         }
 
         public void CreateListItem(LobbyPlayerState state, float position)
@@ -90,6 +100,17 @@ namespace UI.Lobby {
         public void UpdatePlayerCount(int count)
         {
             playerCountText.GetComponent<Text>().text = "Players("+count+"/10)";
+        }
+
+        public void UpdateGameMode(GameMode mode){
+            switch((int) mode){
+                case 0: gameModeText.gameObject.GetComponent<Text>().text = "GAME MODE: Free For All";
+                break;
+                case 1: gameModeText.gameObject.GetComponent<Text>().text = "GAME MODE: Team Death Match";
+                break;
+                default: break;
+            }
+
         }
     }
 }

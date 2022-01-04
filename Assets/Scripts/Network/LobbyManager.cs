@@ -19,6 +19,7 @@ namespace Network {
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
             gameMode = GameMode.FreeForAll;
+            lobbyUI.UpdateGameMode(gameMode);
             if(IsClient)
             {
                 lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;            
@@ -151,6 +152,18 @@ namespace Network {
         {
             lobbyUI.UpdatePlayerCount(lobbyPlayers.Count);
         }
+
+        public void setGameMode(GameMode mode){
+            if(IsServer) updateGameModeServerRpc(mode);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void updateGameModeServerRpc(GameMode mode, ServerRpcParams serverRpcParams = default)
+        {
+            gameMode = mode;
+            lobbyUI.UpdateGameMode(gameMode);
+        }
+
     }
 }
 

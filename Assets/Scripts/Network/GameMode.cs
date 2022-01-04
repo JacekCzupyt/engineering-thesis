@@ -1,6 +1,6 @@
 namespace Network{
     public enum GameMode{
-        FreeForAll,
-        TeamDeathmatch
+        FreeForAll = 0,
+        TeamDeathmatch = 1
     }
 }
