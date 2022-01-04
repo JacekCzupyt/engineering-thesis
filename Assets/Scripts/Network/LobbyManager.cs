@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
@@ -6,6 +7,7 @@ using MLAPI.NetworkVariable.Collections;
 using NetPortals;
 using UI.Lobby;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Network {
     public class LobbyManager : NetworkBehaviour
@@ -25,20 +27,20 @@ namespace Network {
         
             if(IsServer)
             {
+                //StartCoroutine(GetIPAddress());
                 lobbyUI.startGameButton.gameObject.SetActive(true);
                 NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
-
+                //InvokeRepeating("NotifyServer",0.0f,3.0f);
                 foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
                 {
                     HandleClientConnected(client.ClientId);
                 }
             }
-        }
-
+        }        
         private void OnDestroy() {
             lobbyPlayers.OnListChanged -= HandleLobbyPlayersStateChanged;
-
+            
             if(NetworkManager.Singleton)
             {
                 NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
