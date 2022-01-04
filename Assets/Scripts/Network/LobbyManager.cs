@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
@@ -13,6 +14,9 @@ namespace Network {
     {
         [SerializeField] private GameObject lobbyUIObject; 
         [SerializeField] private GameObject playerManager;
+        [SerializeField] private CountdownController countdownController;
+        [SerializeField] private int numberOfTeams = 2;
+
         private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
         private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private LobbyUI lobbyUI;
@@ -72,6 +76,7 @@ namespace Network {
             lobbyPlayers.Add(new LobbyPlayerState(
                 clientId,
                 playerData.Value.PlayerName,
+                0,
                 false
             ));
         }
@@ -106,7 +111,8 @@ namespace Network {
                     lobbyPlayers[i] = new LobbyPlayerState(
                         lobbyPlayers[i].ClientId,
                         lobbyPlayers[i].PlayerName,
-                        !lobbyPlayers[i].IsReady  
+                        lobbyPlayers[i].TeamId,
+                        !lobbyPlayers[i].IsReady
                     );
                 }
             }
@@ -119,7 +125,29 @@ namespace Network {
 
             if(!IsEveryoneReady()) return;
 
+            if(gameMode.Value == GameMode.TeamDeathmatch){
+                if(lobbyPlayers.Count >= numberOfTeams) RandomizeTeams(lobbyPlayers.Count, numberOfTeams);
+                else{
+                    Debug.Log("Number of teams cannot be more than the number of players");
+                    return;
+                }
+            }
+
             ServerGameNetPortal.Instance.StartGame();
+        }
+
+        private void RandomizeTeams(int playersCount, int numOfTeams){
+            for(int i = 0, j = 0; i < playersCount; i++){
+                int teamNo = j + 1;
+                lobbyPlayers[i] = new LobbyPlayerState(
+                    lobbyPlayers[i].ClientId,
+                    lobbyPlayers[i].PlayerName,
+                    teamNo,
+                    lobbyPlayers[i].IsReady
+                );
+                if(j < (numOfTeams - 1)) j++;
+                else j = 0;
+            }
         }
 
         [ServerRpc(RequireOwnership = false)]

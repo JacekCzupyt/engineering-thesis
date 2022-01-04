@@ -18,5 +18,9 @@ namespace Utility {
         public static T RandomElement<T>(this IList<T> list) {
             return list[rng.Next(list.Count)];
         }
+
+        public static int GetRandomInt(int amount){
+            return rng.Next(1, amount+1);
+        }
     }
 }

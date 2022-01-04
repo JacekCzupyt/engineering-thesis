@@ -2,6 +2,8 @@ using Network;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
+using System;
 
 namespace UI.Lobby {
     public class LobbyUI : MonoBehaviour
@@ -27,12 +29,12 @@ namespace UI.Lobby {
 
         private ListView.ListView lobbyListView;
         private bool IsPlayerReadyUI;
-        private GameObject[] lobbyPanels;
+        private List<GameObject> lobbyPanels;
 
         private void Awake() {
             lobbyListView = lobbyListViewObject.GetComponent<ListView.ListView>();
             IsPlayerReadyUI = false;
-            lobbyPanels = GameObject.FindGameObjectsWithTag("LobbyPanel");
+            lobbyPanels = new List<GameObject>(GameObject.FindGameObjectsWithTag("LobbyPanel"));
             ChangeLobbyPanels(0);
         }
 
@@ -68,6 +70,22 @@ namespace UI.Lobby {
 
         public void ChangeLobbyPanels(int index)
         {
+            DeactivateLobbyPanels();
+            switch(index){
+                case 0: lobbyPanels.Find(x => x.gameObject.name == "PlayLobby").SetActive(true);
+                break;
+                case 1: lobbyPanels.Find(x => x.gameObject.name == "WeaponsLobbby").SetActive(true);
+                break;
+                case 2: lobbyPanels.Find(x => x.gameObject.name == "SettingsLobby").SetActive(true);
+                break;
+                default: break;
+            }
+        }
+
+        public void DeactivateLobbyPanels(){
+            foreach(var panel in GameObject.FindGameObjectsWithTag("LobbyPanel")){
+                panel.gameObject.SetActive(false);
+            }
         }
 
         public void OnChangeModeClicked()
