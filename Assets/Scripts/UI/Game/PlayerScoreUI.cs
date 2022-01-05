@@ -19,7 +19,7 @@ namespace UI.Game {
             scoreListView = scoreListViewObject.GetComponent<ListView.ListView>();
         }
 
-        public void CreateListItem(ScorePlayerState state, float position)
+        public void CreateListItem(PlayerState state, float position)
         {
             GameObject obj = Instantiate(scoreListView.prefab, new Vector3(0, position, 0), 
                 Quaternion.identity) as GameObject;

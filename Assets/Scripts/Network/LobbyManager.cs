@@ -97,8 +97,11 @@ namespace Network {
         private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
             var manager = Instantiate(playerManager);
             manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            LobbyPlayerState playerState = lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault();
             manager.GetComponent<PlayerManager>().SetPlayerData(clientId, 
-                lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault().PlayerName);
+                playerState.PlayerName,
+                playerState.TeamId
+                );
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -137,7 +140,7 @@ namespace Network {
                 }
             }
 
-            //ServerGameNetPortal.Instance.StartGame();
+            ServerGameNetPortal.Instance.StartGame();
         }
 
         private void RandomizeTeams(int playersCount, int numOfTeams){

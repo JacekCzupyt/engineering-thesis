@@ -1,14 +1,14 @@
 using MLAPI.Serialization;
 
 namespace Network {
-    public struct ScorePlayerState : INetworkSerializable
+    public struct PlayerState : INetworkSerializable
     {
         public ulong ClientId;
         public string PlayerName;
         public int PlayerKills;
         public int PlayerDeaths;
 
-        public ScorePlayerState(ulong clientId, string playerName, int playerKills, int playerDeaths)
+        public PlayerState(ulong clientId, string playerName, int playerKills, int playerDeaths)
         {
             ClientId = clientId;
             PlayerName = playerName;

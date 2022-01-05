@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using MLAPI;
 using MLAPI.NetworkVariable;
 using UI;
@@ -9,11 +8,12 @@ using UnityEngine.Serialization;
 namespace Network {
     public class PlayerManager : NetworkBehaviour {
         [FormerlySerializedAs("playerCharacter")] [SerializeField] private GameObject playerCharacterPrefab;
-        private ScoreboardManager scoreboardManager;
+        private GameManager gameManager;
         private GameStateManager gamestateManager;
         public NetworkVariable<GameObject> playerCharacter;
-        public string playerName;
         private ulong clientId;
+        public string playerName;
+        private int teamId;
         private int playerKills;
         private int playerDeaths;
 
@@ -24,30 +24,33 @@ namespace Network {
             var character = GameObject.Instantiate(playerCharacterPrefab, pos, Quaternion.identity);
             character.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, null, true);
             playerCharacter.Value = character;
+
+            //HUD Score System, not scoreboard
             character.GetComponent<ScoreSystem>().AssignPlayerManager(this);
             return character;
         }
 
-        public void SetScoreBoardManager(ScoreboardManager manager)
+        public void SetGameManager(GameManager manager)
         {
-            scoreboardManager = manager;
+            gameManager = manager;
         }
         public void SetGameStateManager(GameStateManager manager)
         {
             gamestateManager = manager;
         }
 
-        public void SetPlayerData(ulong clientId, string playerName)
+        public void SetPlayerData(ulong clientId, string playerName, int teamId)
         {
             this.clientId = clientId;
             this.playerName = playerName;
+            this.teamId = teamId;
             playerKills = 0;
             playerDeaths = 0;
         }
 
-        public ScorePlayerState ToPlayerScoreState()
+        public PlayerState ToPlayerState()
         {
-            return new ScorePlayerState(
+            return new PlayerState(
                 clientId,
                 playerName,
                 playerKills,
@@ -58,25 +61,19 @@ namespace Network {
         public void AddPlayerKills(ulong clientId)
         {
             playerKills += 1;
-            scoreboardManager.PlayerKillUpdate(clientId);
-            gamestateManager.CheckPlayerScore();
+            //gameManager.PlayerKillUpdate(clientId);
+            //gamestateManager.CheckPlayerScore();
         }
 
         public void AddPlayerDeaths(ulong clientId)
         {
             playerDeaths += 1;
-            scoreboardManager.PlayerDeathUpdate(clientId);
+            //gameManager.PlayerDeathUpdate(clientId);
         }
 
         public ulong GetClientId()
         {
             return clientId;
         }
-
-        // public void PlayerKillHandler()
-        // {
-        //     Debug.Log("Player Kill Event has been raised");
-        //     scoreboardManager.PlayerKillUpdate();
-        // }
     }
 }
