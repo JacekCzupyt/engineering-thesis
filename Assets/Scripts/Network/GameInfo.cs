@@ -5,21 +5,33 @@ namespace Network
     public class GameInfo : MonoBehaviour
     {
         private GameMode gameMode;
-        private int TeamCount;
-        private int PlayerCount;
+        public GameMode GameMode
+        {
+            get { return gameMode; }
+        }
+        private int teamCount;
+        public int TeamCount 
+        {
+            get { return teamCount; }
+        }
+        private int playerCount;
+        public int PlayerCount
+        {
+            get { return PlayerCount; }
+        }
 
         private void Awake() {
             gameMode = GameMode.Undefined;
-            TeamCount = 0;
-            PlayerCount = 0;
+            teamCount = 0;
+            playerCount = 0;
             DontDestroyOnLoad(gameObject);
         }
 
-        public void SetGameInfo(GameMode mode, int teamCount, int playerCount)
+        public void SetGameInfo(GameMode gameMode, int teamCount, int playerCount)
         {
-            gameMode = mode;
-            TeamCount = teamCount;
-            PlayerCount = playerCount;
+            this.gameMode = gameMode;
+            this.teamCount = teamCount;
+            this.playerCount = playerCount;
         }
 
         public void DestroyGameInfo()

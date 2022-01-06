@@ -13,7 +13,7 @@ namespace Network {
         public NetworkVariable<GameObject> playerCharacter;
         private ulong clientId;
         public string playerName;
-        private int teamId;
+        public int teamId;
         private int playerKills;
         private int playerDeaths;
 
@@ -61,14 +61,14 @@ namespace Network {
 
         public void AddPlayerKills(ulong clientId)
         {
-            playerKills += 1;
+            //playerKills += 1;
             //gameManager.PlayerKillUpdate(clientId);
             //gamestateManager.CheckPlayerScore();
         }
 
         public void AddPlayerDeaths(ulong clientId)
         {
-            playerDeaths += 1;
+            //playerDeaths += 1;
             //gameManager.PlayerDeathUpdate(clientId);
         }
 

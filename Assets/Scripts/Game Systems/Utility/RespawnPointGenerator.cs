@@ -12,7 +12,7 @@ namespace Game_Systems.Utility
     {
         public static System.Random rnd = new System.Random();
         
-        public static  List<Vector3> generatePoints(int num, int sphereRad = 10)
+        public static List<Vector3> generatePoints(int num, float sphereRad = 10f)
         {
             List<Vector3> points = new List<Vector3>();
             if (num == 1)
@@ -34,6 +34,32 @@ namespace Game_Systems.Utility
                 points.Add(new Vector3((float)(x*newRad), (float)(y * newRad), (float)(z * newRad)));        
             }
             return points;
+        }
+
+        public static List<Vector3> GenerateTeamPoints(int playerCount, int teamCount, int teamId, int sphereRad = 10)
+        {
+            List<Vector3> points = new List<Vector3>();
+            
+            for(int i = 0; i < playerCount; i++)
+            {
+                points.Add(GeneratePointTeam(teamCount, teamId) * sphereRad);
+            }
+            return points;
+        }
+
+        public static Vector3 GeneratePointTeam(int teamCount, int teamId)
+        {
+            float pi = 2 * (float)Math.PI;
+            float divider = pi/teamCount;
+            float r, theta, gamma;
+            double x, y, z;
+            r = UnityEngine.Random.Range(0, 1f);
+            theta = UnityEngine.Random.Range((teamId-1)*divider, teamId*divider);
+            gamma = UnityEngine.Random.Range(0, pi);
+            x = r*Math.Cos(theta);
+            z = r*Math.Sin(theta);
+            y = r*Math.Cos(gamma);
+            return new Vector3((float)x, (float)y, (float)z);
         }
         
         // public static  List<Vector3> generatePoints(int num, int sphereRad = 10)

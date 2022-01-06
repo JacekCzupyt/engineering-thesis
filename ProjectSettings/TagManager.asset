@@ -8,6 +8,7 @@ TagManager:
   - ClientSide
   - PlayerManager
   - LobbyPanel
+  - GameInfo
   layers:
   - Default
   - TransparentFX
