@@ -12,7 +12,6 @@ namespace Network
 {
     public class GameStateManager : NetworkBehaviour
     {
-        // Start is called before the first frame update
         [SerializeField] GameObject sc;
         private ScoreboardManager score;
         [SerializeField] int NumOfKillsToWin;

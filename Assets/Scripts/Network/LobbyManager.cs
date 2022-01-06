@@ -12,11 +12,15 @@ using UnityEngine;
 namespace Network {
     public class LobbyManager : NetworkBehaviour
     {
-        [SerializeField] private GameObject lobbyUIObject; 
-        [SerializeField] private GameObject playerManager;
-        [SerializeField] private CountdownController countdownController;
-        [SerializeField] private int numberOfTeams = 2;
+        [Header("UI Object References")]
+        [SerializeField] private GameObject lobbyUIObject;
 
+        [Header("Prefab References")]
+        [SerializeField] private GameObject playerManagerPrefab;
+        [SerializeField] private GameObject gameInfoPrefab;
+
+        [Header("Game Settings")]
+        [SerializeField] private int numberOfTeams = 2;
         private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
         private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
@@ -28,7 +32,6 @@ namespace Network {
             {
                 lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
                 gameMode.OnValueChanged += HandleGameModeChange;      
-                SpawnPlayerManagerServerRpc(NetworkManager.Singleton.LocalClientId);
                 UpdateGameMode();
             }
         
@@ -95,13 +98,21 @@ namespace Network {
     
         [ServerRpc(RequireOwnership = false)]
         private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
-            var manager = Instantiate(playerManager);
+            var manager = Instantiate(playerManagerPrefab);
             manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
             LobbyPlayerState playerState = lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault();
             manager.GetComponent<PlayerManager>().SetPlayerData(clientId, 
                 playerState.PlayerName,
                 playerState.TeamId
                 );
+        }
+
+        private void UpdatePlayerManagers()
+        {
+            foreach(var playerManager in GetComponents<PlayerManager>())
+            {
+                Debug.Log(playerManager.GetClientId() + " - " + playerManager.playerName);
+            }
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -140,6 +151,13 @@ namespace Network {
                 }
             }
 
+            foreach(var player in lobbyPlayers)
+            {
+                SpawnPlayerManagerServerRpc(player.ClientId);
+            }
+
+            InitializeGameInfoObject();
+
             ServerGameNetPortal.Instance.StartGame();
         }
 
@@ -155,6 +173,12 @@ namespace Network {
                 if(j < (numOfTeams - 1)) j++;
                 else j = 0;
             }
+        }
+
+        private void InitializeGameInfoObject()
+        {
+            var gameInfo = Instantiate(gameInfoPrefab);
+            gameInfo.GetComponent<GameInfo>().SetGameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count); 
         }
 
         [ServerRpc(RequireOwnership = false)]

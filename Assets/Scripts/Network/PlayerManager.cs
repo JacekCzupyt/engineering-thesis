@@ -53,6 +53,7 @@ namespace Network {
             return new PlayerState(
                 clientId,
                 playerName,
+                teamId,
                 playerKills,
                 playerDeaths
             );
@@ -74,6 +75,11 @@ namespace Network {
         public ulong GetClientId()
         {
             return clientId;
+        }
+
+        public void DestoryPlayerManager()
+        {
+            Destroy(gameObject);
         }
     }
 }

@@ -5,13 +5,15 @@ namespace Network {
     {
         public ulong ClientId;
         public string PlayerName;
+        public int TeamId;
         public int PlayerKills;
         public int PlayerDeaths;
 
-        public PlayerState(ulong clientId, string playerName, int playerKills, int playerDeaths)
+        public PlayerState(ulong clientId, string playerName, int teamId, int playerKills, int playerDeaths)
         {
             ClientId = clientId;
             PlayerName = playerName;
+            TeamId = teamId;
             PlayerKills = playerKills;
             PlayerDeaths = playerDeaths;
         }
@@ -20,6 +22,7 @@ namespace Network {
         {
             serializer.Serialize(ref ClientId);
             serializer.Serialize(ref PlayerName);
+            serializer.Serialize(ref TeamId);
             serializer.Serialize(ref PlayerKills);
             serializer.Serialize(ref PlayerDeaths); 
         }
