@@ -33,11 +33,6 @@ namespace Game_Systems.Settings {
             TryLoadSettings();
         }
 
-        private void OnDestroy() {
-            if(this == Instance)
-                SaveSettings();
-        }
-
         public void TryLoadSettings() {
             string json;
             try {

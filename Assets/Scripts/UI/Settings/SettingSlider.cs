@@ -14,7 +14,7 @@ namespace UI.Settings {
 
         private float value;
 
-        private void Start() {
+        private void Awake() {
             slider = GetComponentInChildren<Slider>();
             slider.minValue = minVal;
             slider.maxValue = maxVal;
