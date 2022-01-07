@@ -11,7 +11,7 @@ namespace Game_Systems.Settings {
     public class SettingsManager : MonoBehaviour {
         
         public SettingsData data = SettingsData.Default;
-        public string settingsFilePath = "SaveData.dat";
+        public string settingsFilePath = "Settings.dat";
         
         private static SettingsManager _instance;
         
@@ -30,6 +30,11 @@ namespace Game_Systems.Settings {
             }
             DontDestroyOnLoad(this.gameObject);
             TryLoadSettings();
+        }
+
+        private void OnDestroy() {
+            if(this == Instance)
+                SaveSettings();
         }
 
         public void TryLoadSettings() {
@@ -51,12 +56,23 @@ namespace Game_Systems.Settings {
                 sd.LoadFromJson(json);
             }
             catch(Exception e) {
-                Debug.LogWarning($"Failed to interpret settings file.\n {e.Message}");
+                Debug.LogWarning($"Failed to interpret settings file.\n{e}");
                 return;
             }
 
             data = sd;
             Debug.Log("Settings file loaded successfully");
+        }
+
+        public void SaveSettings() {
+            try {
+                var json = data.ToJson();
+                File.WriteAllText(settingsFilePath, json);
+                Debug.Log("Settings file saved successfully");
+            }
+            catch (Exception e) {
+                Debug.LogWarning($"Failed to save settings.\n{e}");
+            }
         }
     }
 }

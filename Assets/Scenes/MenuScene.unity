@@ -3715,7 +3715,7 @@ MonoBehaviour:
     mouseSensitivity: 0.27
     mouseRollSensitivity: 0.5
     volume: 1
-  settingsFilePath: SaveData.dat
+  settingsFilePath: Settings.dat
 --- !u!4 &1826101497
 Transform:
   m_ObjectHideFlags: 0

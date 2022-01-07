@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game_Systems.Settings {
     [System.Serializable]
-    public struct SettingsData : IJsonSerializable {
+    public class SettingsData : IJsonSerializable {
         public float fov;
         public float mouseSensitivity;
         public float mouseRollSensitivity;
