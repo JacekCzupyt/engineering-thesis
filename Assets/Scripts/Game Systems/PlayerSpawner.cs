@@ -9,8 +9,16 @@ namespace Game_Systems
 {
     public class PlayerSpawner : MonoBehaviour
     {
+        [SerializeField] GameManager gameManager;
         private GameMode gameMode;
         private int teamCount;
+
+        private void Awake() {
+            if(NetworkManager.Singleton.IsServer)
+            {
+                gameManager.SpawnPlayerEvent += SpawnPlayer;
+            }
+        }
         private void Start() {
             var gameInfoObject = GameObject.FindGameObjectWithTag("GameInfo");
             GameInfo gameInfo = gameInfoObject.GetComponent<GameInfo>();
@@ -19,45 +27,49 @@ namespace Game_Systems
 
             if(NetworkManager.Singleton.IsServer)
             {
-                var players = GameObject.FindGameObjectsWithTag("PlayerManager");
-                List<Vector3> spawnPoints = null;
-                switch(gameMode)
-                {
-                    case GameMode.FreeForAll:
-                    spawnPoints = RespawnPointGenerator.generatePoints(10, 70);
-                    foreach (var player in players)
-                    {
-                        PlayerManager playerManager = player.GetComponent<PlayerManager>();
+                // if(gameManager)
+                // {
+                //     gameManager.SpawnPlayerEvent += SpawnPlayer;
+                // }
+                // var players = GameObject.FindGameObjectsWithTag("PlayerManager");
+                // List<Vector3> spawnPoints = null;
+                // switch(gameMode)
+                // {
+                //     case GameMode.FreeForAll:
+                //     spawnPoints = RespawnPointGenerator.generatePoints(10, 70);
+                //     foreach (var player in players)
+                //     {
+                //         PlayerManager playerManager = player.GetComponent<PlayerManager>();
 
-                        int rand = RespawnPointGenerator.rnd.Next(spawnPoints.Count);
+                //         int rand = RespawnPointGenerator.rnd.Next(spawnPoints.Count);
 
-                        playerManager.SpawnCharacter(spawnPoints[rand]);
+                //         playerManager.SpawnCharacter(spawnPoints[rand]);
 
-                        spawnPoints.RemoveAt(rand);
-                    }
-                    break;
-                    case GameMode.TeamDeathmatch:
-                    for(int i = 1; i < teamCount+1; i++)
-                    {
-                        int playerCount = GetPlayerCountPerTeam(players, i);
-                        spawnPoints = RespawnPointGenerator.GenerateTeamPoints(playerCount, teamCount, i, 70);
-                        foreach(var player in players)
-                        {
-                            PlayerManager playerManager = player.GetComponent<PlayerManager>();
-                            if(playerManager.teamId == i)
-                            {
-                                int rand = RespawnPointGenerator.rnd.Next(spawnPoints.Count);
+                //         spawnPoints.RemoveAt(rand);
+                //     }
+                //     break;
+                //     case GameMode.TeamDeathmatch:
+                //     for(int i = 1; i < teamCount+1; i++)
+                //     {
+                //         int playerCount = GetPlayerCountPerTeam(players, i);
+                //         spawnPoints = RespawnPointGenerator.GenerateTeamPoints(playerCount, teamCount, i, 70);
+                //         foreach(var player in players)
+                //         {
+                //             PlayerManager playerManager = player.GetComponent<PlayerManager>();
+                //             if(playerManager.teamId == i)
+                //             {
+                //                 int rand = RespawnPointGenerator.rnd.Next(spawnPoints.Count);
 
-                                playerManager.SpawnCharacter(spawnPoints[rand]);
+                //                 playerManager.SpawnCharacter(spawnPoints[rand]);
 
-                                spawnPoints.RemoveAt(rand);
-                            }
-                        }
-                    }
-                    break;
-                    default: 
-                        throw new InvalidOperationException("Game Mode does not exist");
-                }
+                //                 spawnPoints.RemoveAt(rand);
+                //             }
+                //         }
+                //     }
+                //     break;
+                //     default: 
+                //         throw new InvalidOperationException("Game Mode does not exist");
+                // }
             }
             // Debug.Log("Team " + 1);
             // foreach(var point in RespawnPointGenerator.GenerateTeamPoints(5, 2, 1))
@@ -71,15 +83,26 @@ namespace Game_Systems
             // }
         }
 
+        private void OnDestroy() {
+            if(NetworkManager.Singleton)
+            {
+                gameManager.SpawnPlayerEvent -= SpawnPlayer;
+            }
+        }
+
         private void OnGameStart()
         {
             
 
         }
 
-        private void SpawnPlayer()
+        private void SpawnPlayer(object sender, PlayerManager manager)
         {
-
+            if(gameMode == GameMode.FreeForAll)
+            {
+                manager.SpawnCharacter(new Vector3(0,0,0));
+                Debug.Log("Spawn Player");
+            }
         }
 
         private int GetPlayerCountPerTeam(GameObject[] players, int teamId)

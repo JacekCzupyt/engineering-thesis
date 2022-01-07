@@ -12,15 +12,20 @@ namespace Network
     {
         [SerializeField] private GameObject gamestateManagerObject;
         [SerializeField] private GameObject scoreboardUIObject;
-        public NetworkList<PlayerState> playersStates = new NetworkList<PlayerState>();
+        public NetworkDictionary<ulong, PlayerState> playerStates = new NetworkDictionary<ulong, PlayerState>();
+        public event EventHandler<PlayerManager> SpawnPlayerEvent;
         private PlayerScoreUI playerScoreUI;
+        private GameMode gameMode;
+        private int teamCount;
 
         public void Start() {
+            //Scoreboard
             playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
             playerScoreUI.gameObject.SetActive(false);
+
             if(IsClient)
             {
-                playersStates.OnListChanged += HandlePlayerStatesChange;
+                playerStates.OnDictionaryChanged += HandlePlayerStateChange;
             }
             if(IsServer)
             {
@@ -28,14 +33,17 @@ namespace Network
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
                 foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
                 {
-                    HandleClientConnected(client.ClientId);
+                    if(!playerStates.ContainsKey(client.ClientId))
+                    {
+                        HandleClientConnected(client.ClientId);
+                    }
                 }
             }
         }
 
         private void OnDestroy()
         {
-            playersStates.OnListChanged -= HandlePlayerStatesChange;
+            playerStates.OnDictionaryChanged -= HandlePlayerStateChange;
 
             if(NetworkManager.Singleton)
             {
@@ -52,26 +60,32 @@ namespace Network
                 if(playerManager.GetClientId() == clientId) break;
             }
 
-            if(!playerManager) return;
-            Debug.Log(playerManager.name + " has joined the game!");
+            if(!playerManager)
+            {
+                Debug.Log("No player manager detected for " + clientId);
+                //Client connecting after game has started logic
+                return;
+            }
+            SpawnPlayerEvent?.Invoke(this, playerManager);
+            Debug.Log("Player with id " + clientId + " has joined the game!");
             playerManager.SetGameManager(this);
-            playersStates.Add(playerManager.ToPlayerState());
+            playerStates.Add(clientId, playerManager.ToPlayerState());
         }
 
         private void HandleClientDisconnect(ulong clientId)
         {
-            for(int i = 0; i < playersStates.Count; i++)
+            if(playerStates.ContainsKey(clientId))
             {
-                if(playersStates[i].ClientId == clientId)
-                {
-                    Debug.Log(playersStates[i].PlayerName + " has left the game.");
-                    playersStates.RemoveAt(i);
-                    break;
-                }
+                Debug.Log("Player with id " + clientId + " has left the game.");  
+                playerStates.Remove(clientId);
+
+            }else
+            {
+                Debug.Log("Player with id " + clientId + ", does not exist.");
             }
         }
 
-        private void HandlePlayerStatesChange(NetworkListEvent<PlayerState> states)
+        private void HandlePlayerStateChange(NetworkDictionaryEvent<ulong, PlayerState> state)
         {
             ScoreboardUpdate();
         }
@@ -79,10 +93,23 @@ namespace Network
         private void ScoreboardUpdate()
         {
             playerScoreUI.DestroyCards();
-            for(int i = 0; i < playersStates.Count; i++)
+            int i = 0;
+            foreach(var player in playerStates)
             {
                 float position = -(30*i + 30*(i+1));
-                playerScoreUI.CreateListItem(playersStates[i], position);
+                playerScoreUI.CreateListItem(player.Value, position);
+                i++;
+            }
+        }
+
+        private void Update() {
+            if(Input.GetKeyDown(KeyCode.Tab))
+            {
+                scoreboardUIObject.SetActive(true);
+            }
+            if(Input.GetKeyUp(KeyCode.Tab))
+            {
+                scoreboardUIObject.SetActive(false);
             }
         }
     }
