@@ -3713,7 +3713,8 @@ MonoBehaviour:
   data:
     fov: 91.5
     mouseSensitivity: 0.27
-    volume: 100
+    mouseRollSensitivity: 0.5
+    volume: 1
   settingsFilePath: SaveData.dat
 --- !u!4 &1826101497
 Transform:

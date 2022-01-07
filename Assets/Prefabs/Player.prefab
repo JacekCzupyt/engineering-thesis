@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 94830311284520282}
   - component: {fileID: 3669082577767021151}
   - component: {fileID: 1804004853132312889}
+  - component: {fileID: 5310425609212808408}
   m_Layer: 7
   m_Name: Player Camera
   m_TagString: ClientSide
@@ -240,6 +241,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultFov: 60
   currentMultiplier: 1
+--- !u!114 &5310425609212808408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94830311284520281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8006bf396a6a59b4f9cd9e3bd4c3e528, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &94830311501573989
 GameObject:
   m_ObjectHideFlags: 0
@@ -3153,8 +3166,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 94830311284520283}
-  mouseSensitivity: 0.27
-  rollSensitivity: 0.5
   playerBody: {fileID: 94830311501574011}
 --- !u!114 &5971295356278041402
 MonoBehaviour:
