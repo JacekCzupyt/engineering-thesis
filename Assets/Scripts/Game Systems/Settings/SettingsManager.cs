@@ -14,6 +14,7 @@ namespace Game_Systems.Settings {
         public string settingsFilePath = "Settings.dat";
         
         private static SettingsManager _instance;
+        private SettingsData backup;
         
         public static SettingsManager Instance {
             get {
@@ -73,6 +74,14 @@ namespace Game_Systems.Settings {
             catch (Exception e) {
                 Debug.LogWarning($"Failed to save settings.\n{e}");
             }
+        }
+
+        public void BackupSettings() {
+            backup = data.Clone() as SettingsData;
+        }
+
+        public void RestoreBackup() {
+            data = backup;
         }
     }
 }

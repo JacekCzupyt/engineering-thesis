@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game_Systems.Settings {
     [System.Serializable]
-    public class SettingsData : IJsonSerializable {
+    public class SettingsData : IJsonSerializable, ICloneable {
         public float fov;
         public float mouseSensitivity;
         public float mouseRollSensitivity;
@@ -23,6 +23,11 @@ namespace Game_Systems.Settings {
             mouseRollSensitivity = 0.5f,
             volume = 1
         };
+
+        public object Clone() {
+            return new SettingsData
+                {fov = fov, mouseSensitivity = mouseSensitivity, mouseRollSensitivity = mouseRollSensitivity, volume = volume};
+        }
     }
 
     public interface IJsonSerializable {
