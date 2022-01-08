@@ -28,7 +28,7 @@ namespace NetPortals {
 
         private GameNetPortal gameNetPortal;
 
-        private string uri = "http://79.191.62.119:8080/servers";
+        private string uri = "http://79.191.52.229:8080/servers";
         private int DbId;
         
         [SerializeField] AddServerManager servert;

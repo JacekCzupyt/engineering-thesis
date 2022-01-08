@@ -44,7 +44,7 @@ namespace UI.MainMenu
         private ServerComponent[] ServerArray;
         
         // Start is called before the first frame update
-        string uri = "http://79.191.62.119:8080/servers";
+        string uri = "http://79.191.52.229:8080/servers";
 
         public void getData()
         {
