@@ -82,7 +82,7 @@ namespace UI.MainMenu
                         for (int i = 0; i < ServerArray.Length; i++)
                         {
                             GameObject g;
-                            g = Instantiate(ListItemPrefab, ItemHolder);
+                            g = Instantiate(ListItemPrefab, ItemHolder.transform);
                             ItemClassHolder o = (ItemClassHolder) g.GetComponent(typeof(ItemClassHolder));
                             o.serv = new ServerComponent(ServerArray[i].id, ServerArray[i].ip, ServerArray[i].name);                         
                             g.GetComponentInChildren<Text>().text = o.serv.name;

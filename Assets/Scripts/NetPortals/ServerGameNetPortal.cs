@@ -192,7 +192,7 @@ namespace NetPortals {
             {
                 string jsonData = "{\"name\": \"" + servert.serverName.text + "\", \"ip\": \"" + servert.ip + "\"}";
                 StartCoroutine(AddServer(uri, jsonData));
-                InvokeRepeating("Upload", 5.0f, 2.0f);
+                InvokeRepeating("Upload", 5.0f, 8.0f);
             }            
             string clientGuid = Guid.NewGuid().ToString();
             string playerName = PlayerPrefs.GetString("PlayerName", "Missing Name");
