@@ -30,7 +30,8 @@ namespace NetPortals {
 
         private string uri = "http://79.191.52.229:8080/servers";
         private int DbId;
-        
+
+        private int counter = 0;
         [SerializeField] AddServerManager servert;
         bool isAdd;
 
@@ -191,7 +192,7 @@ namespace NetPortals {
             {
                 string jsonData = "{\"name\": \"" + servert.serverName.text + "\", \"ip\": \"" + servert.ip + "\"}";
                 StartCoroutine(AddServer(uri, jsonData));
-                InvokeRepeating("Upload", 5.0f, 10.0f);
+                InvokeRepeating("Upload", 5.0f, 2.0f);
             }            
             string clientGuid = Guid.NewGuid().ToString();
             string playerName = PlayerPrefs.GetString("PlayerName", "Missing Name");
@@ -208,9 +209,9 @@ namespace NetPortals {
                 yield return www.SendWebRequest();
                 if (www.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.Log(www.error);
-                    isAdd = false;
                     CancelInvoke("Upload");
+                    Debug.Log(www.error);
+                    
                 }
                 else
                 {
@@ -232,11 +233,16 @@ namespace NetPortals {
                 if (www.result != UnityWebRequest.Result.Success)
                 {
                     Debug.Log(www.error);
-                    isAdd = false;
-                    CancelInvoke("Upload");
+                    if(counter>1)
+                    {
+                        CancelInvoke("Upload");
+                        
+                    }
+                    counter += 1;
                 }
                 else
                 {
+                    counter = 0;
                     Debug.Log("Upload complete!");
                 }
             }
