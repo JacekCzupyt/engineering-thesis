@@ -8,7 +8,31 @@ namespace UI.MainMenu {
         [SerializeField] private InputField playerNameInput;
         [SerializeField] private InputField ipAddressTextInput;
         [SerializeField] private GameObject nameErrorText;
-
+        [SerializeField] private GameObject serverList;
+        [SerializeField] private GameObject playMenu;
+        [SerializeField] private ServerListManager serv;
+        [SerializeField] private GameObject addServer;
+        public void AddServer()
+        {
+            playMenu.SetActive(false);
+            addServer.SetActive(true);
+        }
+        public void BackServerList()
+        {
+            playMenu.SetActive(true);
+            serverList.SetActive(false);
+        }
+        public void BackAddServer()
+        {
+            playMenu.SetActive(true);
+            addServer.SetActive(false);
+        }
+        public void ServerList()
+        {
+            serverList.SetActive(true);
+            playMenu.SetActive(false);
+            serv.getData();
+        }
         public void HostGame(){
             if(NameValidation()) GameNetPortal.Instance.StartHost();
         }

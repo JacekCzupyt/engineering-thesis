@@ -6,7 +6,9 @@ using MLAPI;
 using MLAPI.SceneManagement;
 using MLAPI.Spawning;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UI.MainMenu;
 
 namespace NetPortals {
     public class ServerGameNetPortal : MonoBehaviour
@@ -16,7 +18,7 @@ namespace NetPortals {
 
         public static ServerGameNetPortal Instance => instance;
         private static ServerGameNetPortal instance;
-
+        
         private Dictionary<string, PlayerData> clientData;
         private Dictionary<ulong, string> clientIdToGuid;
         private Dictionary<ulong, int> clientSceneMap;
@@ -25,6 +27,13 @@ namespace NetPortals {
         private const int MaxConnectionPayload = 1024;
 
         private GameNetPortal gameNetPortal;
+
+        private string uri = "http://79.191.52.229:8080/servers";
+        private int DbId;
+
+        private int counter = 0;
+        [SerializeField] AddServerManager servert;
+        bool isAdd;
 
         private void Awake()
         {
@@ -40,6 +49,7 @@ namespace NetPortals {
 
         private void Start()
         {
+            
             gameNetPortal = GetComponent<GameNetPortal>();
             gameNetPortal.OnNetworkReadied += HandleNetworkReadied;
 
@@ -61,6 +71,7 @@ namespace NetPortals {
 
             NetworkManager.Singleton.ConnectionApprovalCallback -= ApprovalCheck;
             NetworkManager.Singleton.OnServerStarted -= HandleServerStarted;
+            
         }
 
         public PlayerData? GetPlayerData(ulong clientId)
@@ -143,6 +154,11 @@ namespace NetPortals {
 
         private void HandleUserDisconnectRequested()
         {
+            if (isAdd)
+            {
+                CancelInvoke("Upload");               
+            }
+            StartCoroutine(DelServer());
             HandleClientDisconnect(NetworkManager.Singleton.LocalClientId);
 
             NetworkManager.Singleton.StopHost();
@@ -151,16 +167,89 @@ namespace NetPortals {
 
             SceneManager.LoadScene("MenuScene");
         }
-
+        private IEnumerator DelServer()
+        {
+            using (UnityWebRequest www = UnityWebRequest.Delete(uri + $"/{DbId}"))
+            {
+                yield return www.SendWebRequest();
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.Log(www.error);
+                }
+                else
+                {
+                    Debug.Log("Success");
+                }
+            }
+        }
+            
         private void HandleServerStarted()
         {
+            
             if (!NetworkManager.Singleton.IsHost) { return; }
-
+            isAdd = servert.IsAdd;
+            if (isAdd)
+            {
+                string jsonData = "{\"name\": \"" + servert.serverName.text + "\", \"ip\": \"" + servert.ip + "\"}";
+                StartCoroutine(AddServer(uri, jsonData));
+                InvokeRepeating("Upload", 5.0f, 8.0f);
+            }            
             string clientGuid = Guid.NewGuid().ToString();
             string playerName = PlayerPrefs.GetString("PlayerName", "Missing Name");
-
             clientData.Add(clientGuid, new PlayerData(playerName, NetworkManager.Singleton.LocalClientId));
             clientIdToGuid.Add(NetworkManager.Singleton.LocalClientId, clientGuid);
+        }
+        private IEnumerator AddServer(string uri, string data)
+        {
+            using (UnityWebRequest www = UnityWebRequest.Post(uri, ""))
+            {
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
+                www.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
+                www.SetRequestHeader("Content-Type", "application/json");
+                yield return www.SendWebRequest();
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    CancelInvoke("Upload");
+                    Debug.Log(www.error);
+                    
+                }
+                else
+                {
+                    Dictionary<string, string> hdrs = www.GetResponseHeaders();
+                    Debug.Log("Success");
+                    string[] k = hdrs["Location"].Split('/');
+                    Int32.TryParse(k[2], out DbId);
+                }
+            }
+        }
+        
+        private IEnumerator Uploadform()
+        {
+
+            using (UnityWebRequest www = UnityWebRequest.Put(uri+"/"+DbId, "{}"))
+            {
+                yield return www.SendWebRequest();
+
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.Log(www.error);
+                    if(counter>1)
+                    {
+                        CancelInvoke("Upload");
+                        
+                    }
+                    counter += 1;
+                }
+                else
+                {
+                    counter = 0;
+                    Debug.Log("Upload complete!");
+                }
+            }
+        }
+        private void Upload()
+        {
+            StartCoroutine(Uploadform());
         }
 
         private void ClearData()
