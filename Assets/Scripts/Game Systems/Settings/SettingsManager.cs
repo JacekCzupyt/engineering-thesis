@@ -1,9 +1,6 @@
 using System;
-using System.Diagnostics;
 using System.IO;
-using PlasticGui.WorkspaceWindow;
 using UnityEngine;
-using UnityEngine.Windows;
 using Debug = UnityEngine.Debug;
 using File = System.IO.File;
 
