@@ -44,6 +44,7 @@ namespace UI.MainMenu
         [SerializeField] private GameObject loadingInfo;
         private ServerComponent[] ServerArray;
         [SerializeField] private InputField nameinput;
+        [SerializeField] private GameObject isacticeServer;
         
         // Start is called before the first frame update
         string uri = "http://79.191.52.229:8080/servers";
@@ -78,7 +79,12 @@ namespace UI.MainMenu
                         break;
                     case UnityWebRequest.Result.Success:
                         ServerArray = JsonHelper.getJsonArray<ServerComponent>(webRequest.downloadHandler.text);
-                        
+                        if(ServerArray.Length==0)
+                        {
+                            isacticeServer.SetActive(true);
+                            break;
+                        }
+                        isacticeServer.SetActive(false);
                         for (int i = 0; i < ServerArray.Length; i++)
                         {
                             GameObject g;
