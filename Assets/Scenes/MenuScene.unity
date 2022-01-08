@@ -3262,6 +3262,38 @@ PrefabInstance:
       propertyPath: menu
       value: 
       objectReference: {fileID: 980122613}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 980122613}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: BackToInitialMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UI.MainMenu.MainMenuManager, Scripts
+      objectReference: {fileID: 0}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 955589094, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
+      propertyPath: closeMenu.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 3657101183736593766, guid: 6c30c743607f7ad4ca7bb8b40250df61, type: 3}
       propertyPath: m_Name
       value: SettingsMenu

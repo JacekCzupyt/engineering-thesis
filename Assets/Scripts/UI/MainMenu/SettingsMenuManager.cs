@@ -1,10 +1,11 @@
 using Game_Systems.Settings;
 using UI.Settings;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace UI.MainMenu {
     public class SettingsMenuManager : MonoBehaviour {
-        [SerializeField] private MainMenuManager menu;
+        [SerializeField] public UnityEvent closeMenu;
         
         [SerializeField] private SettingSlider fov;
         [SerializeField] private SettingSlider sensitivity;
@@ -46,12 +47,12 @@ namespace UI.MainMenu {
 
         public void AcceptButton() {
             settings.SaveSettings();
-            menu.BackToInitialMenu(1);
+            closeMenu.Invoke();
         }
 
         public void CancelButton() {
             Settings.RestoreBackup();
-            menu.BackToInitialMenu(1);
+            closeMenu.Invoke();
         }
 
         public void RevertToDefaultButton() {
