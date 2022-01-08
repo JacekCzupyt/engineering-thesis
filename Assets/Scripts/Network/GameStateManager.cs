@@ -13,7 +13,6 @@ namespace Network
     public class GameStateManager : NetworkBehaviour
     {
         [SerializeField] GameObject sc;
-        private ScoreboardManager score;
         [SerializeField] int NumOfKillsToWin;
         [SerializeField] GameObject EndGameUIobject;
 
@@ -22,7 +21,6 @@ namespace Network
 
         void Start()
         {
-            score = sc.GetComponent<ScoreboardManager>();
             can = EndGameUIobject.GetComponentInChildren<Canvas>();
             winMessage = can.GetComponentInChildren<Text>();
             EndGameUIobject.SetActive(false);

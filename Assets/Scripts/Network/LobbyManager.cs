@@ -107,14 +107,6 @@ namespace Network {
                 );
         }
 
-        private void UpdatePlayerManagers()
-        {
-            foreach(var playerManager in GetComponents<PlayerManager>())
-            {
-                Debug.Log(playerManager.GetClientId() + " - " + playerManager.playerName);
-            }
-        }
-
         [ServerRpc(RequireOwnership = false)]
         private void ToggleReadyServerRpc(ServerRpcParams serverRpcParams = default)
         {

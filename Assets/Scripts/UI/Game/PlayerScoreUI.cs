@@ -6,7 +6,6 @@ namespace UI.Game {
     {
         [Header("References")]
         [SerializeField] private GameObject scoreListViewObject;
-        [SerializeField] private GameObject scoreboardManager;
         private ListView.ListView scoreListView;
 
         private void Awake()
