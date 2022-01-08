@@ -48,6 +48,6 @@ public class PlayerGameManager : MonoBehaviour
 
     public GameMode GetGameMode()
     {
-        return gameInfo.GameMode;
+        return gameInfo.gameMode;
     }
 }

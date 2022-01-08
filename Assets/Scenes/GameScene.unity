@@ -9514,6 +9514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreboardUIObject: {fileID: 38413747}
+  playerSpawnerObject: {fileID: 1726714043}
 --- !u!4 &1501253577
 Transform:
   m_ObjectHideFlags: 0

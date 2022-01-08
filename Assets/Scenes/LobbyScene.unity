@@ -2152,7 +2152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lobbyUIObject: {fileID: 2031190816}
   playerManagerPrefab: {fileID: 4405543599418297458, guid: d2fd60207659abc4e892e442f59c62d4, type: 3}
-  gameInfoPrefab: {fileID: 82579516683017229, guid: 60325c0ccdd4c794784ad11a9bdf4879, type: 3}
+  gameInfoManagerPrefab: {fileID: 1694593559336902949, guid: 60325c0ccdd4c794784ad11a9bdf4879, type: 3}
   numberOfTeams: 2
 --- !u!114 &1296984202
 MonoBehaviour:

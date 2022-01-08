@@ -13,13 +13,6 @@ namespace Game_Systems
         private GameMode gameMode;
         private int teamCount;
 
-        private void Awake() {
-            if(NetworkManager.Singleton.IsServer)
-            {
-                gameManager.SpawnPlayerEvent += SpawnPlayer;
-                gameManager.SendGameInfoEvent += ReceiveGameInfo;
-            }
-        }
         private void Start() {
             if(NetworkManager.Singleton.IsServer)
             {
@@ -79,26 +72,19 @@ namespace Game_Systems
             // }
         }
 
-        private void OnDestroy() {
-            if(NetworkManager.Singleton)
-            {
-                gameManager.SpawnPlayerEvent -= SpawnPlayer;
-            }
-        }
-
         private void OnGameStart()
         {
             
 
         }
 
-        private void ReceiveGameInfo(object sender, GameInfo gameInfo)
+        public void ReceiveGameInfo(GameInfo gameInfo)
         {
-            gameMode = gameInfo.GameMode;
-            teamCount = gameInfo.TeamCount;
+            gameMode = gameInfo.gameMode;
+            teamCount = gameInfo.teamCount;
         }
 
-        private void SpawnPlayer(object sender, PlayerManager manager)
+        public void SpawnPlayer(PlayerManager manager)
         {
             GameObject player = null;
             List<Vector3> pos = RespawnPointGenerator.generatePoints(10, 70);

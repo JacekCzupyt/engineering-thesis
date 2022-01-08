@@ -17,7 +17,7 @@ namespace Network {
 
         [Header("Prefab References")]
         [SerializeField] private GameObject playerManagerPrefab;
-        [SerializeField] private GameObject gameInfoPrefab;
+        [SerializeField] private GameObject gameInfoManagerPrefab;
 
         [Header("Game Settings")]
         [SerializeField] private int numberOfTeams = 2;
@@ -169,8 +169,8 @@ namespace Network {
 
         private void InitializeGameInfoObject()
         {
-            var gameInfo = Instantiate(gameInfoPrefab);
-            gameInfo.GetComponent<GameInfo>().SetGameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count); 
+            var gameInfo = Instantiate(gameInfoManagerPrefab);
+            gameInfo.GetComponent<GameInfoManager>().SetGameInfo(new GameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count)); 
         }
 
         [ServerRpc(RequireOwnership = false)]
