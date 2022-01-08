@@ -1016,7 +1016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sc: {fileID: 951744429}
-  NumOfKillsToWin: 1
+  NumOfKillsToWin: 4
   EndGameUIobject: {fileID: 342768522}
 --- !u!114 &182249694
 MonoBehaviour:
