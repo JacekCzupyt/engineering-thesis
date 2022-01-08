@@ -14,6 +14,7 @@ namespace UI.MainMenu
         public int id;
         public string ip;
         public string name;
+        
         public ServerComponent(int _id,string _ip,string _name)
         {
             id = _id;
@@ -42,6 +43,7 @@ namespace UI.MainMenu
         [SerializeField] private Transform ItemHolder;
         [SerializeField] private GameObject loadingInfo;
         private ServerComponent[] ServerArray;
+        [SerializeField] private InputField nameinput;
         
         // Start is called before the first frame update
         string uri = "http://79.191.52.229:8080/servers";
@@ -92,6 +94,7 @@ namespace UI.MainMenu
         }
         private void JoinClick(string ip)
         {
+            PlayerPrefs.SetString("PlayerName", nameinput.text);
             ClientGameNetPortal.Instance.SetConnectAddress(ip);
             ClientGameNetPortal.Instance.StartClient();
         }
