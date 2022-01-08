@@ -8,9 +8,6 @@ using UnityEngine.Serialization;
 namespace Network {
     public class PlayerManager : NetworkBehaviour {
         [FormerlySerializedAs("playerCharacter")] [SerializeField] private GameObject playerCharacterPrefab;
-        private GameManager gameManager;
-        private GameStateManager gamestateManager;
-        public NetworkVariable<GameObject> playerCharacter;
         private ulong clientId;
         public string playerName;
         public int teamId;
@@ -23,20 +20,10 @@ namespace Network {
 
             var character = GameObject.Instantiate(playerCharacterPrefab, pos, Quaternion.identity);
             character.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, null, true);
-            playerCharacter.Value = character;
-
             //HUD Score System, not scoreboard
             character.GetComponent<ScoreSystem>().AssignPlayerManager(this);
+            
             return character;
-        }
-
-        public void SetGameManager(GameManager manager)
-        {
-            gameManager = manager;
-        }
-        public void SetGameStateManager(GameStateManager manager)
-        {
-            gamestateManager = manager;
         }
 
         public void SetPlayerData(ulong clientId, string playerName, int teamId)
@@ -57,19 +44,6 @@ namespace Network {
                 playerKills,
                 playerDeaths
             );
-        }
-
-        public void AddPlayerKills(ulong clientId)
-        {
-            //playerKills += 1;
-            //gameManager.PlayerKillUpdate(clientId);
-            //gamestateManager.CheckPlayerScore();
-        }
-
-        public void AddPlayerDeaths(ulong clientId)
-        {
-            //playerDeaths += 1;
-            //gameManager.PlayerDeathUpdate(clientId);
         }
 
         public ulong GetClientId()

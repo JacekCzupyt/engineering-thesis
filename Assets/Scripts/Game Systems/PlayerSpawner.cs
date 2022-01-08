@@ -17,14 +17,10 @@ namespace Game_Systems
             if(NetworkManager.Singleton.IsServer)
             {
                 gameManager.SpawnPlayerEvent += SpawnPlayer;
+                gameManager.SendGameInfoEvent += ReceiveGameInfo;
             }
         }
         private void Start() {
-            var gameInfoObject = GameObject.FindGameObjectWithTag("GameInfo");
-            GameInfo gameInfo = gameInfoObject.GetComponent<GameInfo>();
-            gameMode = gameInfo.GameMode;
-            teamCount = gameInfo.TeamCount;
-
             if(NetworkManager.Singleton.IsServer)
             {
                 // if(gameManager)
@@ -96,13 +92,28 @@ namespace Game_Systems
 
         }
 
+        private void ReceiveGameInfo(object sender, GameInfo gameInfo)
+        {
+            gameMode = gameInfo.GameMode;
+            teamCount = gameInfo.TeamCount;
+        }
+
         private void SpawnPlayer(object sender, PlayerManager manager)
         {
+            GameObject player = null;
+            List<Vector3> pos = RespawnPointGenerator.generatePoints(10, 70);
             if(gameMode == GameMode.FreeForAll)
             {
-                manager.SpawnCharacter(new Vector3(0,0,0));
-                Debug.Log("Spawn Player");
+                player = manager.SpawnCharacter(new Vector3(0,0,0));
+
+            }else if(gameMode == GameMode.TeamDeathmatch)
+            {
+                int rand = RespawnPointGenerator.rnd.Next(pos.Count);
+                player = manager.SpawnCharacter(pos[rand]);
+                pos.RemoveAt(rand);
             }
+            player?.GetComponent<PlayerGameManager>().SetGameManager(gameManager);  
+            player?.GetComponent<PlayerGameManager>().SetPlayerState(manager.ToPlayerState());              
         }
 
         private int GetPlayerCountPerTeam(GameObject[] players, int teamId)

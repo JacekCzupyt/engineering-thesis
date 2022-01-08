@@ -14,8 +14,9 @@ namespace Network
         [SerializeField] private GameObject scoreboardUIObject;
         public NetworkDictionary<ulong, PlayerState> playerStates = new NetworkDictionary<ulong, PlayerState>();
         public event EventHandler<PlayerManager> SpawnPlayerEvent;
+        public event EventHandler<GameInfo> SendGameInfoEvent;
         private PlayerScoreUI playerScoreUI;
-        private GameMode gameMode;
+        private GameInfo gameInfo;
         private int teamCount;
 
         public void Start() {
@@ -23,12 +24,18 @@ namespace Network
             playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
             playerScoreUI.gameObject.SetActive(false);
 
+            //Game Info
+            var gameInfoObject = GameObject.FindGameObjectWithTag("GameInfo");
+            gameInfo = gameInfoObject.GetComponent<GameInfo>();
+
             if(IsClient)
             {
                 playerStates.OnDictionaryChanged += HandlePlayerStateChange;
             }
             if(IsServer)
             {
+                SendGameInfoEvent?.Invoke(this, gameInfo);
+
                 NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
                 foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
@@ -68,8 +75,8 @@ namespace Network
             }
             SpawnPlayerEvent?.Invoke(this, playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");
-            playerManager.SetGameManager(this);
             playerStates.Add(clientId, playerManager.ToPlayerState());
+            playerManager.DestoryPlayerManager();
         }
 
         private void HandleClientDisconnect(ulong clientId)
@@ -88,6 +95,38 @@ namespace Network
         private void HandlePlayerStateChange(NetworkDictionaryEvent<ulong, PlayerState> state)
         {
             ScoreboardUpdate();
+        }
+
+        private void PlayerKill(ulong clientId)
+        {
+            if(!IsServer)
+                throw new InvalidOperationException("This method can only be run on the server");
+
+            if(playerStates.ContainsKey(clientId))
+            {
+                playerStates[clientId] = new PlayerState(
+                    playerStates[clientId].ClientId,
+                    playerStates[clientId].PlayerName,
+                    playerStates[clientId].TeamId,
+                    playerStates[clientId].PlayerKills + 1,
+                    playerStates[clientId].PlayerDeaths
+                );
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void PlayerDeathServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
+        {
+            if(playerStates.ContainsKey(clientId))
+            {
+                playerStates[clientId] = new PlayerState(
+                    playerStates[clientId].ClientId,
+                    playerStates[clientId].PlayerName,
+                    playerStates[clientId].TeamId,
+                    playerStates[clientId].PlayerKills,
+                    playerStates[clientId].PlayerDeaths + 1
+                );
+            }
         }
 
         private void ScoreboardUpdate()
@@ -111,6 +150,21 @@ namespace Network
             {
                 scoreboardUIObject.SetActive(false);
             }
+        }
+
+        public void PlayerKillUpdate(ulong clientId)
+        {
+            PlayerKill(clientId);
+        }
+
+        public void PlayerDeathUpdate(ulong clientId)
+        {
+            PlayerDeathServerRpc(clientId);
+        }
+
+        public GameInfo GetGameInfo()
+        {
+            return gameInfo;
         }
     }
 }
