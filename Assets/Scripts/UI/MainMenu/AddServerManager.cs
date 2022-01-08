@@ -22,7 +22,7 @@ namespace UI.MainMenu
         [SerializeField] private GameObject pleaseWaitMessage;
         [SerializeField] private GameObject addingPanel;
 
-        string uri = "http://79.191.52.229:8080/servers";
+        //string uri = "http://79.191.52.229:8080/servers";
         public string ip;
         public bool IsAdd=false;
         private void Start()
