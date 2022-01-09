@@ -15,6 +15,7 @@ namespace Network
         [SerializeField] private GameObject scoreboardUIObject;
         [SerializeField] private GameObject playerSpawnerObject;
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
+        private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
         private PlayerScoreUI playerScoreUI;
         private GameObject gameInfoObject;
         private int teamCount;
@@ -27,14 +28,17 @@ namespace Network
             if(IsClient)
             {
                 playerStates.OnListChanged += HandlePlayerStateChange;
+                gameInfo.OnValueChanged += HandleGameInfoChange;
+                UpdateGameMode();
             }
             if(IsServer)
             {
                 //Game Info
                 gameInfoObject = GameObject.FindGameObjectWithTag("GameInfoManager");
+                gameInfo.Value = gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo();
 
                 playerSpawnerObject.GetComponent<PlayerSpawner>()
-                .ReceiveGameInfo(gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo());
+                .ReceiveGameInfo(gameInfo.Value);
 
                 NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
@@ -49,6 +53,7 @@ namespace Network
         private void OnDestroy()
         {
             playerStates.OnListChanged -= HandlePlayerStateChange;
+            gameInfo.OnValueChanged -= HandleGameInfoChange;
 
             if(NetworkManager.Singleton)
             {
@@ -92,6 +97,11 @@ namespace Network
         private void HandlePlayerStateChange(NetworkListEvent<PlayerState> state)
         {
             ScoreboardUpdate();
+        }
+
+        private void HandleGameInfoChange(GameInfo prevInfo, GameInfo newInfo)
+        {
+            UpdateGameMode();
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -143,6 +153,11 @@ namespace Network
                 playerScoreUI.CreateListItem(player, position);
                 i++;
             }
+        }
+
+        private void UpdateGameMode()
+        {
+            playerScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
         }
 
         private void Update() {
