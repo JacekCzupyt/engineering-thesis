@@ -8,6 +8,7 @@ namespace Game_Systems.Settings {
         public float mouseSensitivity;
         public float mouseRollSensitivity;
         public float volume;
+        public bool aimToggle;
 
         public string ToJson() {
             return JsonUtility.ToJson(this);
@@ -21,12 +22,18 @@ namespace Game_Systems.Settings {
             fov = 91.5f,
             mouseSensitivity = 0.27f,
             mouseRollSensitivity = 0.5f,
-            volume = 1
+            volume = 1,
+            aimToggle = false
         };
 
         public object Clone() {
-            return new SettingsData
-                {fov = fov, mouseSensitivity = mouseSensitivity, mouseRollSensitivity = mouseRollSensitivity, volume = volume};
+            return new SettingsData {
+                fov = fov, 
+                mouseSensitivity = mouseSensitivity, 
+                mouseRollSensitivity = mouseRollSensitivity, 
+                volume = volume,
+                aimToggle = aimToggle
+            };
         }
     }
 

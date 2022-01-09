@@ -36,12 +36,6 @@ namespace UI.Settings {
 
         private float value;
 
-        // private void Awake() {
-        //     
-        //
-        //     
-        // }
-
         private void InputValueChanged(string s) {
             try {
                 var val = float.Parse(s, CultureInfo.InvariantCulture);

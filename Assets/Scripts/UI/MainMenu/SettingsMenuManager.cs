@@ -11,6 +11,7 @@ namespace UI.MainMenu {
         [SerializeField] private SettingSlider sensitivity;
         [SerializeField] private SettingSlider roll;
         [SerializeField] private SettingSlider volume;
+        [SerializeField] private SettingsCheckbox aimToggle;
 
         private SettingsManager settings;
         private SettingsManager Settings {
@@ -30,6 +31,7 @@ namespace UI.MainMenu {
             sensitivity.ValueChanged += v => Settings.data.mouseSensitivity = v;
             roll.ValueChanged += v => Settings.data.mouseRollSensitivity = v;
             volume.ValueChanged += v => Settings.data.volume = v / 100;
+            aimToggle.ValueChanged += v => settings.data.aimToggle = v;
         }
 
         private void OnEnable() {
@@ -43,6 +45,7 @@ namespace UI.MainMenu {
             sensitivity.Init(Settings.data.mouseSensitivity);
             roll.Init(Settings.data.mouseRollSensitivity);
             volume.Init(Settings.data.volume * 100);
+            aimToggle.Init(settings.data.aimToggle);
         }
 
         public void AcceptButton() {
