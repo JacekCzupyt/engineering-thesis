@@ -1,3 +1,4 @@
+using Game_Systems.Settings;
 using Input_Systems;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,8 +6,7 @@ using UnityEngine.InputSystem;
 namespace Game_Systems.Equipment.Weapons {
     [RequireComponent(typeof(HitscanWeapon))]
     public class WeaponZoom : MonoBehaviour {
-        //TODO: Should be moved to a dedicated settings class
-        [SerializeField] private bool toggleZoom;
+        private bool ToggleZoom => settings.data.aimToggle;
         
         [SerializeField] private CameraZoom cam;
         [SerializeField] private float zoomMultiplier;
@@ -18,11 +18,13 @@ namespace Game_Systems.Equipment.Weapons {
         private CharacterInputManager input;
 
         private HitscanWeapon weapon;
+        private SettingsManager settings;
         
         private void Start() {
             weapon = GetComponent<HitscanWeapon>();
             input = CharacterInputManager.Instance;
             input.ToggleZoomIn += ZoomInToggleCallback;
+            settings = SettingsManager.Instance;
         }
 
         private void Update() {
@@ -48,14 +50,14 @@ namespace Game_Systems.Equipment.Weapons {
         }
 
         private void ZoomInHold() {
-            if (toggleZoom)
+            if (ToggleZoom)
                 return;
 
             currentZoomInState = input.HoldZoomIn.phase == InputActionPhase.Started;
         }
 
         private void ZoomInToggleCallback() {
-            if (!toggleZoom)
+            if (!ToggleZoom)
                 return;
 
             currentZoomInState = !currentZoomInState;
