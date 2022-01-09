@@ -6,7 +6,6 @@ namespace UI.Game {
     {
         [Header("References")]
         [SerializeField] private GameObject scoreListViewObject;
-        [SerializeField] private GameObject scoreboardManager;
         private ListView.ListView scoreListView;
 
         private void Awake()
@@ -19,7 +18,7 @@ namespace UI.Game {
             scoreListView = scoreListViewObject.GetComponent<ListView.ListView>();
         }
 
-        public void CreateListItem(ScorePlayerState state, float position)
+        public void CreateListItem(PlayerState state, float position)
         {
             GameObject obj = Instantiate(scoreListView.prefab, new Vector3(0, position, 0), 
                 Quaternion.identity) as GameObject;

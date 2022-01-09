@@ -12,9 +12,7 @@ namespace Network
 {
     public class GameStateManager : NetworkBehaviour
     {
-        // Start is called before the first frame update
         [SerializeField] GameObject sc;
-        private ScoreboardManager score;
         [SerializeField] int NumOfKillsToWin;
         [SerializeField] GameObject EndGameUIobject;
 
@@ -23,7 +21,6 @@ namespace Network
 
         void Start()
         {
-            score = sc.GetComponent<ScoreboardManager>();
             can = EndGameUIobject.GetComponentInChildren<Canvas>();
             winMessage = can.GetComponentInChildren<Text>();
             EndGameUIobject.SetActive(false);
@@ -34,13 +31,13 @@ namespace Network
             if(!IsServer)
                 throw new InvalidOperationException("This method can only be run on the server");
 
-            foreach (var player in score.scoreboardPlayers)
-            {
-                if (player.PlayerKills >= NumOfKillsToWin) {
-                    GameEndedClientRpc(player.PlayerName);
-                    break;
-                }
-            }
+            // foreach (var player in score.scoreboardPlayers)
+            // {
+            //     if (player.PlayerKills >= NumOfKillsToWin) {
+            //         GameEndedClientRpc(player.PlayerName);
+            //         break;
+            //     }
+            // }
         }
 
         [ClientRpc]
