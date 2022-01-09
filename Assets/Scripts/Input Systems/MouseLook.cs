@@ -1,24 +1,25 @@
+using Game_Systems.Settings;
 using UnityEngine;
+using Utility;
 
 namespace Input_Systems {
     public class MouseLook : MonoBehaviour {
         [SerializeField] private Camera cam;
-        [SerializeField] public float mouseSensitivity = 5f;
-        [SerializeField] public float rollSensitivity = 0.5f;
         public Transform playerBody;
-        private const float DefaultCamFov = 60f;
+        private SettingsManager settings;
 
         private CharacterInputManager input;
         private void Start(){
             Cursor.lockState = CursorLockMode.Locked;
             input = CharacterInputManager.Instance;
+            settings = SettingsManager.Instance;
         }
         private void Update() {
-            var sensitivity = (mouseSensitivity * cam.fieldOfView / DefaultCamFov);
+            var sensitivity = (settings.data.mouseSensitivity * cam.GetHorizontalFov() / settings.data.fov);
 
             if (input.GetRollMod()) {
                 //roll
-                playerBody.Rotate(Vector3.back, (input.GetMouseDelta() * rollSensitivity).x);
+                playerBody.Rotate(Vector3.back, (input.GetMouseDelta() * settings.data.mouseRollSensitivity).x);
             }
             else {
                 //yaw

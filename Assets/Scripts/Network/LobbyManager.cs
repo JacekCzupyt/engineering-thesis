@@ -1,10 +1,9 @@
-using System;
 using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Messaging;
-using MLAPI.NetworkVariable.Collections;
 using MLAPI.NetworkVariable;
+using MLAPI.NetworkVariable.Collections;
 using NetPortals;
 using UI.Lobby;
 using UnityEngine;
