@@ -70,6 +70,7 @@ namespace NetPortals {
             if (NetworkManager.Singleton == null) { return; }
 
             NetworkManager.Singleton.ConnectionApprovalCallback -= ApprovalCheck;
+
             NetworkManager.Singleton.OnServerStarted -= HandleServerStarted;
             
         }

@@ -45,7 +45,8 @@ namespace UI.MainMenu
         private ServerComponent[] ServerArray;
         [SerializeField] private InputField nameinput;
         [SerializeField] private GameObject isacticeServer;
-        
+        [SerializeField] private GameObject nameError;
+        [SerializeField] private GameObject serverBrowserError;
         // Start is called before the first frame update
         string uri = "http://79.191.52.229:8080/servers";
 
@@ -62,6 +63,8 @@ namespace UI.MainMenu
         {
             using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
             {
+                serverBrowserError.SetActive(false);
+                isacticeServer.SetActive(false);
                 loadingInfo.SetActive(true);
                 yield return webRequest.SendWebRequest();
                 loadingInfo.SetActive(false);
@@ -71,6 +74,8 @@ namespace UI.MainMenu
                 switch (webRequest.result)
                 {
                     case UnityWebRequest.Result.ConnectionError:
+                        serverBrowserError.SetActive(true);
+                        break;
                     case UnityWebRequest.Result.DataProcessingError:
                         Debug.LogError(pages[page] + ": Error: " + webRequest.error);
                         break;
@@ -84,7 +89,6 @@ namespace UI.MainMenu
                             isacticeServer.SetActive(true);
                             break;
                         }
-                        isacticeServer.SetActive(false);
                         for (int i = 0; i < ServerArray.Length; i++)
                         {
                             GameObject g;
@@ -100,9 +104,22 @@ namespace UI.MainMenu
         }
         private void JoinClick(string ip)
         {
-            PlayerPrefs.SetString("PlayerName", nameinput.text);
-            ClientGameNetPortal.Instance.SetConnectAddress(ip);
-            ClientGameNetPortal.Instance.StartClient();
+            if (NameValidation())
+            {
+                PlayerPrefs.SetString("PlayerName", nameinput.text);
+                ClientGameNetPortal.Instance.SetConnectAddress(ip);
+                ClientGameNetPortal.Instance.StartClient();
+            }
+        }
+        private bool NameValidation()
+        {
+            if (nameinput.text.Length <= 0)
+            {
+                nameError.SetActive(true);
+                return false;
+            }
+            nameError.SetActive(false);
+            return true;
         }
     }
 }
