@@ -18,7 +18,6 @@ namespace Network
         private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
         private PlayerScoreUI playerScoreUI;
         private GameObject gameInfoObject;
-        private int teamCount;
 
         public void Start() {
             //Scoreboard
@@ -30,6 +29,7 @@ namespace Network
                 playerStates.OnListChanged += HandlePlayerStateChange;
                 gameInfo.OnValueChanged += HandleGameInfoChange;
                 UpdateGameMode();
+                ScoreboardUpdate();
             }
             if(IsServer)
             {
@@ -146,13 +146,34 @@ namespace Network
         private void ScoreboardUpdate()
         {
             playerScoreUI.DestroyCards();
-            int i = 0;
-            foreach(var player in playerStates)
+            
+            if(gameInfo.Value.gameMode == GameMode.FreeForAll)
             {
-                float position = -(30*i + 30*(i+1));
-                playerScoreUI.CreateListItem(player, position);
-                i++;
+                int i = 0;
+                foreach(var player in playerStates)
+                {
+                    float position = -(30*i + 30*(i+1));
+                    playerScoreUI.CreateListItem(player, position);
+                    i++;
+                }
+            }else if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            {
+                for(int i = 1; i < gameInfo.Value.teamCount + 1; i++)
+                {
+                    int k = 0;
+                    int teamSeparator = 600/gameInfo.Value.teamCount;
+                    foreach(var player in playerStates)
+                    {
+                        if(player.TeamId == i)
+                        {
+                            float position = -(30*k + 20*(k+1) + (i-1) * teamSeparator);
+                            playerScoreUI.CreateListItem(player, position);
+                            k++;
+                        }
+                    }
+                }
             }
+
         }
 
         private void UpdateGameMode()
@@ -161,6 +182,7 @@ namespace Network
         }
 
         private void Update() {
+            
             if(Input.GetKeyDown(KeyCode.Tab))
             {
                 scoreboardUIObject.SetActive(true);

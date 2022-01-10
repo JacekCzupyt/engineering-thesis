@@ -27,6 +27,7 @@ namespace UI.Game {
 
             ScoreListItem item = new ScoreListItem(obj, state);
             scoreListView.AddItem(item);
+            
         }
 
         public void DestroyCards()
