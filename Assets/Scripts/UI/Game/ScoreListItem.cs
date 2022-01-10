@@ -20,6 +20,12 @@ namespace UI.Game {
             ListitemObject.transform.GetChild(2).gameObject.GetComponent<Text>().text = state.PlayerDeaths.ToString();
         }
 
+        public void HighlightPlayerName()
+        {
+            ListitemObject.transform.GetChild(0).gameObject.GetComponent<Text>().color = new Color(255, 150, 0, 255);
+            ListitemObject.transform.GetChild(0).gameObject.GetComponent<Text>().fontStyle = FontStyle.Bold;
+        }
+
         public Color GetTeamColor(int teamNumber){
             Color c = Color.grey;
             switch(teamNumber){

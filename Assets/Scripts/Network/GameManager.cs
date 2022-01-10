@@ -153,7 +153,8 @@ namespace Network
                 foreach(var player in playerStates)
                 {
                     float position = -(30*i + 30*(i+1));
-                    playerScoreUI.CreateListItem(player, position);
+                    playerScoreUI.CreateListItem(player, position,
+                    NetworkManager.Singleton.LocalClientId == player.ClientId);
                     i++;
                 }
             }else if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
@@ -167,13 +168,14 @@ namespace Network
                         if(player.TeamId == i)
                         {
                             float position = -(30*k + 20*(k+1) + (i-1) * teamSeparator);
-                            playerScoreUI.CreateListItem(player, position);
+                            playerScoreUI.CreateListItem(player, position,
+                            NetworkManager.Singleton.LocalClientId == player.ClientId);
+                            
                             k++;
                         }
                     }
                 }
             }
-
         }
 
         private void UpdateGameMode()
