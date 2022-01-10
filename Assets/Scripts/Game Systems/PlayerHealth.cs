@@ -31,23 +31,17 @@ namespace Game_Systems {
                 respawnPlayer.Respawn();
             }
         }
-        public void takeDemage(int damage, ulong player)
+        public void TakeDamage(int damage, ulong player)
         {
             Debug.Log($"Apply {damage} Damage");
+
             health.Value -= damage; 
+
             if(health.Value<=0)
             {
-                var shooterPlayerManager = NetworkManager.Singleton.ConnectedClients[player].PlayerObject
-                    .GetComponent<PlayerManager>();
-                shooter = shooterPlayerManager.playerCharacter.Value;
-                score = shooter.GetComponentInChildren<ScoreSystem>();
-                score.AddPoint();
-
-                var receiverPlayerManager = NetworkManager.Singleton.ConnectedClients[OwnerClientId]
-                    .PlayerObject.GetComponent<PlayerManager>();
-
-                receiverPlayerManager.AddPlayerDeaths(OwnerClientId);
-                shooterPlayerManager.AddPlayerKills(player);  
+                var playerManager = gameObject.GetComponentInParent<PlayerGameManager>();
+                playerManager.AddPlayerDeath(OwnerClientId);
+                playerManager.AddPlayerKill(player);  
             }
         }
         public void takeDemage(int damage)

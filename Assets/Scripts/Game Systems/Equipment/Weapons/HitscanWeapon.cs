@@ -209,9 +209,20 @@ namespace Game_Systems.Equipment.Weapons {
 
                 //TODO: validate hit
 
+                var hitPlayerManager = playerHit.GetComponent<PlayerGameManager>();
+                var playerManager = player.GetComponent<PlayerGameManager>();
+
                 var enemyHealth = playerHit.transform.GetComponentInChildren<PlayerHealth>();
-                if (enemyHealth != null) {
-                    enemyHealth.takeDemage(damage, OwnerClientId);
+
+                if(enemyHealth)
+                {
+                    if(playerManager.GetGameMode() == Network.GameMode.TeamDeathmatch &&
+                    hitPlayerManager.GetTeamId() == playerManager.GetTeamId())
+                    {
+                            Debug.Log("Friendly fire");
+                    }else{
+                        enemyHealth.TakeDamage(damage, OwnerClientId);
+                    }
                 }
             }
 
