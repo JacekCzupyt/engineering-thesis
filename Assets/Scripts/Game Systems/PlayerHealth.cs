@@ -12,11 +12,18 @@ namespace Game_Systems {
         );
 
         private PlayerRespawn respawnPlayer;
+        private PlayerScore playerScore;
+        private PlayerGameManager playerGameManager;
         
         GameObject shooter;
         ScoreSystem score;
 
         [SerializeField] private HealthBar bar;
+
+        private void Awake() {
+            playerScore = GetComponentInParent<PlayerScore>();
+            playerGameManager = GetComponentInParent<PlayerGameManager>();
+        }
 
         private void Start() {
             respawnPlayer = GetComponent<PlayerRespawn>();
@@ -39,9 +46,10 @@ namespace Game_Systems {
 
             if(health.Value<=0)
             {
-                var playerManager = gameObject.GetComponentInParent<PlayerGameManager>();
-                playerManager.AddPlayerDeath(OwnerClientId);
-                playerManager.AddPlayerKill(player);  
+                playerGameManager.AddPlayerKill(player);
+                playerGameManager.AddPlayerDeath(OwnerClientId);  
+
+                playerScore.SetDeathCounter(1);
             }
         }
         public void takeDemage(int damage)

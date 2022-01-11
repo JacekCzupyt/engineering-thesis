@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using Network;
 
 public class PlayerGameManager : MonoBehaviour
@@ -9,11 +10,12 @@ public class PlayerGameManager : MonoBehaviour
     private string playerName;
     private int teamId;
     private int playerKills;
-    private int playerDeaths;
+    public int playerDeaths;
     private GameManager gameManager;
+    private PlayerScore playerScore;
     private GameInfo gameInfo;
     private void Awake() {
-
+        playerScore = GetComponent<PlayerScore>();
     }
 
     public void SetPlayerState(PlayerState playerState)
@@ -44,6 +46,12 @@ public class PlayerGameManager : MonoBehaviour
     public void AddPlayerKill(ulong playerId)
     {
         gameManager.PlayerKillUpdate(playerId);
+    }
+
+    public void UpdatePlayerDeathCounter()
+    {
+        playerDeaths++;
+        playerScore.SetDeathCounter(playerDeaths);
     }
 
     public GameMode GetGameMode()
