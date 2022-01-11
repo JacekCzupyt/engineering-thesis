@@ -5,51 +5,69 @@ using UnityEngine.UI;
 namespace UI.MainMenu {
     public class PlayMenuManager : MonoBehaviour
     {
+        [Header("Play Menu Panel References")]
+        [SerializeField] private GameObject joinServerMenu;
+        [SerializeField] private GameObject createServerMenu;
+        [SerializeField] private GameObject joinGameMenu;
+        [SerializeField] private GameObject playMenu;
+        [Header("Other UI References")]
         [SerializeField] private InputField playerNameInput;
         [SerializeField] private InputField ipAddressTextInput;
         [SerializeField] private GameObject nameErrorText;
-        [SerializeField] private GameObject serverList;
-        [SerializeField] private GameObject playMenu;
+        [Header("Server List References")]
         [SerializeField] private ServerListManager serv;
-        [SerializeField] private GameObject addServer;
-        public void AddServer()
+
+        public void HostPrivateGame()
         {
-            playMenu.SetActive(false);
-            addServer.SetActive(true);
-        }
-        public void BackServerList()
-        {
-            playMenu.SetActive(true);
-            serverList.SetActive(false);
-        }
-        public void BackAddServer()
-        {
-            playMenu.SetActive(true);
-            addServer.SetActive(false);
-        }
-        public void ServerList()
-        {
-            serverList.SetActive(true);
-            playMenu.SetActive(false);
-            serv.getData();
-        }
-        public void HostGame(){
-            if(NameValidation()) GameNetPortal.Instance.StartHost();
+            //Currently no additional host menus
+            if(!NameValidation()) return;
+            GameNetPortal.Instance.StartHost();
         }
 
-        public void ClientConnect(){
-            if(NameValidation()) 
+        public void JoinPrivateGame()
+        {
+            if(!NameValidation()) return;
+            SwitchMenus(playMenu, joinGameMenu);
+        }
+
+        public void JoinPrivateGameConnect()
+        {
+            //Ip address validation
+            ClientGameNetPortal.Instance.SetConnectAddress(ipAddressTextInput.text);
+            ClientGameNetPortal.Instance.StartClient();
+        }
+
+        public void CreateServer()
+        {
+            if(!NameValidation()) return;
+            SwitchMenus(playMenu, createServerMenu);
+        }
+
+        public void JoinServer()
+        {
+            if(!NameValidation()) return;
+            SwitchMenus(playMenu, joinServerMenu);
+            serv.getData();
+        }
+
+        public void BackToPlayMenu(int index)
+        {
+            switch(index)
             {
-                ClientGameNetPortal.Instance.SetConnectAddress(ipAddressTextInput.text);
-                ClientGameNetPortal.Instance.StartClient();
+                case 0: SwitchMenus(joinServerMenu, playMenu);
+                break;
+                case 1: SwitchMenus(createServerMenu, playMenu);
+                break;
+                case 2: SwitchMenus(joinGameMenu, playMenu);
+                break;
+                default: break;
             }
         }
 
-        private bool PlayMenuValidation()
+        private void SwitchMenus(GameObject disable, GameObject enable)
         {
-            if(NameValidation() && AddressValidation()) return true;
-        
-            return false;
+            disable.SetActive(false);
+            enable.SetActive(true);
         }
 
         private bool NameValidation(){
@@ -61,14 +79,6 @@ namespace UI.MainMenu {
             }
             nameErrorText.SetActive(false);
             PlayerPrefs.SetString("PlayerName", playerName);
-            return true;
-        }
-
-        private bool AddressValidation()
-        {
-            string ipAddress = ipAddressTextInput.text;
-            if(ipAddress.Length <= 0) return false;
-
             return true;
         }
     }

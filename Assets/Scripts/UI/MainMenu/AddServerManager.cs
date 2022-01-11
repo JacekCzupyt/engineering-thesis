@@ -15,10 +15,8 @@ namespace UI.MainMenu
 {
     public class AddServerManager : MonoBehaviour
     {
-        [SerializeField] public InputField serverName;
-        [SerializeField] private InputField playerName;
-        [SerializeField] private GameObject nameInputError;
-        [SerializeField] private GameObject playerInputError;
+        [SerializeField] public InputField serverNameInput;
+        [SerializeField] private GameObject serverNameInputError;
         [SerializeField] private GameObject pleaseWaitMessage;
         [SerializeField] private GameObject addingPanel;
 
@@ -57,23 +55,16 @@ namespace UI.MainMenu
         public void SendData()
         {
             IsAdd = true;
-            if (!NameValidation())
+            if (!ServerNameValidation())
                 return;
-            PlayerPrefs.SetString("PlayerName", playerName.text);
             GameNetPortal.Instance.StartHost();
         }
 
-
-        private bool NameValidation()
+        private bool ServerNameValidation()
         {
-            if (serverName.text.Length <= 0)
+            if (serverNameInput.text.Length <= 0)
             {
-                nameInputError.SetActive(true);
-                return false;
-            }
-            if (playerName.text.Length <= 0)
-            {
-                playerInputError.SetActive(true);
+                serverNameInputError.SetActive(true);
                 return false;
             }
             return true;

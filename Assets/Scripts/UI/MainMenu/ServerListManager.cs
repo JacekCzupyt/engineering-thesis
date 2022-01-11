@@ -43,7 +43,6 @@ namespace UI.MainMenu
         [SerializeField] private Transform ItemHolder;
         [SerializeField] private GameObject loadingInfo;
         private ServerComponent[] ServerArray;
-        [SerializeField] private InputField nameinput;
         [SerializeField] private GameObject isacticeServer;
         
         // Start is called before the first frame update
@@ -100,7 +99,6 @@ namespace UI.MainMenu
         }
         private void JoinClick(string ip)
         {
-            PlayerPrefs.SetString("PlayerName", nameinput.text);
             ClientGameNetPortal.Instance.SetConnectAddress(ip);
             ClientGameNetPortal.Instance.StartClient();
         }
