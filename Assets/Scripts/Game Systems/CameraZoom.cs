@@ -7,7 +7,6 @@ namespace Game_Systems {
     public class CameraZoom : MonoBehaviour {
         private Camera cam;
         private SettingsManager settings;
-        [SerializeField] public float defaultFov = 60f;
 
         public float currentMultiplier = 1f;
 

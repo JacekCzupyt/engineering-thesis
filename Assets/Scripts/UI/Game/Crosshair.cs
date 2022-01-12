@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using Game_Systems.Utility;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace UI.Game {
     public class Crosshair : MonoBehaviour {
@@ -24,8 +26,8 @@ namespace UI.Game {
         public void SetSpreadFromAngle(float angle) {
             if (cam == null)
                 throw new NullReferenceException("SetSpreadFromAngle can't be used if camera is not assigned");
-
-            var screenSpacePoint = cam.ViewportToScreenPoint(new Vector3(0, angle / cam.fieldOfView, 0)).y;
+            
+            var screenSpacePoint = new Vector3(0, angle / cam.fieldOfView, 0).y * this.GetComponent<RectTransform>().rect.height;
             SetSpread(screenSpacePoint);
         }
     }
