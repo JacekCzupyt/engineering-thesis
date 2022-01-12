@@ -35,7 +35,7 @@ namespace UI {
             Cursor.lockState = CursorLockMode.None;
 
         }
-        public void GoBack()
+        public void ReturnFromSettings()
         {
             settingsMenu.SetActive(false);
             pauseMenu.SetActive(true);

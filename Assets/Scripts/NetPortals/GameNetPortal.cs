@@ -56,6 +56,7 @@ namespace NetPortals {
         public void StartHost()
         {
             NetworkManager.Singleton.StartHost();
+            
         }
 
         public void RequestDisconnect()

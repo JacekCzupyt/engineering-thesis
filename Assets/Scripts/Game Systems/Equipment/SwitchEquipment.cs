@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Game_Systems.Equipment.Weapons;
 using Input_Systems;
 using MLAPI;
 using MLAPI.NetworkVariable;

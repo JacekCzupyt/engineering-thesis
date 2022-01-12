@@ -18,5 +18,21 @@ namespace Utility {
         public static T RandomElement<T>(this IList<T> list) {
             return list[rng.Next(list.Count)];
         }
+
+        public static int GetRandomInt(int amount){
+            return rng.Next(1, amount+1);
+        }
+
+        public static float GetHorizontalFov(this Camera cam) {
+            var radAngle = cam.fieldOfView * Mathf.Deg2Rad;
+            var radHfov = 2 * Mathf.Atan(Mathf.Tan(radAngle / 2) * cam.aspect);
+            return Mathf.Rad2Deg * radHfov;
+        }
+
+        public static void SetHorizontalFov(this Camera cam, float hFov) {
+            var radAngle = hFov * Mathf.Deg2Rad;
+            var radHfov = 2 * Mathf.Atan(Mathf.Tan(radAngle / 2) / cam.aspect);
+            cam.fieldOfView = Mathf.Rad2Deg * radHfov;
+        }
     }
 }

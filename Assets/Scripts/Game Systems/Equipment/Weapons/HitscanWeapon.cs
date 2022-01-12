@@ -1,20 +1,21 @@
-using System;
 using System.Linq;
 using Audio;
 using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.Spawning;
+using UI.Game;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Scripting;
+using Random = UnityEngine.Random;
 
-namespace Game_Systems.Equipment {
+namespace Game_Systems.Equipment.Weapons {
     public class HitscanWeapon : NetworkBehaviour {
-        //TODO: recoil, bloom, damage falloff?, physics recoil?
-        
+        //TODO: damage falloff?
+
         //TODO: variable pitch depending on ammo
 
+        [SerializeField] public GameObject player;
         [SerializeField] private Camera cam;
         [SerializeField] private GameObject gunModel;
 
@@ -22,55 +23,90 @@ namespace Game_Systems.Equipment {
         [SerializeField] private float fireRate;
 
         [SerializeField] private int damage;
-        
-        [SerializeField] public int maxAmmoCount;
-        [SerializeField] public int currentAmmoCount;
 
+        [Header("Ammo")] [SerializeField] public int maxAmmoCount;
+        [SerializeField] public int currentAmmoCount;
         [SerializeField] private float reloadTime;
 
-        [SerializeField] private SoundPlayer fireAudio;
+        [Header("Audio")] [SerializeField] private SoundPlayer fireAudio;
         [SerializeField] private SoundPlayer misfireAudio;
         [SerializeField] private SoundPlayer reloadAudio;
+
+        [Header("Knock-back")] [SerializeField]
+        private float knockBackForce;
         
+
+        [SerializeField] private bool simulateRecoil;
+        [SerializeField] private bool weaponSpread;
+        [SerializeField] private HitMarker hitMarker;
+
+        // private float currentRecoilDeviation;
+        private WeaponRecoil recoilManager;
+        public WeaponRecoil RecoilManager {
+            get {
+                if (!recoilManager)
+                    recoilManager = GetComponent<WeaponRecoil>();
+                if (!recoilManager)
+                    throw new MissingComponentException("No weapon recoil component");
+                return recoilManager;
+            }
+        }
+
+        private WeaponSpread spreadManager;
+        public WeaponSpread SpreadManager {
+            get {
+                if (!spreadManager)
+                    spreadManager = GetComponent<WeaponSpread>();
+                if (!spreadManager)
+                    throw new MissingComponentException("No weapon spread component");
+                return spreadManager;
+            }
+        }
+
+        private Rigidbody playerRb;
+
         private CharacterInputManager input;
         private ParticleSystem particles;
         private bool firedDuringAction = false;
         private bool misfiredDuringAction = false;
         private float lastShotTime = float.NegativeInfinity;
-        
+
         private bool reloading = false;
         private float reloadStartTime;
 
         private void OnEnable() {
             gunModel.SetActive(true);
+            if (weaponSpread)
+                SpreadManager.enabled = true;
         }
 
         private void OnDisable() {
-            if(reloading)
+            if (reloading)
                 CancelReload();
             gunModel.SetActive(false);
+            if(weaponSpread)
+                SpreadManager.enabled = false;
         }
 
         private ClientRpcParams NonOwnerClientParams =>
-            new ClientRpcParams
-            {
-                Send = new ClientRpcSendParams
-                {
+            new ClientRpcParams {
+                Send = new ClientRpcSendParams {
                     TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId != OwnerClientId)
                         .Select(c => c.ClientId).ToArray()
                 }
             };
+
 
         private void Start() {
             input = CharacterInputManager.Instance;
             particles = GetComponentInChildren<ParticleSystem>();
             currentAmmoCount = maxAmmoCount;
             input.Controls.Reload.performed += Reload;
+            playerRb = player.GetComponent<Rigidbody>();
         }
 
-        // Update is called once per frame
-        private void Update()
-        {
+
+        private void Update() {
             if (IsOwner) {
                 CheckFiringState();
             }
@@ -90,14 +126,13 @@ namespace Game_Systems.Equipment {
                 firedDuringAction = false;
                 misfiredDuringAction = false;
             }
-
         }
 
         private void AttemptFireWeapon() {
             firedDuringAction = true;
-            if(currentAmmoCount > 0)
+            if (currentAmmoCount > 0)
                 FireWeapon();
-            else if(!reloading) {
+            else if (!reloading) {
                 misfiredDuringAction = true;
                 misfireAudio.Play();
             }
@@ -106,26 +141,36 @@ namespace Game_Systems.Equipment {
         private void FireWeapon() {
             lastShotTime = Time.time;
             currentAmmoCount--;
-            
-            if(reloading)
+
+            if (reloading)
                 CancelReload();
+
+            var shotDirection = cam.transform.rotation;
             
-            FireWeaponPresentation();
-            
-            var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
-            ray.origin = cam.transform.position;
-            GameObject hitPlayer = null;
+            if (weaponSpread)
+                shotDirection *= SpreadManager.ApplySpread();
+
+            var ray = new Ray(cam.transform.position, shotDirection * Vector3.forward);
             var hitPlayerId = ulong.MaxValue;
-            
-            if (Physics.Raycast(ray,out RaycastHit hit, float.PositiveInfinity, LayerMask.GetMask("Player", "Terrain")))
-            {
+
+            if (Physics.Raycast(ray, out RaycastHit hit, float.PositiveInfinity, LayerMask.GetMask("Player", "Terrain"))) {
                 if (hit.collider.gameObject.CompareTag("Player")) {
-                    hitPlayer = hit.collider.gameObject;
+                    var hitPlayer = hit.collider.gameObject;
                     hitPlayerId = hitPlayer.GetComponent<NetworkObject>().NetworkObjectId;
                 }
             }
 
-            ShotServerRPC(ray,  hitPlayerId);
+            ShotServerRPC(ray, hitPlayerId);
+            
+            KnockBackPlayer();
+            FireWeaponPresentation(ray);
+
+            if (simulateRecoil)
+                RecoilManager.AddRecoil();
+        }
+
+        private void KnockBackPlayer() {
+            playerRb.AddForce(-player.transform.forward * knockBackForce, ForceMode.VelocityChange);
         }
 
         private void Reload(InputAction.CallbackContext context) {
@@ -147,9 +192,11 @@ namespace Game_Systems.Equipment {
             currentAmmoCount = maxAmmoCount;
         }
 
-        private void FireWeaponPresentation() {
+        private void FireWeaponPresentation(Ray shot) {
             fireAudio.Play();
-            particles.Emit(new ParticleSystem.EmitParams(), 1);
+            var emitParams = new ParticleSystem.EmitParams();
+            emitParams.velocity = shot.direction * particles.main.startSpeedMultiplier;
+            particles.Emit(emitParams, 1);
         }
 
         [ServerRpc]
@@ -161,23 +208,38 @@ namespace Game_Systems.Equipment {
                 var playerHit = NetworkSpawnManager.SpawnedObjects[playerHitId];
 
                 //TODO: validate hit
-            
+
+                var hitPlayerManager = playerHit.GetComponent<PlayerGameManager>();
+                var playerManager = player.GetComponent<PlayerGameManager>();
+
                 var enemyHealth = playerHit.transform.GetComponentInChildren<PlayerHealth>();
-                if (enemyHealth!=null)
+
+                if(enemyHealth)
                 {
-                    enemyHealth.takeDemage(damage, OwnerClientId);
+                    if(playerManager.GetGameMode() == Network.GameMode.TeamDeathmatch &&
+                    hitPlayerManager.GetTeamId() == playerManager.GetTeamId())
+                    {
+                            Debug.Log("Friendly fire");
+                    }else{
+                        enemyHealth.TakeDamage(damage, OwnerClientId);
+                    }
                 }
             }
 
-            ShootClientRPC(shot);
+            ShootClientRPC(shot, playerHitId != ulong.MaxValue);
         }
-        
-        [ClientRpc]
-        private void ShootClientRPC(Ray shot, ClientRpcParams rpcParams = default) {
-            if (!enabled || IsOwner)
-                return;
 
-            FireWeaponPresentation();
+        [ClientRpc]
+        private void ShootClientRPC(Ray shot, bool hit, ClientRpcParams rpcParams = default) {
+            if (!enabled)
+                return;
+            if (IsOwner) {
+                if(hit)
+                    hitMarker.Trigger();
+                return;
+            }
+
+            FireWeaponPresentation(shot);
         }
     }
 }

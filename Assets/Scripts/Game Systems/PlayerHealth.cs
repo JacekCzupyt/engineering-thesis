@@ -12,11 +12,18 @@ namespace Game_Systems {
         );
 
         private PlayerRespawn respawnPlayer;
+        private PlayerScore playerScore;
+        private PlayerGameManager playerGameManager;
         
         GameObject shooter;
         ScoreSystem score;
 
         [SerializeField] private HealthBar bar;
+
+        private void Awake() {
+            playerScore = GetComponentInParent<PlayerScore>();
+            playerGameManager = GetComponentInParent<PlayerGameManager>();
+        }
 
         private void Start() {
             respawnPlayer = GetComponent<PlayerRespawn>();
@@ -31,24 +38,18 @@ namespace Game_Systems {
                 respawnPlayer.Respawn();
             }
         }
-        public void takeDemage(int damage, ulong player)
+        public void TakeDamage(int damage, ulong player)
         {
             Debug.Log($"Apply {damage} Damage");
+
             health.Value -= damage; 
+
             if(health.Value<=0)
             {
-                var shooterPlayerManager = NetworkManager.Singleton.ConnectedClients[player].PlayerObject
-                    .GetComponent<PlayerManager>();
-                shooter = shooterPlayerManager.playerCharacter.Value;
-                score = shooter.GetComponentInChildren<ScoreSystem>();
-                score.AddPoint();
+                playerGameManager.AddPlayerKill(player);
+                playerGameManager.AddPlayerDeath(OwnerClientId);  
 
-                var receiverPlayerManager = NetworkManager.Singleton.ConnectedClients[OwnerClientId]
-                    .PlayerObject.GetComponent<PlayerManager>();
-
-
-                receiverPlayerManager.AddPlayerDeaths(OwnerClientId);
-                shooterPlayerManager.AddPlayerKills(player);  
+                playerScore.SetDeathCounter(1);
             }
         }
         public void takeDemage(int damage)

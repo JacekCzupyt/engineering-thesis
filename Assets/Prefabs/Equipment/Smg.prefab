@@ -4992,6 +4992,9 @@ GameObject:
   m_Component:
   - component: {fileID: 984521477969044482}
   - component: {fileID: 7868692278534635022}
+  - component: {fileID: 109713274594850822}
+  - component: {fileID: 1143508925468536954}
+  - component: {fileID: 7703861469400641425}
   m_Layer: 7
   m_Name: Smg
   m_TagString: Untagged
@@ -5027,17 +5030,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21f2cedc0a7f1104c8c4de2395b42572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   cam: {fileID: 0}
   gunModel: {fileID: 5342326200344668817}
   fullAuto: 1
   fireRate: 15
-  damage: 5
+  damage: 15
   maxAmmoCount: 40
   currentAmmoCount: 0
   reloadTime: 1.2
   fireAudio: {fileID: 5652983142558833822}
   misfireAudio: {fileID: 2891449820321026157}
   reloadAudio: {fileID: 1436143218299252778}
+  knockBackForce: 0.1
+  simulateRecoil: 1
+  weaponSpread: 1
+  hitMarker: {fileID: 0}
+--- !u!114 &109713274594850822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4624637393124916215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9ebf25f87c31684aa544c58f9e0fabe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  standardRecoil: {x: -2, y: 0}
+  recoilDeviation: {x: 0.5, y: 1}
+  snapSpeed: 20
+  returnSpeed: 4
+--- !u!114 &1143508925468536954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4624637393124916215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e6b6818b162cf44b06f41d726278b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minimumSpread: 0.8
+  spreadPerShot: 1
+  returnSpeed: 5
+  crosshair: {fileID: 0}
+  currentSpread: 0
+--- !u!114 &7703861469400641425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4624637393124916215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96ea3a03882820d488a69dfe281f888e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleZoom: 1
+  cam: {fileID: 0}
+  zoomMultiplier: 1.5
+  zoomTime: 0.1
+  zoomTimeExponent: 2
 --- !u!1 &5342326200344668817
 GameObject:
   m_ObjectHideFlags: 0

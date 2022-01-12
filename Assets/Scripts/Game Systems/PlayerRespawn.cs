@@ -69,8 +69,10 @@ namespace Game_Systems {
             cc.enabled = false;
             playerCollider.enabled = false;
             PlayerState(false);
-            if(IsOwner)
+            if (IsOwner) {
                 canvas.SetActive(false);
+                CharacterInputManager.Instance.enabled = false;
+            }
             yield return new WaitForSeconds(5);
             transform.parent.position = randomPos;
             cc.enabled = true;
@@ -79,6 +81,7 @@ namespace Game_Systems {
             if (IsOwner) {
                 canvas.SetActive(true);
                 GetComponentInParent<Rigidbody>().velocity = Vector3.zero;
+                CharacterInputManager.Instance.enabled = true;
             }
 
         }

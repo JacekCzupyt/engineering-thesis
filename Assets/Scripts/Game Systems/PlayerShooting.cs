@@ -32,7 +32,7 @@ namespace Game_Systems {
                         .Select(c => c.ClientId).ToArray()
                 }
             };
-        // Start is called before the first frame update
+
         void Start()
         {
             myAudio = GetComponent<AudioSource>();
@@ -77,18 +77,23 @@ namespace Game_Systems {
             ray.origin = cam.transform.position;
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                var enemyHealth = hit.transform.GetComponentInChildren<PlayerHealth>();
-                if (enemyHealth!=null)
+                var hitObject = hit.transform.GetComponent<PlayerGameManager>();
+                if (hitObject)
                 {
-                    enemyHealth.takeDemage(1,GetComponent<NetworkObject>().OwnerClientId);
+                    if(hitObject.GetTeamId() == GetComponent<PlayerGameManager>().GetTeamId())
+                    {
+                        Debug.Log("Friendly Fire");
+                    }else
+                    {
+                        hitObject.GetComponent<PlayerHealth>().TakeDamage(1, OwnerClientId);
+                    }
                 }
-
             }
             ShootClientRPC(NonOwnerClientParams);
 
         }
 
-        [ClientRpc(Delivery =RpcDelivery.Unreliable)]
+        [ClientRpc(Delivery = RpcDelivery.Unreliable)]
         private void ShootClientRPC(ClientRpcParams rpcParams = default)
         {
             //var p=Instantiate(bulletSystem, transform.position, transform.rotation);
