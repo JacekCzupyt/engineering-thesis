@@ -5260,7 +5260,7 @@ MonoBehaviour:
   gunModel: {fileID: 6312640891720423668}
   fullAuto: 0
   fireRate: 0.7
-  damage: 80
+  damage: 45
   maxAmmoCount: 4
   currentAmmoCount: 0
   reloadTime: 2.2
@@ -5316,7 +5316,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ea3a03882820d488a69dfe281f888e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleZoom: 1
   cam: {fileID: 0}
   zoomMultiplier: 6
   zoomTime: 0.3
