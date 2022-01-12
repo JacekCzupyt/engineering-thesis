@@ -90,7 +90,9 @@ namespace Game_Systems
             List<Vector3> pos = RespawnPointGenerator.generatePoints(10, 70);
             if(gameMode == GameMode.FreeForAll)
             {
-                player = manager.SpawnCharacter(new Vector3(0,0,0));
+                int rand = RespawnPointGenerator.rnd.Next(pos.Count);
+                player = manager.SpawnCharacter(pos[rand]);
+                pos.RemoveAt(rand);
 
             }else if(gameMode == GameMode.TeamDeathmatch)
             {

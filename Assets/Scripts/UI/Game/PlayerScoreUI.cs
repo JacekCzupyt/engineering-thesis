@@ -67,8 +67,8 @@ namespace UI.Game {
         {
             int column = (int)Math.Floor((double)(teamId-1)/2);
             int row = (teamId-1)%2;
-            float posX = -(column*250);
-            float posY = -(row*50);
+            float posX = 125 + column*250;
+            float posY = -(50 + row*50);
             var teamScore = Instantiate(TextPrefab, 
             new Vector3(posX, posY, 0), Quaternion.identity) as GameObject;
 

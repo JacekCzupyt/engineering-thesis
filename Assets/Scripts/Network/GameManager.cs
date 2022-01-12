@@ -158,9 +158,6 @@ namespace Network
                     NetworkManager.Singleton.LocalClientId == player.ClientId);
                     i++;
                 }
-                // PlayerState topPlayer = GetTopPlayerScore();
-                // playerScoreUI.AddPlayerScores(topPlayer.PlayerName, topPlayer.PlayerKills, 0);
-
             }else if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
             {
                 for(int i = 1; i < gameInfo.Value.teamCount + 1; i++)
