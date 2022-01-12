@@ -146,6 +146,7 @@ namespace Network
         private void ScoreboardUpdate()
         {
             playerScoreUI.DestroyCards();
+            playerScoreUI.DeleteTeamScores();
             
             if(gameInfo.Value.gameMode == GameMode.FreeForAll)
             {
@@ -174,6 +175,7 @@ namespace Network
                             k++;
                         }
                     }
+                    playerScoreUI.AddTeamScores(i, GetTeamScore(i));
                 }
             }
         }
@@ -208,6 +210,16 @@ namespace Network
         public GameInfo GetGameInfo()
         {
             return gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo();
+        }
+
+        public int GetTeamScore(int teamId)
+        {
+            int score = 0;
+            foreach(var player in playerStates)
+            {
+                if(player.TeamId == teamId) score += player.PlayerKills;
+            }
+            return score;
         }
     }
 }
