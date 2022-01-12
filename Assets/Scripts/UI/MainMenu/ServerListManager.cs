@@ -43,7 +43,6 @@ namespace UI.MainMenu
         [SerializeField] private Transform ItemHolder;
         [SerializeField] private GameObject loadingInfo;
         private ServerComponent[] ServerArray;
-        [SerializeField] private InputField nameinput;
         [SerializeField] private GameObject isacticeServer;
         [SerializeField] private GameObject nameError;
         [SerializeField] private GameObject serverBrowserError;
@@ -104,22 +103,8 @@ namespace UI.MainMenu
         }
         private void JoinClick(string ip)
         {
-            if (NameValidation())
-            {
-                PlayerPrefs.SetString("PlayerName", nameinput.text);
-                ClientGameNetPortal.Instance.SetConnectAddress(ip);
-                ClientGameNetPortal.Instance.StartClient();
-            }
-        }
-        private bool NameValidation()
-        {
-            if (nameinput.text.Length <= 0)
-            {
-                nameError.SetActive(true);
-                return false;
-            }
-            nameError.SetActive(false);
-            return true;
+            ClientGameNetPortal.Instance.SetConnectAddress(ip);
+            ClientGameNetPortal.Instance.StartClient();
         }
     }
 }

@@ -191,7 +191,7 @@ namespace NetPortals {
             isAdd = servert.IsAdd;
             if (isAdd)
             {
-                string jsonData = "{\"name\": \"" + servert.serverName.text + "\", \"ip\": \"" + servert.ip + "\"}";
+                string jsonData = "{\"name\": \"" + servert.serverNameInput.text + "\", \"ip\": \"" + servert.ip + "\"}";
                 StartCoroutine(AddServer(uri, jsonData));
                 InvokeRepeating("Upload", 5.0f, 8.0f);
             }            

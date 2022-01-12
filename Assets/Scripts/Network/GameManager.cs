@@ -15,9 +15,9 @@ namespace Network
         [SerializeField] private GameObject scoreboardUIObject;
         [SerializeField] private GameObject playerSpawnerObject;
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
+        private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
         private PlayerScoreUI playerScoreUI;
         private GameObject gameInfoObject;
-        private int teamCount;
 
         public void Start() {
             //Scoreboard
@@ -27,14 +27,18 @@ namespace Network
             if(IsClient)
             {
                 playerStates.OnListChanged += HandlePlayerStateChange;
+                gameInfo.OnValueChanged += HandleGameInfoChange;
+                UpdateGameMode();
+                ScoreboardUpdate();
             }
             if(IsServer)
             {
                 //Game Info
                 gameInfoObject = GameObject.FindGameObjectWithTag("GameInfoManager");
+                gameInfo.Value = gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo();
 
                 playerSpawnerObject.GetComponent<PlayerSpawner>()
-                .ReceiveGameInfo(gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo());
+                .ReceiveGameInfo(gameInfo.Value);
 
                 NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
@@ -49,6 +53,7 @@ namespace Network
         private void OnDestroy()
         {
             playerStates.OnListChanged -= HandlePlayerStateChange;
+            gameInfo.OnValueChanged -= HandleGameInfoChange;
 
             if(NetworkManager.Singleton)
             {
@@ -94,6 +99,11 @@ namespace Network
             ScoreboardUpdate();
         }
 
+        private void HandleGameInfoChange(GameInfo prevInfo, GameInfo newInfo)
+        {
+            UpdateGameMode();
+        }
+
         [ServerRpc(RequireOwnership = false)]
         private void PlayerKillServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
         {
@@ -136,16 +146,45 @@ namespace Network
         private void ScoreboardUpdate()
         {
             playerScoreUI.DestroyCards();
-            int i = 0;
-            foreach(var player in playerStates)
+            
+            if(gameInfo.Value.gameMode == GameMode.FreeForAll)
             {
-                float position = -(30*i + 30*(i+1));
-                playerScoreUI.CreateListItem(player, position);
-                i++;
+                int i = 0;
+                foreach(var player in playerStates)
+                {
+                    float position = -(30*i + 30*(i+1));
+                    playerScoreUI.CreateListItem(player, position,
+                    NetworkManager.Singleton.LocalClientId == player.ClientId);
+                    i++;
+                }
+            }else if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            {
+                for(int i = 1; i < gameInfo.Value.teamCount + 1; i++)
+                {
+                    int k = 0;
+                    int teamSeparator = 600/gameInfo.Value.teamCount;
+                    foreach(var player in playerStates)
+                    {
+                        if(player.TeamId == i)
+                        {
+                            float position = -(30*k + 20*(k+1) + (i-1) * teamSeparator);
+                            playerScoreUI.CreateListItem(player, position,
+                            NetworkManager.Singleton.LocalClientId == player.ClientId);
+                            
+                            k++;
+                        }
+                    }
+                }
             }
         }
 
+        private void UpdateGameMode()
+        {
+            playerScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
+        }
+
         private void Update() {
+            
             if(Input.GetKeyDown(KeyCode.Tab))
             {
                 scoreboardUIObject.SetActive(true);

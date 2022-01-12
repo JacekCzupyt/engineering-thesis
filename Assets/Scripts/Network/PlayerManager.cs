@@ -21,7 +21,7 @@ namespace Network {
             var character = GameObject.Instantiate(playerCharacterPrefab, pos, Quaternion.identity);
             character.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId, null, true);
             //HUD Score System, not scoreboard
-            character.GetComponent<ScoreSystem>().AssignPlayerManager(this);
+            //character.GetComponent<ScoreSystem>().AssignPlayerManager(this);
             
             return character;
         }
