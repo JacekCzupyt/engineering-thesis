@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using Network;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,12 +7,16 @@ using UnityEngine.UI;
 namespace UI.Game {
     public class PlayerScoreUI : MonoBehaviour
     {
-        [Header("References")]
+        [Header("Sprite Image References")]
+        [SerializeField] private Sprite freeForAllSprite;
+        [SerializeField] private Sprite teamDeathMatchSprite;
+        [Header("UI References")]
         [SerializeField] private GameObject scoreListViewObject;
         [SerializeField] private GameObject gameModeTitle;
-        [SerializeField] private GameObject gameModeScorePanelObject;
-        [SerializeField] private GameObject TeamScoreTextPrefab;
-        private List<GameObject> teamScoreTexts = new List<GameObject>();
+        [SerializeField] private GameObject gameModeScoreImagePanelObject;
+        [SerializeField] private GameObject gameScorePanelObject;
+        [SerializeField] private GameObject TextPrefab;
+        private List<GameObject> scoreTexts = new List<GameObject>();
         private ListView.ListView scoreListView;
 
         private void Awake()
@@ -43,41 +48,57 @@ namespace UI.Game {
         public void UpdateGameMode(GameMode gamemode)
         {
             gameModeTitle.GetComponent<Text>().text = gamemode.ToString();
-            gameModeScorePanelObject.transform.GetChild(0).GetComponent<Text>().text = GameModeAbbreviation(gamemode);
+            gameModeScoreImagePanelObject.transform.GetChild(0).GetComponent<Image>().sprite = GameModeImageSprite(gamemode);
         }
 
-        public string GameModeAbbreviation(GameMode mode)
+        public Sprite GameModeImageSprite(GameMode mode)
         {
             if(mode == GameMode.FreeForAll)
             {
-                return "FFA";
+                return freeForAllSprite;
             }else if(mode == GameMode.TeamDeathmatch)
             {
-                return "TDM";
+                return teamDeathMatchSprite;
             }
-            return "";
+            return null;
         }
 
         public void AddTeamScores(int teamId, int teamScoreValue)
         {
-            float pos = -(100 + 50*(teamId - 1));
-            var teamScore = Instantiate(TeamScoreTextPrefab, 
-            new Vector3(0, pos, 0), Quaternion.identity) as GameObject;
+            int column = (int)Math.Floor((double)(teamId-1)/2);
+            int row = (teamId-1)%2;
+            float posX = -(column*250);
+            float posY = -(row*50);
+            var teamScore = Instantiate(TextPrefab, 
+            new Vector3(posX, posY, 0), Quaternion.identity) as GameObject;
 
             teamScore.GetComponent<Text>().text = "Team " + teamId +": " + teamScoreValue;
 
-            teamScore.transform.SetParent(gameModeScorePanelObject.transform, false);
+            teamScore.transform.SetParent(gameScorePanelObject.transform, false);
             teamScore.SetActive(true);
-            teamScoreTexts.Add(teamScore);
+            scoreTexts.Add(teamScore);
         }
 
-        public void DeleteTeamScores()
+        public void AddPlayerScores(string playerName, int killScore, int pos)
         {
-            foreach(var teamScore in teamScoreTexts)
+            float posY = -(pos*50);
+            var playerScore = Instantiate(TextPrefab,
+            new Vector3(0, posY, 0), Quaternion.identity) as GameObject;
+
+            playerScore.GetComponent<Text>().text = playerName + " " + killScore;
+
+            playerScore.transform.SetParent(gameScorePanelObject.transform, false);
+            playerScore.SetActive(true);
+            scoreTexts.Add(playerScore);
+        }
+
+        public void DeleteScores()
+        {
+            foreach(var teamScore in scoreTexts)
             {
                 Destroy(teamScore);
             }
-            teamScoreTexts.Clear();
+            scoreTexts.Clear();
         }
     }
 }

@@ -146,7 +146,7 @@ namespace Network
         private void ScoreboardUpdate()
         {
             playerScoreUI.DestroyCards();
-            playerScoreUI.DeleteTeamScores();
+            playerScoreUI.DeleteScores();
             
             if(gameInfo.Value.gameMode == GameMode.FreeForAll)
             {
@@ -158,6 +158,9 @@ namespace Network
                     NetworkManager.Singleton.LocalClientId == player.ClientId);
                     i++;
                 }
+                // PlayerState topPlayer = GetTopPlayerScore();
+                // playerScoreUI.AddPlayerScores(topPlayer.PlayerName, topPlayer.PlayerKills, 0);
+
             }else if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
             {
                 for(int i = 1; i < gameInfo.Value.teamCount + 1; i++)
@@ -220,6 +223,19 @@ namespace Network
                 if(player.TeamId == teamId) score += player.PlayerKills;
             }
             return score;
+        }
+
+        public PlayerState GetTopPlayerScore()
+        {
+            PlayerState topPlayer = playerStates[0];
+            foreach(var player in playerStates)
+            {
+                if(player.PlayerKills >= topPlayer.PlayerKills)
+                {
+                    topPlayer = player;
+                }
+            }
+            return topPlayer;
         }
     }
 }
