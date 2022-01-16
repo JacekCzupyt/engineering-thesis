@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 865252383405237185}
   - component: {fileID: 865252383405237198}
   - component: {fileID: 865252383405237184}
+  - component: {fileID: 6752159695057488736}
   m_Layer: 5
   m_Name: DamageOverlay
   m_TagString: Untagged
@@ -94,3 +95,16 @@ MonoBehaviour:
   startBlend: 0.4
   endBlend: 1.6
   generate: 0
+--- !u!114 &6752159695057488736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 865252383405237196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af941015615c205469eef67d2d98afd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rate: 4
