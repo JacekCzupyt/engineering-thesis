@@ -1782,7 +1782,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &342768523
 Transform:
   m_ObjectHideFlags: 0
@@ -9865,6 +9865,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreboardUIObject: {fileID: 38413747}
   playerSpawnerObject: {fileID: 1726714043}
+  NumOfKillsToWin: 1
+  EndGameUIobject: {fileID: 342768522}
 --- !u!4 &1501253577
 Transform:
   m_ObjectHideFlags: 0
