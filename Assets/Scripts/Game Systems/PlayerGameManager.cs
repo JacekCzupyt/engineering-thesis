@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Network;
+using UI;
 
 public class PlayerGameManager : MonoBehaviour
 {
@@ -12,11 +13,7 @@ public class PlayerGameManager : MonoBehaviour
     private int playerKills;
     public int playerDeaths;
     private GameManager gameManager;
-    private PlayerScore playerScore;
     private GameInfo gameInfo;
-    private void Awake() {
-        playerScore = GetComponent<PlayerScore>();
-    }
 
     public void SetPlayerState(PlayerState playerState)
     {
@@ -48,14 +45,24 @@ public class PlayerGameManager : MonoBehaviour
         gameManager.PlayerKillUpdate(playerId);
     }
 
-    public void UpdatePlayerDeathCounter()
+    public void UpdatePlayerState(PlayerState state)
     {
-        playerDeaths++;
-        playerScore.SetDeathCounter(playerDeaths);
+        this.playerKills = state.PlayerKills;
+        this.playerDeaths = state.PlayerDeaths;
+    }
+
+    public void UpdatePlayerDeaths()
+    {
+        playerDeaths += 1;
     }
 
     public GameMode GetGameMode()
     {
         return gameInfo.gameMode;
+    }
+
+    public ulong GetClientId()
+    {
+        return clientId;
     }
 }

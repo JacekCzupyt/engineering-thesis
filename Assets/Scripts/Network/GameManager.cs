@@ -5,6 +5,7 @@ using MLAPI.Messaging;
 using MLAPI.NetworkVariable.Collections;
 using MLAPI.NetworkVariable;
 using UI.Game;
+using UI.Hud;
 using UnityEngine;
 using Game_Systems;
 
@@ -12,17 +13,26 @@ namespace Network
 {
     public class GameManager : NetworkBehaviour
     {
-        [SerializeField] private GameObject scoreboardUIObject;
+        [Header("UI References")]
+        [SerializeField] private GameObject gameUIObject;
+        [SerializeField] private GameObject scoreboardUIPanel;
+
+        [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
         private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
+        private ScoreboardUI scoreboardUI;
         private PlayerScoreUI playerScoreUI;
+        private GameScoreUI gameScoreUI;
         private GameObject gameInfoObject;
 
         public void Start() {
             //Scoreboard
-            playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
-            playerScoreUI.gameObject.SetActive(false);
+            scoreboardUI = gameUIObject.GetComponent<ScoreboardUI>();
+            playerScoreUI = gameUIObject.GetComponent<PlayerScoreUI>();
+            gameScoreUI = gameUIObject.GetComponent<GameScoreUI>();
+
+            scoreboardUIPanel.SetActive(false);
 
             if(IsClient)
             {
@@ -30,6 +40,8 @@ namespace Network
                 gameInfo.OnValueChanged += HandleGameInfoChange;
                 UpdateGameMode();
                 ScoreboardUpdate();
+                PlayerScoreUpdate();
+                GameScoreUpdate();
             }
             if(IsServer)
             {
@@ -97,6 +109,8 @@ namespace Network
         private void HandlePlayerStateChange(NetworkListEvent<PlayerState> state)
         {
             ScoreboardUpdate();
+            PlayerScoreUpdate();
+            GameScoreUpdate();
         }
 
         private void HandleGameInfoChange(GameInfo prevInfo, GameInfo newInfo)
@@ -143,10 +157,26 @@ namespace Network
             }
         }
 
+        private void PlayerScoreUpdate()
+        {
+            foreach(var playerState in playerStates)
+            {
+                if(NetworkManager.Singleton.LocalClientId == playerState.ClientId)
+                {
+                    playerScoreUI.UpdatePlayerScore(playerState);
+                    break;
+                }
+            }
+        }
+
+        private void GameScoreUpdate()
+        {
+            gameScoreUI.DeleteScores();
+        }
+
         private void ScoreboardUpdate()
         {
-            playerScoreUI.DestroyCards();
-            playerScoreUI.DeleteScores();
+            scoreboardUI.DestroyCards();
             
             if(gameInfo.Value.gameMode == GameMode.FreeForAll)
             {
@@ -154,7 +184,7 @@ namespace Network
                 foreach(var player in playerStates)
                 {
                     float position = -(30*i + 30*(i+1));
-                    playerScoreUI.CreateListItem(player, position,
+                    scoreboardUI.CreateListItem(player, position,
                     NetworkManager.Singleton.LocalClientId == player.ClientId);
                     i++;
                 }
@@ -169,31 +199,30 @@ namespace Network
                         if(player.TeamId == i)
                         {
                             float position = -(30*k + 20*(k+1) + (i-1) * teamSeparator);
-                            playerScoreUI.CreateListItem(player, position,
+                            scoreboardUI.CreateListItem(player, position,
                             NetworkManager.Singleton.LocalClientId == player.ClientId);
                             
                             k++;
                         }
                     }
-                    playerScoreUI.AddTeamScores(i, GetTeamScore(i));
                 }
             }
         }
 
         private void UpdateGameMode()
         {
-            playerScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
+            scoreboardUI.UpdateGameMode(gameInfo.Value.gameMode);
         }
 
         private void Update() {
             
             if(Input.GetKeyDown(KeyCode.Tab))
             {
-                scoreboardUIObject.SetActive(true);
+                scoreboardUIPanel.SetActive(true);
             }
             if(Input.GetKeyUp(KeyCode.Tab))
             {
-                scoreboardUIObject.SetActive(false);
+                scoreboardUIPanel.SetActive(false);
             }
         }
 

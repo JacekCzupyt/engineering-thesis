@@ -6,22 +6,17 @@ using UnityEngine;
 
 namespace Game_Systems {
     public class PlayerHealth : NetworkBehaviour {
-        [SerializeField] public NetworkVariableInt health = new NetworkVariableInt(
+        private NetworkVariableInt health = new NetworkVariableInt(
             new NetworkVariableSettings {WritePermission = NetworkVariablePermission.OwnerOnly},
             100
         );
-
-        private PlayerRespawn respawnPlayer;
-        private PlayerScore playerScore;
-        private PlayerGameManager playerGameManager;
-        
-        GameObject shooter;
-        ScoreSystem score;
-
         [SerializeField] private HealthBar bar;
 
+        private PlayerRespawn respawnPlayer;
+        private PlayerGameManager playerGameManager;
+
+
         private void Awake() {
-            playerScore = GetComponentInParent<PlayerScore>();
             playerGameManager = GetComponentInParent<PlayerGameManager>();
         }
 
@@ -48,14 +43,7 @@ namespace Game_Systems {
             {
                 playerGameManager.AddPlayerKill(player);
                 playerGameManager.AddPlayerDeath(OwnerClientId);  
-
-                playerScore.SetDeathCounter(1);
             }
-        }
-        public void takeDemage(int damage)
-        {
-            Debug.Log($"Apply {damage} Damage");
-            health.Value -= damage;
         }
     }
 }

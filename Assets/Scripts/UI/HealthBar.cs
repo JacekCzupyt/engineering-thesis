@@ -4,18 +4,14 @@ using UnityEngine.UI;
 namespace UI {
     public class HealthBar : MonoBehaviour
     {
-        // Start is called before the first frame update 
         [SerializeField] Slider healthBar;
         public void SetInitialHealth()
         {
-            //healthBar.maxValue = life;
             healthBar.value = 100;
         }
-
-        // Update is called once per frame
-        public void SetHealth(int life)
+        public void SetHealth(int health)
         {
-            healthBar.value = life;
+            healthBar.value = health;
         }
     }
 }
