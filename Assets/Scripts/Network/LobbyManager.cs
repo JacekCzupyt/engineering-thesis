@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
@@ -24,6 +25,8 @@ namespace Network {
         private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
         private LobbyUI lobbyUI;
+
+        public event Action OnListChanged;
         public override void NetworkStart()
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
@@ -52,14 +55,18 @@ namespace Network {
         private void OnDestroy() {
             lobbyPlayers.OnListChanged -= HandleLobbyPlayersStateChanged;
             gameMode.OnValueChanged -= HandleGameModeChange;
-
-            if(NetworkManager.Singleton)
+            lobbyPlayers.Clear();
+            if (NetworkManager.Singleton)
             {
                 NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnect;
             }
         }
-
+        private void Start()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            OnListChanged?.Invoke();
+        }
         private bool IsEveryoneReady()
         {
             foreach(var player in lobbyPlayers)

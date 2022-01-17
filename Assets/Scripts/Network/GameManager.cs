@@ -168,8 +168,9 @@ namespace Network
         }
         private IEnumerator ServerEndGame()
         {
-            yield return new WaitForSeconds(6);
-            NetworkSceneManager.SwitchScene("LobbyScene");
+            yield return new WaitForSeconds(5);
+            ServerGameNetPortal.Instance.EndRound();
+            //NetworkSceneManager.SwitchScene("LobbyScene");
         }
         [ClientRpc]
         private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default)
@@ -184,8 +185,6 @@ namespace Network
             yield return new WaitForSeconds(5);
             EndGameUIobject.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
-            //GameNetPortal.Instance.RequestDisconnect();
-            //ServerGameNetPortal.Instance.EndRound();
         }
         private void ScoreboardUpdate()
         {

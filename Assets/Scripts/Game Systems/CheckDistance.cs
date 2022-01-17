@@ -8,7 +8,7 @@ namespace Game_Systems
     public class CheckDistance : MonoBehaviour
     {
         [SerializeField] public GameObject warningUI;
-        [SerializeField] private float maxDistance = 100;
+        [SerializeField] private float maxDistance = 150;
         private float lastDamageInstanceTime = float.NegativeInfinity;
         PlayerHealth health;
         private void Start()
