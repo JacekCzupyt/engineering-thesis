@@ -14,8 +14,9 @@ namespace UI.Hud
 
         [Header("UI References")]
         [SerializeField] private GameObject gameModeScoreImagePanelObject;
-        [SerializeField] private GameObject gameScorePanelObject;
-        [SerializeField] private GameObject TextPrefab;
+        [SerializeField] private GameObject scoresPanelObject;
+        [SerializeField] private GameObject TeamScorePrefab;
+        [SerializeField] private GameObject PlayerTextPrefab;
         private List<GameObject> scoreTexts = new List<GameObject>();
 
 
@@ -39,29 +40,33 @@ namespace UI.Hud
         
         public void AddTeamScores(int teamId, int teamScoreValue)
         {
-            int column = (int)Math.Floor((double)(teamId-1)/2);
-            int row = (teamId-1)%2;
-            float posX = 125 + column*250;
-            float posY = -(50 + row*50);
-            var teamScore = Instantiate(TextPrefab, 
+            float margin = 10f, scoreHeight = 120, scoreWidth = 100;
+
+            float posX =  (scoreWidth/2 + margin) + (teamId*margin) + (teamId*scoreWidth);
+            float posY = -(scoreHeight/2 + margin);
+
+            var teamScore = Instantiate(TeamScorePrefab, 
             new Vector3(posX, posY, 0), Quaternion.identity) as GameObject;
 
-            teamScore.GetComponent<Text>().text = "Team " + teamId +": " + teamScoreValue;
+            teamScore.GetComponent<Image>().color = TeamColor.GetTeamColor(teamId + 1, 0.4f);
+            teamScore.GetComponentInChildren<Text>().text = "" + teamScoreValue.ToString();
 
-            teamScore.transform.SetParent(gameScorePanelObject.transform, false);
+            teamScore.transform.SetParent(scoresPanelObject.transform, false);
             teamScore.SetActive(true);
             scoreTexts.Add(teamScore);
         }
 
-        public void AddPlayerScores(string playerName, int killScore, int pos)
+        public void AddPlayerScores(PlayerState playerState, int pos, bool highlight)
         {
-            float posY = -(pos*50);
-            var playerScore = Instantiate(TextPrefab,
+            float textHeight = 90;
+            float posY = textHeight/2 + (pos * textHeight);
+            var playerScore = Instantiate(PlayerTextPrefab,
             new Vector3(0, posY, 0), Quaternion.identity) as GameObject;
 
-            playerScore.GetComponent<Text>().text = playerName + " " + killScore;
+            playerScore.GetComponent<Text>().text = playerState.PlayerName + " " + playerState.PlayerKills.ToString();
+            if(highlight) playerScore.GetComponent<Text>().color = new Color(255, 150, 0, 255);
 
-            playerScore.transform.SetParent(gameScorePanelObject.transform, false);
+            playerScore.transform.SetParent(scoresPanelObject.transform, false);
             playerScore.SetActive(true);
             scoreTexts.Add(playerScore);
         }

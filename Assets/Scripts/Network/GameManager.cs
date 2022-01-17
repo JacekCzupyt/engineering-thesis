@@ -172,6 +172,27 @@ namespace Network
         private void GameScoreUpdate()
         {
             gameScoreUI.DeleteScores();
+            if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            {
+                for(int i = 0; i < gameInfo.Value.teamCount; i++)
+                {
+                    gameScoreUI.AddTeamScores(i, GetTeamScore(i + 1));
+                }
+            } else if(gameInfo.Value.gameMode == GameMode.FreeForAll)
+            {
+                PlayerState localPlayerState = GetLocalPlayerState();
+                PlayerState topPlayer = GetTopPlayerScore(localPlayerState.ClientId);
+
+                if(localPlayerState.PlayerKills >= topPlayer.PlayerKills)
+                {
+                    gameScoreUI.AddPlayerScores(localPlayerState, 0, true);
+                    gameScoreUI.AddPlayerScores(topPlayer, 1, false);
+                }else
+                {
+                    gameScoreUI.AddPlayerScores(topPlayer, 0, false);
+                    gameScoreUI.AddPlayerScores(localPlayerState, 1, true);
+                }
+            }   
         }
 
         private void ScoreboardUpdate()
@@ -201,7 +222,6 @@ namespace Network
                             float position = -(30*k + 20*(k+1) + (i-1) * teamSeparator);
                             scoreboardUI.CreateListItem(player, position,
                             NetworkManager.Singleton.LocalClientId == player.ClientId);
-                            
                             k++;
                         }
                     }
@@ -251,14 +271,23 @@ namespace Network
             return score;
         }
 
-        public PlayerState GetTopPlayerScore()
+        public PlayerState GetLocalPlayerState()
         {
-            PlayerState topPlayer = playerStates[0];
-            foreach(var player in playerStates)
+            foreach(var playerState in playerStates)
             {
-                if(player.PlayerKills >= topPlayer.PlayerKills)
+                if(playerState.ClientId == NetworkManager.Singleton.LocalClientId) return playerState;
+            }
+            return new PlayerState();
+        }
+
+        public PlayerState GetTopPlayerScore(ulong localClientId)
+        {
+            PlayerState topPlayer = new PlayerState();
+            foreach(var playerState in playerStates)
+            {
+                if(playerState.PlayerKills >= topPlayer.PlayerKills && playerState.ClientId != localClientId)
                 {
-                    topPlayer = player;
+                    topPlayer = playerState;
                 }
             }
             return topPlayer;

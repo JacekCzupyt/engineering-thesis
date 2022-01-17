@@ -12720,10 +12720,10 @@ RectTransform:
   m_Father: {fileID: 2123164174}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 380, y: -90}
-  m_SizeDelta: {x: 400, y: 180}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 90, y: 0}
+  m_SizeDelta: {x: -180, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1791994302
 MonoBehaviour:
@@ -12921,8 +12921,9 @@ MonoBehaviour:
   freeForAllSprite: {fileID: 21300000, guid: faced131e7fb3d943b4e05ea5395c884, type: 3}
   teamDeathMatchSprite: {fileID: 21300000, guid: dc0304473f1929c46ae619ebb577e33a, type: 3}
   gameModeScoreImagePanelObject: {fileID: 352649982}
-  gameScorePanelObject: {fileID: 1791994300}
-  TextPrefab: {fileID: 5994513596008541781, guid: 8653fffb87d2ee9418a820244b372d85, type: 3}
+  scoresPanelObject: {fileID: 1791994300}
+  TeamScorePrefab: {fileID: 2766216750636105400, guid: fd58ea92081c5b442ac2e312dd1273e3, type: 3}
+  PlayerTextPrefab: {fileID: 4410847413909764563, guid: 22347e9056a2c074d9429499039b7331, type: 3}
 --- !u!1 &1802769462
 GameObject:
   m_ObjectHideFlags: 0
@@ -15342,10 +15343,10 @@ RectTransform:
   m_Father: {fileID: 327991057}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 345, y: -90}
+  m_SizeDelta: {x: 700, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2123164175
 MonoBehaviour:
