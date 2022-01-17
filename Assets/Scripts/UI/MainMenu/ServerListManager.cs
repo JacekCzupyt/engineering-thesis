@@ -47,7 +47,7 @@ namespace UI.MainMenu
         [SerializeField] private GameObject nameError;
         [SerializeField] private GameObject serverBrowserError;
         // Start is called before the first frame update
-        string uri = "http://79.191.52.229:8080/servers";
+        string uri = "http://79.191.180.42:8080/servers";
 
         public void getData()
         {

@@ -10,6 +10,7 @@ using Game_Systems;
 using System.Collections;
 using UnityEngine.UI;
 using NetPortals;
+using MLAPI.SceneManagement;
 
 namespace Network
 {
@@ -156,8 +157,10 @@ namespace Network
             {
                 if (playerStates[i].PlayerKills >=NumOfKillsToWin)
                 {
+                    
                     GameEndedClientRpc(playerStates[i].PlayerName);
-                    //ServerEndGame();                   
+                    StartCoroutine(ServerEndGame());
+               
                     break;
 
                 }
@@ -165,8 +168,8 @@ namespace Network
         }
         private IEnumerator ServerEndGame()
         {
-            yield return new WaitForSeconds(5);
-            ServerGameNetPortal.Instance.EndRound();
+            yield return new WaitForSeconds(6);
+            NetworkSceneManager.SwitchScene("LobbyScene");
         }
         [ClientRpc]
         private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default)
@@ -181,7 +184,7 @@ namespace Network
             yield return new WaitForSeconds(5);
             EndGameUIobject.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
-            GameNetPortal.Instance.RequestDisconnect();
+            //GameNetPortal.Instance.RequestDisconnect();
             //ServerGameNetPortal.Instance.EndRound();
         }
         private void ScoreboardUpdate()
