@@ -1,11 +1,11 @@
 using MLAPI;
 using MLAPI.Messaging;
 using MLAPI.NetworkVariable;
-using Network;
 using UI;
 using UnityEngine;
 using Utility;
 using Visuals;
+using Debug = UnityEngine.Debug;
 
 namespace Game_Systems {
     public class PlayerHealth : NetworkBehaviour {
@@ -14,6 +14,7 @@ namespace Game_Systems {
             100
         );
 
+        public bool inactive = false;
         private PlayerRespawn respawnPlayer;
         private PlayerScore playerScore;
         private PlayerGameManager playerGameManager;
@@ -37,13 +38,18 @@ namespace Game_Systems {
             if (IsOwner) {
                 bar.SetHealth(health.Value);
             }
-            if (IsOwner && health.Value <= 0) {
+            if (IsServer && health.Value <= 0 && !inactive) {
                 health.Value = 100;
                 respawnPlayer.Respawn();
             }
         }
         public void TakeDamage(int damage, ulong? player = null)
         {
+            if (inactive) {
+                Debug.Log("Player is immune");
+                return;
+            }
+
             Debug.Log($"Apply {damage} Damage");
 
             health.Value -= damage; 
@@ -53,9 +59,8 @@ namespace Game_Systems {
             {
                 if(player.HasValue)
                     playerGameManager.AddPlayerKill(player.Value);
-                playerGameManager.AddPlayerDeath(OwnerClientId);  
                 
-                // playerScore.SetDeathCounter(1);
+                playerGameManager.AddPlayerDeath(OwnerClientId);
             }
         }
         
