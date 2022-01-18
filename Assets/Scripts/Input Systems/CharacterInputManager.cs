@@ -22,10 +22,11 @@ namespace Input_Systems {
             }
             else {
                 _instance = this;
+                controls = new PlayerControls();
+                SetupCallbacks();
+                DontDestroyOnLoad(this.gameObject);
             }
-            controls = new PlayerControls();
-            SetupCallbacks();
-            DontDestroyOnLoad(this.gameObject);
+
         }
 
         private void SetupCallbacks() {
@@ -39,11 +40,11 @@ namespace Input_Systems {
         }
 
         private void OnEnable() {
-            controls.Enable();
+            controls?.Enable();
         }
 
         private void OnDisable() {
-            controls.Disable();
+            controls?.Disable();
         }
 
         public event Action<int> SwitchEquipment;
