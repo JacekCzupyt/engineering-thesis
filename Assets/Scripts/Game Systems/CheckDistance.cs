@@ -25,7 +25,7 @@ namespace Game_Systems
                 if (Time.time - lastDamageInstanceTime >= 1)
                 {
                     lastDamageInstanceTime = Time.time;
-                    //health?.takeDemage(10);
+                    health?.TakeDamage(10);
                 }
             }
             else

@@ -88,14 +88,6 @@ namespace Game_Systems.Equipment.Weapons {
                 SpreadManager.enabled = false;
         }
 
-        private ClientRpcParams NonOwnerClientParams =>
-            new ClientRpcParams {
-                Send = new ClientRpcSendParams {
-                    TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId != OwnerClientId)
-                        .Select(c => c.ClientId).ToArray()
-                }
-            };
-
 
         private void Start() {
             input = CharacterInputManager.Instance;

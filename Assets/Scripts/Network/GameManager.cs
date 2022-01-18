@@ -8,6 +8,10 @@ using UI.Game;
 using UI.Hud;
 using UnityEngine;
 using Game_Systems;
+using System.Collections;
+using UnityEngine.UI;
+using NetPortals;
+using MLAPI.SceneManagement;
 
 namespace Network
 {
@@ -19,13 +23,18 @@ namespace Network
 
         [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
+        [SerializeField] int NumOfKillsToWin;
+        [SerializeField] GameObject EndGameUIobject;
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
         private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
         private ScoreboardUI scoreboardUI;
         private PlayerScoreUI playerScoreUI;
         private GameScoreUI gameScoreUI;
         private GameObject gameInfoObject;
-
+        
+        private Canvas can;
+        private Text winMessage;
+        
         public void Start() {
             //Scoreboard
             scoreboardUI = gameUIObject.GetComponent<ScoreboardUI>();
@@ -35,6 +44,10 @@ namespace Network
             scoreboardUIPanel.SetActive(false);
 
             if(IsClient)
+              can = EndGameUIobject.GetComponentInChildren<Canvas>();
+              winMessage = can.GetComponentInChildren<Text>();
+            
+            if (IsClient)
             {
                 playerStates.OnListChanged += HandlePlayerStateChange;
                 gameInfo.OnValueChanged += HandleGameInfoChange;
@@ -156,6 +169,44 @@ namespace Network
                 }
             }
         }
+        [ServerRpc(RequireOwnership = false)]
+        private void CheckPlayerScoreServerRpc()
+        {
+            for (int i = 0; i < playerStates.Count; i++)
+            {
+                if (playerStates[i].PlayerKills >=NumOfKillsToWin)
+                {
+                    
+                    GameEndedClientRpc(playerStates[i].PlayerName);
+                    StartCoroutine(ServerEndGame());
+               
+                    break;
+
+                }
+            }
+        }
+        private IEnumerator ServerEndGame()
+        {
+            yield return new WaitForSeconds(6);
+            NetworkSceneManager.SwitchScene("LobbyScene");
+        }
+        
+        [ClientRpc]
+        private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default)
+        {
+            StartCoroutine(WaitForGameEnd(playerName));
+        }
+        
+        private IEnumerator WaitForGameEnd(string playerName)
+        {
+            winMessage.text = "Player " + playerName + " win a game";
+            EndGameUIobject.SetActive(true);
+            yield return new WaitForSeconds(5);
+            EndGameUIobject.SetActive(false);
+            Cursor.lockState = CursorLockMode.None;
+            //GameNetPortal.Instance.RequestDisconnect();
+            //ServerGameNetPortal.Instance.EndRound();
+        }
 
         private void PlayerScoreUpdate()
         {
@@ -194,7 +245,7 @@ namespace Network
                 }
             }   
         }
-
+        
         private void ScoreboardUpdate()
         {
             scoreboardUI.DestroyCards();
@@ -249,6 +300,7 @@ namespace Network
         public void PlayerKillUpdate(ulong clientId)
         {
             PlayerKillServerRpc(clientId);
+            CheckPlayerScoreServerRpc();
         }
 
         public void PlayerDeathUpdate(ulong clientId)
