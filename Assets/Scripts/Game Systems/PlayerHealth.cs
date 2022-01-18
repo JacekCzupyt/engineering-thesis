@@ -9,24 +9,23 @@ using Debug = UnityEngine.Debug;
 
 namespace Game_Systems {
     public class PlayerHealth : NetworkBehaviour {
-        [SerializeField] public NetworkVariableInt health = new NetworkVariableInt(
+        private NetworkVariableInt health = new NetworkVariableInt(
             new NetworkVariableSettings {WritePermission = NetworkVariablePermission.OwnerOnly},
             100
         );
+        [SerializeField] private HealthBar bar;
 
         public bool inactive = false;
         private PlayerRespawn respawnPlayer;
-        private PlayerScore playerScore;
         private PlayerGameManager playerGameManager;
+
         [SerializeField] private DamageOverlay damageOverlay;
         
         GameObject shooter;
         ScoreSystem score;
 
-        [SerializeField] private HealthBar bar;
 
         private void Awake() {
-            playerScore = GetComponentInParent<PlayerScore>();
             playerGameManager = GetComponentInParent<PlayerGameManager>();
         }
 
