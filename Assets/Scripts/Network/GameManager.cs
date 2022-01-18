@@ -92,7 +92,7 @@ namespace Network
             PlayerManager playerManager = null;
             foreach (var manager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
                 playerManager = manager.GetComponent<PlayerManager>();
-                if(playerManager.GetClientId() == clientId) break;
+                if(playerManager.GetPlayerState().ClientId == clientId) break;
             }
 
             if(!playerManager)
@@ -103,7 +103,7 @@ namespace Network
             }
             playerSpawnerObject.GetComponent<PlayerSpawner>().SpawnPlayer(playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");
-            playerStates.Add(playerManager.ToPlayerState());
+            playerStates.Add(playerManager.GetPlayerState());
             //playerManager.DestoryPlayerManager();
         }
 
