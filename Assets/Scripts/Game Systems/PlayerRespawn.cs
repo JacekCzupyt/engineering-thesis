@@ -43,7 +43,7 @@ namespace Game_Systems {
             
             yield return new WaitForSeconds(5); 
             
-            health.health.Value = 100;
+            health.Health = 100;
             
             int numPlayers = NetworkManager.Singleton.ConnectedClients.Count;
             List<Vector3> li = RespawnPointGenerator.generatePoints(numPlayers, 70);

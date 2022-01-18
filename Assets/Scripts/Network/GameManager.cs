@@ -232,17 +232,9 @@ namespace Network
             } else if(gameInfo.Value.gameMode == GameMode.FreeForAll)
             {
                 PlayerState localPlayerState = GetLocalPlayerState();
-                PlayerState topPlayer = GetTopPlayerScore(localPlayerState.ClientId);
-
-                if(localPlayerState.PlayerKills >= topPlayer.PlayerKills)
-                {
-                    gameScoreUI.AddPlayerScores(localPlayerState, 0, true);
-                    gameScoreUI.AddPlayerScores(topPlayer, 1, false);
-                }else
-                {
-                    gameScoreUI.AddPlayerScores(topPlayer, 0, false);
-                    gameScoreUI.AddPlayerScores(localPlayerState, 1, true);
-                }
+                PlayerState topPlayer = GetTopPlayerScore();
+                gameScoreUI.SetPlayerScore(topPlayer, 0);
+                gameScoreUI.SetPlayerScore(localPlayerState, 1);
             }   
         }
         
@@ -332,12 +324,12 @@ namespace Network
             return new PlayerState();
         }
 
-        public PlayerState GetTopPlayerScore(ulong localClientId)
+        public PlayerState GetTopPlayerScore()
         {
             PlayerState topPlayer = new PlayerState();
             foreach(var playerState in playerStates)
             {
-                if(playerState.PlayerKills >= topPlayer.PlayerKills && playerState.ClientId != localClientId)
+                if(playerState.PlayerKills >= topPlayer.PlayerKills)
                 {
                     topPlayer = playerState;
                 }

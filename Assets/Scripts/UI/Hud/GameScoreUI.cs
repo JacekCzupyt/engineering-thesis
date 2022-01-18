@@ -14,15 +14,26 @@ namespace UI.Hud
 
         [Header("UI References")]
         [SerializeField] private GameObject gameModeScoreImagePanelObject;
-        [SerializeField] private GameObject scoresPanelObject;
-        [SerializeField] private GameObject TeamScorePrefab;
-        [SerializeField] private GameObject PlayerTextPrefab;
-        private List<GameObject> scoreTexts = new List<GameObject>();
+        [SerializeField] private GameObject teamScoresPanelObject;
+        [SerializeField] private GameObject playerScoresPanelObject;
+        [SerializeField] private GameObject teamScorePrefab;
+        [SerializeField] private GameObject topPlayerTextObject;
+        [SerializeField] private GameObject currentPlayerTextObject;
+        private List<GameObject> teamObjects = new List<GameObject>();
 
 
         public void UpdateGameMode(GameMode gamemode)
         {
             gameModeScoreImagePanelObject.transform.GetChild(0).GetComponent<Image>().sprite = GameModeImageSprite(gamemode);
+            if(gamemode == GameMode.FreeForAll)
+            {
+                playerScoresPanelObject.SetActive(true);
+                teamScoresPanelObject.SetActive(false);
+            }else if(gamemode == GameMode.TeamDeathmatch)
+            {
+                playerScoresPanelObject.SetActive(false);
+                teamScoresPanelObject.SetActive(true);
+            }
         }
 
         public Sprite GameModeImageSprite(GameMode mode)
@@ -45,39 +56,37 @@ namespace UI.Hud
             float posX =  (scoreWidth/2 + margin) + (teamId*margin) + (teamId*scoreWidth);
             float posY = -(scoreHeight/2 + margin);
 
-            var teamScore = Instantiate(TeamScorePrefab, 
+            var teamScore = Instantiate(teamScorePrefab, 
             new Vector3(posX, posY, 0), Quaternion.identity) as GameObject;
 
             teamScore.GetComponent<Image>().color = TeamColor.GetTeamColor(teamId + 1, 0.4f);
             teamScore.GetComponentInChildren<Text>().text = "" + teamScoreValue.ToString();
 
-            teamScore.transform.SetParent(scoresPanelObject.transform, false);
+            teamScore.transform.SetParent(teamScoresPanelObject.transform, false);
             teamScore.SetActive(true);
-            scoreTexts.Add(teamScore);
+            teamObjects.Add(teamScore);
         }
 
-        public void AddPlayerScores(PlayerState playerState, int pos, bool highlight)
+        public void SetPlayerScore(PlayerState playerState, int pos)
         {
-            float textHeight = 90;
-            float posY = textHeight/2 + (pos * textHeight);
-            var playerScore = Instantiate(PlayerTextPrefab,
-            new Vector3(0, posY, 0), Quaternion.identity) as GameObject;
-
-            playerScore.GetComponent<Text>().text = playerState.PlayerName + " " + playerState.PlayerKills.ToString();
-            if(highlight) playerScore.GetComponent<Text>().color = new Color(255, 150, 0, 255);
-
-            playerScore.transform.SetParent(scoresPanelObject.transform, false);
-            playerScore.SetActive(true);
-            scoreTexts.Add(playerScore);
+            Text scoreText = null;
+            if(pos == 0)
+            {
+                scoreText = topPlayerTextObject.GetComponent<Text>();
+            }else if(pos == 1)
+            {
+                scoreText = currentPlayerTextObject.GetComponent<Text>();
+            }
+            scoreText.text = playerState.PlayerName + " " + playerState.PlayerKills.ToString();
         }
 
         public void DeleteScores()
         {
-            foreach(var teamScore in scoreTexts)
+            foreach(var teamScore in teamObjects)
             {
                 Destroy(teamScore);
             }
-            scoreTexts.Clear();
+            teamObjects.Clear();
         }
     }
 }

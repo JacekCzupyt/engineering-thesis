@@ -13,6 +13,15 @@ namespace Game_Systems {
             new NetworkVariableSettings {WritePermission = NetworkVariablePermission.OwnerOnly},
             100
         );
+
+        public int Health{
+            get{
+                return health.Value;
+            }
+            set{
+                health.Value = value;
+            }
+        }
         [SerializeField] private HealthBar bar;
 
         public bool inactive = false;
