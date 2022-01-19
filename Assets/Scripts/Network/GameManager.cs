@@ -20,9 +20,11 @@ namespace Network
         [Header("UI References")]
         [SerializeField] private GameObject gameUIObject;
         [SerializeField] private GameObject scoreboardUIPanel;
+        
 
         [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
+        [SerializeField] private GameObject playerManagerPrefab;
         [SerializeField] int NumOfKillsToWin;
         [SerializeField] GameObject EndGameUIobject;
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
@@ -89,17 +91,56 @@ namespace Network
 
         private void HandleClientConnected(ulong clientId)
         {
+            
             PlayerManager playerManager = null;
             foreach (var manager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
                 playerManager = manager.GetComponent<PlayerManager>();
-                if(playerManager.GetClientId() == clientId) break;
-            }
+                if (playerManager.GetClientId() == clientId)
+                {
 
-            if(!playerManager)
+                    break;
+                }
+                playerManager = null;
+                
+            }
+            
+
+            if (!playerManager)
             {
-                Debug.Log("No player manager detected for " + clientId);
+                var newPlayer = Instantiate(playerManagerPrefab);
+                newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+                if (gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+                    {
+                    int teamInfo = 1;
+                    int teamCounter1=0;
+                    int teamCounter2=0;
+                    for(int i=0;i<playerStates.Count;i++)
+                    {
+                        if (playerStates[i].TeamId == 1)
+                            teamCounter1++;
+                        else
+                            teamCounter2++;
+                                
+                    }
+                    if (teamCounter1 >= teamCounter2)
+                        teamInfo = 2;
+                    newPlayer.GetComponent<PlayerManager>().SetPlayerData(clientId,
+                    "jjja",
+                    teamInfo
+                    );
+                    }
+                    else
+                    {
+                    newPlayer.GetComponent<PlayerManager>().SetPlayerData(clientId,
+                    "jjja",
+                    0
+                    );
+                    }
+                
+                playerManager = newPlayer.GetComponent<PlayerManager>();
+                //Debug.Log("No player manager detected for " + clientId);
                 //Client connecting after game has started logic
-                return;
+                //return;
             }
             playerSpawnerObject.GetComponent<PlayerSpawner>().SpawnPlayer(playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");

@@ -293,7 +293,7 @@ namespace NetPortals {
                 gameReturnStatus = ConnectStatus.ServerFull;
             }
 
-            if (gameReturnStatus == ConnectStatus.Success)
+            if (gameReturnStatus == ConnectStatus.Success || gameReturnStatus == ConnectStatus.GameInProgress)
             {
                 clientSceneMap[clientId] = connectionPayload.clientScene;
                 clientIdToGuid[clientId] = connectionPayload.clientGUID;
@@ -304,7 +304,7 @@ namespace NetPortals {
 
             gameNetPortal.ServerToClientConnectResult(clientId, gameReturnStatus);
 
-            if (gameReturnStatus != ConnectStatus.Success)
+            if (gameReturnStatus != ConnectStatus.Success && gameReturnStatus != ConnectStatus.GameInProgress)
             {
                 StartCoroutine(WaitToDisconnectClient(clientId, gameReturnStatus));
             }

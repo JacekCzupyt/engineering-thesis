@@ -10340,6 +10340,7 @@ MonoBehaviour:
   gameUIObject: {fileID: 1799994223}
   scoreboardUIPanel: {fileID: 745254748}
   playerSpawnerObject: {fileID: 1726714043}
+  playerManagerPrefab: {fileID: 4405543599418297458, guid: d2fd60207659abc4e892e442f59c62d4, type: 3}
   NumOfKillsToWin: 1
   EndGameUIobject: {fileID: 342768522}
 --- !u!4 &1501253577
