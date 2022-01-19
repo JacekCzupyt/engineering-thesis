@@ -84,7 +84,7 @@ namespace Game_Systems.Utility
         public static void TestPoints()
         {
             int i = 1;
-            foreach(var list in GenerateListsOfDividedPoints(10, 1, 70f))
+            foreach(var list in GenerateListsOfDividedPoints(2, 1, 70f))
             {
                 Debug.Log("List " + i);
                 foreach(var point in list)

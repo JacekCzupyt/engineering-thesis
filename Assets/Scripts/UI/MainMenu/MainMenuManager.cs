@@ -1,6 +1,4 @@
 using UnityEngine;
-//Temporary
-using Game_Systems.Utility;
 
 namespace UI.MainMenu {
     public class MainMenuManager : MonoBehaviour
@@ -11,7 +9,6 @@ namespace UI.MainMenu {
 
         public void Play(){
             SwitchMenus(initialMenu, playMenu);
-            RespawnPointGenerator.TestPoints();
         }
 
         public void Exit(){
