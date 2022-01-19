@@ -12,76 +12,25 @@ namespace Game_Systems
         [SerializeField] GameManager gameManager;
         private GameMode gameMode;
         private int teamCount;
+        private float mapRadius;
+        private List<List<Vector3>> dividedPoints = new List<List<Vector3>>();
 
         private void Start() {
-            if(NetworkManager.Singleton.IsServer)
-            {
-                // if(gameManager)
-                // {
-                //     gameManager.SpawnPlayerEvent += SpawnPlayer;
-                // }
-                // var players = GameObject.FindGameObjectsWithTag("PlayerManager");
-                // List<Vector3> spawnPoints = null;
-                // switch(gameMode)
-                // {
-                //     case GameMode.FreeForAll:
-                //     spawnPoints = RespawnPointGenerator.generatePoints(10, 70);
-                //     foreach (var player in players)
-                //     {
-                //         PlayerManager playerManager = player.GetComponent<PlayerManager>();
-
-                //         int rand = RespawnPointGenerator.rnd.Next(spawnPoints.Count);
-
-                //         playerManager.SpawnCharacter(spawnPoints[rand]);
-
-                //         spawnPoints.RemoveAt(rand);
-                //     }
-                //     break;
-                //     case GameMode.TeamDeathmatch:
-                //     for(int i = 1; i < teamCount+1; i++)
-                //     {
-                //         int playerCount = GetPlayerCountPerTeam(players, i);
-                //         spawnPoints = RespawnPointGenerator.GenerateTeamPoints(playerCount, teamCount, i, 70);
-                //         foreach(var player in players)
-                //         {
-                //             PlayerManager playerManager = player.GetComponent<PlayerManager>();
-                //             if(playerManager.teamId == i)
-                //             {
-                //                 int rand = RespawnPointGenerator.rnd.Next(spawnPoints.Count);
-
-                //                 playerManager.SpawnCharacter(spawnPoints[rand]);
-
-                //                 spawnPoints.RemoveAt(rand);
-                //             }
-                //         }
-                //     }
-                //     break;
-                //     default: 
-                //         throw new InvalidOperationException("Game Mode does not exist");
-                // }
-            }
-            // Debug.Log("Team " + 1);
-            // foreach(var point in RespawnPointGenerator.GenerateTeamPoints(5, 2, 1))
-            // {
-            //     Debug.Log("x: " + point.x + ", y: " + point.y + ", z: " + point.z);
-            // }
-            // Debug.Log("Team " + 2);
-            // foreach(var point in RespawnPointGenerator.GenerateTeamPoints(5, 2, 2))
-            // {
-            //     Debug.Log("x: " + point.x + ", y: " + point.y + ", z: " + point.z);
-            // }
-        }
-
-        private void OnGameStart()
-        {
-            
-
+            mapRadius = 70f;
         }
 
         public void ReceiveGameInfo(GameInfo gameInfo)
         {
             gameMode = gameInfo.gameMode;
             teamCount = gameInfo.teamCount;
+            
+            if(gameMode == GameMode.FreeForAll)
+            {
+                dividedPoints = RespawnPointGenerator.GenerateListsOfDividedPoints(gameInfo.playerCount, 1, mapRadius);
+            }else if(gameMode == GameMode.TeamDeathmatch)
+            {
+                dividedPoints = RespawnPointGenerator.GenerateListsOfDividedPoints(teamCount, gameInfo.maxPlayersPerTeam, mapRadius);
+            }
         }
 
         public void SpawnPlayer(PlayerManager manager)
@@ -100,6 +49,7 @@ namespace Game_Systems
                 player = manager.SpawnCharacter(pos[rand]);
                 pos.RemoveAt(rand);
             }
+            
             player?.GetComponent<PlayerGameManager>().SetGameManager(gameManager);  
             player?.GetComponent<PlayerGameManager>().SetPlayerState(manager.GetPlayerState());              
         }
@@ -110,7 +60,7 @@ namespace Game_Systems
             foreach(var player in players)
             {
                 PlayerManager pm = player.GetComponent<PlayerManager>();
-                if(pm.teamId == teamId)
+                if(pm.GetPlayerState().TeamId == teamId)
                 {
                     count++;
                 }

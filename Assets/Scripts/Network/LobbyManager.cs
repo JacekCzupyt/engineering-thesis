@@ -169,7 +169,7 @@ namespace Network {
         private void InitializeGameInfoObject()
         {
             var gameInfo = Instantiate(gameInfoManagerPrefab);
-            gameInfo.GetComponent<GameInfoManager>().SetGameInfo(new GameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count)); 
+            gameInfo.GetComponent<GameInfoManager>().SetGameInfo(new GameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count, lobbyPlayers.Count)); 
         }
 
         [ServerRpc(RequireOwnership = false)]
