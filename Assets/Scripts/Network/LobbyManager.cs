@@ -21,7 +21,7 @@ namespace Network {
 
         [Header("Game Settings")]
         [SerializeField] private int numberOfTeams = 2;
-        private NetworkList<LobbyPlayerState> lobbyPlayers = new NetworkList<LobbyPlayerState>();
+        private NetworkDictionary<ulong, LobbyPlayerState> lobbyPlayers = new NetworkDictionary<ulong, LobbyPlayerState>();
         private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
         private LobbyUI lobbyUI;
@@ -34,7 +34,7 @@ namespace Network {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
             if(IsClient)
             {
-                lobbyPlayers.OnListChanged += HandleLobbyPlayersStateChanged;
+                lobbyPlayers.OnDictionaryChanged += HandleLobbyPlayersStateChanged;
                 gameMode.OnValueChanged += HandleGameModeChange;      
                 UpdateGameMode();
             }
@@ -55,7 +55,7 @@ namespace Network {
         }
 
         private void OnDestroy() {
-            lobbyPlayers.OnListChanged -= HandleLobbyPlayersStateChanged;
+            lobbyPlayers.OnDictionaryChanged -= HandleLobbyPlayersStateChanged;
             gameMode.OnValueChanged -= HandleGameModeChange;
 
             if(NetworkManager.Singleton)
@@ -67,7 +67,7 @@ namespace Network {
 
         private bool IsEveryoneReady()
         {
-            foreach(var player in lobbyPlayers)
+            foreach(var player in lobbyPlayers.Values)
             {
                 if(!player.IsReady) return false;
             }
@@ -80,31 +80,24 @@ namespace Network {
 
             if(!playerData.HasValue) return;
 
-            lobbyPlayers.Add(new LobbyPlayerState(
+            lobbyPlayers[clientId] = new LobbyPlayerState(
                 clientId,
                 playerData.Value.PlayerName,
                 0,
                 false
-            ));
+            );
         }
 
-        private void HandleClientDisconnect(ulong clientId)
-        {
-            for(int i = 0; i < lobbyPlayers.Count; i++)
-            {
-                if(lobbyPlayers[i].ClientId == clientId)
-                {
-                    lobbyPlayers.RemoveAt(i);
-                    break;
-                }
-            }
+        private void HandleClientDisconnect(ulong clientId) {
+            if (!lobbyPlayers.Remove(clientId))
+                throw new InvalidOperationException("Can't disconnect non-existent client");
         }
     
         [ServerRpc(RequireOwnership = false)]
         private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
             var manager = Instantiate(playerManagerPrefab);
             manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-            LobbyPlayerState playerState = lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault();
+            LobbyPlayerState playerState = lobbyPlayers[clientId];// lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault();
             manager.GetComponent<PlayerManager>().SetPlayerData(clientId, 
                 playerState.PlayerName,
                 playerState.TeamId
@@ -112,20 +105,10 @@ namespace Network {
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void ToggleReadyServerRpc(ServerRpcParams serverRpcParams = default)
-        {
-            for(int i = 0; i < lobbyPlayers.Count; i++)
-            {
-                if(lobbyPlayers[i].ClientId == serverRpcParams.Receive.SenderClientId)
-                {
-                    lobbyPlayers[i] = new LobbyPlayerState(
-                        lobbyPlayers[i].ClientId,
-                        lobbyPlayers[i].PlayerName,
-                        lobbyPlayers[i].TeamId,
-                        !lobbyPlayers[i].IsReady
-                    );
-                }
-            }
+        private void ToggleReadyServerRpc(ServerRpcParams serverRpcParams = default) {
+            var playerState = lobbyPlayers[serverRpcParams.Receive.SenderClientId];
+            playerState.IsReady = !playerState.IsReady;
+            lobbyPlayers[playerState.ClientId] = playerState;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -147,7 +130,7 @@ namespace Network {
                 }
             }
 
-            foreach(var player in lobbyPlayers)
+            foreach(var player in lobbyPlayers.Values)
             {
                 SpawnPlayerManagerServerRpc(player.ClientId);
             }
@@ -158,16 +141,14 @@ namespace Network {
         }
 
         private void RandomizeTeams(int playersCount, int numOfTeams){
-            for(int i = 0, j = 0; i < playersCount; i++){
-                int teamNo = j + 1;
-                lobbyPlayers[i] = new LobbyPlayerState(
-                    lobbyPlayers[i].ClientId,
-                    lobbyPlayers[i].PlayerName,
-                    teamNo,
-                    lobbyPlayers[i].IsReady
-                );
-                if(j < (numOfTeams - 1)) j++;
-                else j = 0;
+
+            var ids = lobbyPlayers.Keys;
+            int index = 0;
+            foreach(var id in ids) {
+                var playerState = lobbyPlayers[id];
+                playerState.TeamId = (index % numOfTeams) + 1;
+                lobbyPlayers[id] = playerState;
+                index++;
             }
         }
 
@@ -205,29 +186,28 @@ namespace Network {
             ChangeGameModeServerRpc(mode);
         }
 
-        private void HandleLobbyPlayersStateChanged(NetworkListEvent<LobbyPlayerState> lobbyState)
+        private void HandleLobbyPlayersStateChanged(NetworkDictionaryEvent<ulong, LobbyPlayerState> lobbyState)
         {
             lobbyUI.DestroyCards();
             if(gameMode.Value == GameMode.TeamDeathmatch && arrangeCards.Value == true)
             {
                 int k = 0;
-                for(int i = 1; i < numberOfTeams + 1; i++)
-                {
-                    for(int j = 0; j < lobbyPlayers.Count; j++)
+                for(int i = 1; i < numberOfTeams + 1; i++) {
+                    foreach(var playerState in lobbyPlayers.Values)
                     {
-                        if(lobbyPlayers[j].TeamId == i){
+                        if(playerState.TeamId == i){
                             float position = -(30*k + 20*(k+1));
-                            lobbyUI.CreateListItem(lobbyPlayers[j], position);
+                            lobbyUI.CreateListItem(playerState, position);
                             k++;
                         }
                     }
                 }
-            }else
-            {
-                for(int i = 0; i < lobbyPlayers.Count; i++)
-                {
-                    float position = -(30*i + 20*(i+1));
-                    lobbyUI.CreateListItem(lobbyPlayers[i], position);
+            }else {
+                int k = 0;
+                foreach(var playerState in lobbyPlayers.Values) {
+                    float position = -(30*k + 20*(k+1));
+                    lobbyUI.CreateListItem(playerState, position);
+                    k++;
                 }
             }
             UpdatePlayerCount();
