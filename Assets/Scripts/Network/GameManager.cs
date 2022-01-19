@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Messaging;
@@ -90,7 +91,7 @@ namespace Network
         }
 
         private void HandleClientConnected(ulong clientId) {
-            PlayerManager playerManager;
+            PlayerManager playerManager = null;
             try {
                 playerManager = NetworkManager.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerManager>();
                 if (!playerManager)
@@ -98,48 +99,66 @@ namespace Network
             }
             catch {
                 //No player manager found
-
-                CreatePlayerManager(clientId);
+                playerManager = CreatePlayerManager(clientId);
             }
             
             playerSpawnerObject.GetComponent<PlayerSpawner>().SpawnPlayer(playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");
             playerStates.Add(playerManager.ToPlayerState());
-            //playerManager.DestoryPlayerManager();
+            playerManager.DestoryPlayerManager();
         }
 
-        private void CreatePlayerManager(ulong clientId) {
-            var newPlayerManager = Instantiate(playerManagerPrefab);
-            newPlayerManager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-            if (gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+        private PlayerManager CreatePlayerManager(ulong clientId) {
+            var newPlayerManagerObject = Instantiate(playerManagerPrefab);
+
+            if(!newPlayerManagerObject)
+                throw new Exception();
+
+            newPlayerManagerObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            
+            var newPlayerManager = newPlayerManagerObject.GetComponent<PlayerManager>();
+            
+            var playerData = ServerGameNetPortal.Instance.GetPlayerData(clientId);
+            
+            int teamId = 0;
+
+            if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
             {
-                int teamInfo = 1;
-                int teamCounter1=0;
-                int teamCounter2=0;
-                for(int i=0;i<playerStates.Count;i++)
-                {
-                    if (playerStates[i].TeamId == 1)
-                        teamCounter1++;
-                    else
-                        teamCounter2++;
+                teamId = AssignTeamToNewPlayer();
+            }
+
+            newPlayerManager.SetPlayerData(clientId, playerData.Value.PlayerName, teamId);
+
+            return newPlayerManager;
+
+            // if (gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            // {
+            //     int teamInfo = 1;
+            //     int teamCounter1=0;
+            //     int teamCounter2=0;
+            //     for(int i=0;i<playerStates.Count;i++)
+            //     {
+            //         if (playerStates[i].TeamId == 1)
+            //             teamCounter1++;
+            //         else
+            //             teamCounter2++;
                                 
-                }
-                if (teamCounter1 >= teamCounter2)
-                    teamInfo = 2;
-                newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
-                    "jjja",
-                    teamInfo
-                );
-            }
-            else
-            {
-                newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
-                    "jjja",
-                    0
-                );
-            }
-                
-            playerManager = newPlayerManager.GetComponent<PlayerManager>();
+            //     }
+            //     if (teamCounter1 >= teamCounter2)
+            //         teamInfo = 2;
+            //     newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
+            //         "jjja",
+            //         teamInfo
+            //     );
+            // }
+            // else
+            // {
+            //     newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
+            //         "jjja",
+            //         0
+            //     );
+            // }
+
             //Debug.Log("No player manager detected for " + clientId);
             //Client connecting after game has started logic
             //return;
@@ -373,6 +392,27 @@ namespace Network
                 }
             }
             return topPlayer;
+        }
+
+        public int AssignTeamToNewPlayer()
+        {
+            int teamCount = gameInfo.Value.teamCount;
+            int[] teamsCount = new int[teamCount];
+            for(int i = 0; i < teamCount; i++)
+            {
+                teamsCount[i] = PlayersPerTeam(i+1);
+            }
+            return Array.IndexOf(teamsCount, teamsCount.Min()) + 1;
+        }
+
+        public int PlayersPerTeam(int teamId)
+        {
+            int value = 0;
+            foreach(var playerState in playerStates)
+            {
+                if(playerState.TeamId == teamId) value++;
+            }
+            return value;
         }
     }
 }

@@ -97,7 +97,7 @@ namespace Network {
         private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
             var manager = Instantiate(playerManagerPrefab);
             manager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-            LobbyPlayerState playerState = lobbyPlayers[clientId];// lobbyPlayers.Where(p => p.ClientId == clientId).FirstOrDefault();
+            LobbyPlayerState playerState = lobbyPlayers[clientId];
             manager.GetComponent<PlayerManager>().SetPlayerData(clientId, 
                 playerState.PlayerName,
                 playerState.TeamId
@@ -141,7 +141,6 @@ namespace Network {
         }
 
         private void RandomizeTeams(int playersCount, int numOfTeams){
-
             var ids = lobbyPlayers.Keys;
             int index = 0;
             foreach(var id in ids) {
