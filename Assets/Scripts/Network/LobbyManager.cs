@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
@@ -24,6 +25,10 @@ namespace Network {
         private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
         private LobbyUI lobbyUI;
+
+        private void Start() {
+            Cursor.lockState = CursorLockMode.None;
+        }
         public override void NetworkStart()
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();

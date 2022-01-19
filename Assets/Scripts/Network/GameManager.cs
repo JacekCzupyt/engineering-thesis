@@ -187,8 +187,8 @@ namespace Network
         }
         private IEnumerator ServerEndGame()
         {
-            yield return new WaitForSeconds(6);
-            NetworkSceneManager.SwitchScene("LobbyScene");
+            yield return new WaitForSeconds(5);
+            ServerGameNetPortal.Instance.EndRound();
         }
         
         [ClientRpc]
