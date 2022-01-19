@@ -89,63 +89,60 @@ namespace Network
             }
         }
 
-        private void HandleClientConnected(ulong clientId)
-        {
-            
-            PlayerManager playerManager = null;
-            foreach (var manager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
-                playerManager = manager.GetComponent<PlayerManager>();
-                if (playerManager.GetClientId() == clientId)
-                {
+        private void HandleClientConnected(ulong clientId) {
+            PlayerManager playerManager;
+            try {
+                playerManager = NetworkManager.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerManager>();
+                if (!playerManager)
+                    throw new Exception();
+            }
+            catch {
+                //No player manager found
 
-                    break;
-                }
-                playerManager = null;
-                
+                CreatePlayerManager(clientId);
             }
             
-
-            if (!playerManager)
-            {
-                var newPlayer = Instantiate(playerManagerPrefab);
-                newPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-                if (gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
-                    {
-                    int teamInfo = 1;
-                    int teamCounter1=0;
-                    int teamCounter2=0;
-                    for(int i=0;i<playerStates.Count;i++)
-                    {
-                        if (playerStates[i].TeamId == 1)
-                            teamCounter1++;
-                        else
-                            teamCounter2++;
-                                
-                    }
-                    if (teamCounter1 >= teamCounter2)
-                        teamInfo = 2;
-                    newPlayer.GetComponent<PlayerManager>().SetPlayerData(clientId,
-                    "jjja",
-                    teamInfo
-                    );
-                    }
-                    else
-                    {
-                    newPlayer.GetComponent<PlayerManager>().SetPlayerData(clientId,
-                    "jjja",
-                    0
-                    );
-                    }
-                
-                playerManager = newPlayer.GetComponent<PlayerManager>();
-                //Debug.Log("No player manager detected for " + clientId);
-                //Client connecting after game has started logic
-                //return;
-            }
             playerSpawnerObject.GetComponent<PlayerSpawner>().SpawnPlayer(playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");
             playerStates.Add(playerManager.ToPlayerState());
             //playerManager.DestoryPlayerManager();
+        }
+
+        private void CreatePlayerManager(ulong clientId) {
+            var newPlayerManager = Instantiate(playerManagerPrefab);
+            newPlayerManager.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            if (gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            {
+                int teamInfo = 1;
+                int teamCounter1=0;
+                int teamCounter2=0;
+                for(int i=0;i<playerStates.Count;i++)
+                {
+                    if (playerStates[i].TeamId == 1)
+                        teamCounter1++;
+                    else
+                        teamCounter2++;
+                                
+                }
+                if (teamCounter1 >= teamCounter2)
+                    teamInfo = 2;
+                newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
+                    "jjja",
+                    teamInfo
+                );
+            }
+            else
+            {
+                newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
+                    "jjja",
+                    0
+                );
+            }
+                
+            playerManager = newPlayerManager.GetComponent<PlayerManager>();
+            //Debug.Log("No player manager detected for " + clientId);
+            //Client connecting after game has started logic
+            //return;
         }
 
         private void HandleClientDisconnect(ulong clientId)
