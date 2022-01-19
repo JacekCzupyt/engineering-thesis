@@ -1,5 +1,6 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using Game_Systems.Utility;
 using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Messaging;
@@ -141,14 +142,39 @@ namespace Network {
         }
 
         private void RandomizeTeams(int playersCount, int numOfTeams){
-            var ids = lobbyPlayers.Keys;
-            int index = 0;
-            foreach(var id in ids) {
-                var playerState = lobbyPlayers[id];
-                playerState.TeamId = (index % numOfTeams) + 1;
-                lobbyPlayers[id] = playerState;
-                index++;
+            int[] playersPerTeam = new int[numberOfTeams];
+            for(int i = 0; i < numberOfTeams; i++)
+            {
+                playersPerTeam[i] = (int) Math.Ceiling((double) playersCount/(double) numberOfTeams);
             }
+
+            List<LobbyPlayerState> tempStates = new List<LobbyPlayerState>(lobbyPlayers.Values);
+
+            foreach(var player in tempStates)
+            {
+                int teamId = RespawnPointGenerator.rnd.Next(numberOfTeams);
+                while(playersPerTeam[teamId] == 0)
+                {
+                    teamId = RespawnPointGenerator.rnd.Next(numberOfTeams);
+                }
+
+                lobbyPlayers[player.ClientId] = new LobbyPlayerState(
+                    player.ClientId,
+                    player.PlayerName,
+                    teamId + 1,
+                    player.IsReady
+                );
+            
+                playersPerTeam[teamId]--;
+            }
+            // var ids = lobbyPlayers.Keys;
+            // int index = 0;
+            // foreach(var id in ids) {
+            //     var playerState = lobbyPlayers[id];
+            //     playerState.TeamId = (index % numOfTeams) + 1;
+            //     lobbyPlayers[id] = playerState;
+            //     index++;
+            // }
         }
 
         private void InitializeGameInfoObject()
