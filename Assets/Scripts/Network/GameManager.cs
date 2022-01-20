@@ -66,7 +66,7 @@ namespace Network
                 gameInfo.Value = gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo();
 
                 playerSpawnerObject.GetComponent<PlayerSpawner>()
-                .ReceiveGameInfo(gameInfo.Value);
+                .UpdateGameInfo(gameInfo.Value);
 
                 NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
@@ -333,6 +333,7 @@ namespace Network
         private void UpdateGameMode()
         {
             scoreboardUI.UpdateGameMode(gameInfo.Value.gameMode);
+            gameScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
         }
 
         private void Update() {
