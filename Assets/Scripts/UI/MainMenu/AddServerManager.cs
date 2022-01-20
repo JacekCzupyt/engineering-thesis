@@ -22,7 +22,7 @@ namespace UI.MainMenu
 
         //string uri = "http://79.191.52.229:8080/servers";
         public string ip;
-        public bool IsAdd=false;
+        // public bool IsAdd=false;
         private void Start()
         {
             StartCoroutine(GetIPAddress());
@@ -49,24 +49,27 @@ namespace UI.MainMenu
                     string[] a3 = a2.Split('<');    // Now split to the first HTML tag after the IP address.
                     ip = a3[0];              // Get the substring before the tag.
                     Debug.Log("External IP Address = " + ip);
+                    ServerGameNetPortal.Instance.serverIp = ip;
                     break;
             }
         }
-        public void SendData()
-        {
-            IsAdd = true;
+        public void SendData() {
+            ServerGameNetPortal.Instance.informServerBrowser = true;
+            // IsAdd = true;
             if (!ServerNameValidation())
                 return;
             GameNetPortal.Instance.StartHost();
         }
 
-        private bool ServerNameValidation()
-        {
-            if (serverNameInput.text.Length <= 0)
+        private bool ServerNameValidation() {
+            var serverName = serverNameInput.text;
+            if (serverName.Length <= 0)
             {
                 serverNameInputError.SetActive(true);
                 return false;
             }
+            serverNameInputError.SetActive(false);
+            PlayerPrefs.SetString("ServerName", serverName);
             return true;
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Messaging;
@@ -20,9 +21,11 @@ namespace Network
         [Header("UI References")]
         [SerializeField] private GameObject gameUIObject;
         [SerializeField] private GameObject scoreboardUIPanel;
+        
 
         [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
+        [SerializeField] private GameObject playerManagerPrefab;
         [SerializeField] int NumOfKillsToWin;
         [SerializeField] GameObject EndGameUIobject;
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
@@ -87,24 +90,79 @@ namespace Network
             }
         }
 
-        private void HandleClientConnected(ulong clientId)
-        {
+        private void HandleClientConnected(ulong clientId) {
             PlayerManager playerManager = null;
-            foreach (var manager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
-                playerManager = manager.GetComponent<PlayerManager>();
-                if(playerManager.GetPlayerState().ClientId == clientId) break;
+            try {
+                playerManager = NetworkManager.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerManager>();
+                if (!playerManager)
+                    throw new Exception();
             }
-
-            if(!playerManager)
-            {
-                Debug.Log("No player manager detected for " + clientId);
-                //Client connecting after game has started logic
-                return;
+            catch {
+                //No player manager found
+                //We create a new one
+                playerManager = CreatePlayerManager(clientId);
             }
+            
             playerSpawnerObject.GetComponent<PlayerSpawner>().SpawnPlayer(playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");
             playerStates.Add(playerManager.GetPlayerState());
-            //playerManager.DestoryPlayerManager();
+            playerManager.DestoryPlayerManager();
+        }
+
+        private PlayerManager CreatePlayerManager(ulong clientId) {
+            var newPlayerManagerObject = Instantiate(playerManagerPrefab);
+
+            if(!newPlayerManagerObject)
+                throw new Exception();
+
+            newPlayerManagerObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            
+            var newPlayerManager = newPlayerManagerObject.GetComponent<PlayerManager>();
+            
+            var playerData = ServerGameNetPortal.Instance.GetPlayerData(clientId);
+            
+            int teamId = 0;
+
+            if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            {
+                teamId = AssignTeamToNewPlayer();
+            }
+
+            newPlayerManager.SetPlayerData(clientId, playerData.Value.PlayerName, teamId);
+
+            return newPlayerManager;
+
+            // if (gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            // {
+            //     int teamInfo = 1;
+            //     int teamCounter1=0;
+            //     int teamCounter2=0;
+            //     for(int i=0;i<playerStates.Count;i++)
+            //     {
+            //         if (playerStates[i].TeamId == 1)
+            //             teamCounter1++;
+            //         else
+            //             teamCounter2++;
+                                
+            //     }
+            //     if (teamCounter1 >= teamCounter2)
+            //         teamInfo = 2;
+            //     newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
+            //         "jjja",
+            //         teamInfo
+            //     );
+            // }
+            // else
+            // {
+            //     newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
+            //         "jjja",
+            //         0
+            //     );
+            // }
+
+            //Debug.Log("No player manager detected for " + clientId);
+            //Client connecting after game has started logic
+            //return;
         }
 
         private void HandleClientDisconnect(ulong clientId)
@@ -187,8 +245,8 @@ namespace Network
         }
         private IEnumerator ServerEndGame()
         {
-            yield return new WaitForSeconds(6);
-            NetworkSceneManager.SwitchScene("LobbyScene");
+            yield return new WaitForSeconds(5);
+            ServerGameNetPortal.Instance.EndRound();
         }
         
         [ClientRpc]
@@ -336,6 +394,27 @@ namespace Network
                 }
             }
             return topPlayer;
+        }
+
+        public int AssignTeamToNewPlayer()
+        {
+            int teamCount = gameInfo.Value.teamCount;
+            int[] teamsCount = new int[teamCount];
+            for(int i = 0; i < teamCount; i++)
+            {
+                teamsCount[i] = PlayersPerTeam(i+1);
+            }
+            return Array.IndexOf(teamsCount, teamsCount.Min()) + 1;
+        }
+
+        public int PlayersPerTeam(int teamId)
+        {
+            int value = 0;
+            foreach(var playerState in playerStates)
+            {
+                if(playerState.TeamId == teamId) value++;
+            }
+            return value;
         }
     }
 }

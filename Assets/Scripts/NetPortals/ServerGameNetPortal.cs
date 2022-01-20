@@ -32,8 +32,9 @@ namespace NetPortals {
         private int DbId;
 
         private int counter = 0;
-        [SerializeField] AddServerManager servert;
-        bool isAdd;
+
+        public bool informServerBrowser = false;
+        public string serverIp;
 
         private void Awake()
         {
@@ -155,7 +156,7 @@ namespace NetPortals {
 
         private void HandleUserDisconnectRequested()
         {
-            if (isAdd)
+            if (informServerBrowser)
             {
                 CancelInvoke("Upload");               
             }
@@ -188,10 +189,9 @@ namespace NetPortals {
         {
             
             if (!NetworkManager.Singleton.IsHost) { return; }
-            isAdd = servert.IsAdd;
-            if (isAdd)
+            if (informServerBrowser)
             {
-                string jsonData = "{\"name\": \"" + servert.serverNameInput.text + "\", \"ip\": \"" + servert.ip + "\"}";
+                string jsonData = "{\"name\": \"" + PlayerPrefs.GetString("ServerName", "Missing Name") + "\", \"ip\": \"" + serverIp + "\"}";
                 StartCoroutine(AddServer(uri, jsonData));
                 InvokeRepeating("Upload", 5.0f, 8.0f);
             }            
@@ -293,7 +293,7 @@ namespace NetPortals {
                 gameReturnStatus = ConnectStatus.ServerFull;
             }
 
-            if (gameReturnStatus == ConnectStatus.Success)
+            if (gameReturnStatus == ConnectStatus.Success || gameReturnStatus == ConnectStatus.GameInProgress)
             {
                 clientSceneMap[clientId] = connectionPayload.clientScene;
                 clientIdToGuid[clientId] = connectionPayload.clientGUID;
@@ -304,7 +304,7 @@ namespace NetPortals {
 
             gameNetPortal.ServerToClientConnectResult(clientId, gameReturnStatus);
 
-            if (gameReturnStatus != ConnectStatus.Success)
+            if (gameReturnStatus != ConnectStatus.Success && gameReturnStatus != ConnectStatus.GameInProgress)
             {
                 StartCoroutine(WaitToDisconnectClient(clientId, gameReturnStatus));
             }
