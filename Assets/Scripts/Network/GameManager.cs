@@ -99,12 +99,13 @@ namespace Network
             }
             catch {
                 //No player manager found
+                //We create a new one
                 playerManager = CreatePlayerManager(clientId);
             }
             
             playerSpawnerObject.GetComponent<PlayerSpawner>().SpawnPlayer(playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");
-            playerStates.Add(playerManager.ToPlayerState());
+            playerStates.Add(playerManager.GetPlayerState());
             playerManager.DestoryPlayerManager();
         }
 

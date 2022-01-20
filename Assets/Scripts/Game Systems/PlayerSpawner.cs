@@ -101,7 +101,7 @@ namespace Game_Systems
                 pos.RemoveAt(rand);
             }
             player?.GetComponent<PlayerGameManager>().SetGameManager(gameManager);  
-            player?.GetComponent<PlayerGameManager>().SetPlayerState(manager.ToPlayerState());              
+            player?.GetComponent<PlayerGameManager>().SetPlayerState(manager.GetPlayerState());              
         }
 
         private int GetPlayerCountPerTeam(GameObject[] players, int teamId)
@@ -110,7 +110,7 @@ namespace Game_Systems
             foreach(var player in players)
             {
                 PlayerManager pm = player.GetComponent<PlayerManager>();
-                if(pm.teamId == teamId)
+                if(pm.GetPlayerState().TeamId == teamId)
                 {
                     count++;
                 }
