@@ -73,7 +73,7 @@ namespace Network
 
                 foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
                 {
-                    HandleClientConnected(client.ClientId);
+                    HandleClientLoaded(client.ClientId);
                 }
             }
         }
@@ -91,6 +91,17 @@ namespace Network
         }
 
         private void HandleClientConnected(ulong clientId) {
+            var tmpGameInfo = gameInfo.Value;
+            tmpGameInfo.playerCount++;
+            tmpGameInfo.maxPlayersPerTeam++;
+            gameInfo.Value = tmpGameInfo;
+            
+            playerSpawnerObject.GetComponent<PlayerSpawner>()
+                .UpdateGameInfo(gameInfo.Value);
+            HandleClientLoaded(clientId);
+        }
+
+        private void HandleClientLoaded(ulong clientId) {
             PlayerManager playerManager = null;
             try {
                 playerManager = NetworkManager.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerManager>();
@@ -131,42 +142,15 @@ namespace Network
             newPlayerManager.SetPlayerData(clientId, playerData.Value.PlayerName, teamId);
 
             return newPlayerManager;
-
-            // if (gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
-            // {
-            //     int teamInfo = 1;
-            //     int teamCounter1=0;
-            //     int teamCounter2=0;
-            //     for(int i=0;i<playerStates.Count;i++)
-            //     {
-            //         if (playerStates[i].TeamId == 1)
-            //             teamCounter1++;
-            //         else
-            //             teamCounter2++;
-                                
-            //     }
-            //     if (teamCounter1 >= teamCounter2)
-            //         teamInfo = 2;
-            //     newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
-            //         "jjja",
-            //         teamInfo
-            //     );
-            // }
-            // else
-            // {
-            //     newPlayerManager.GetComponent<PlayerManager>().SetPlayerData(clientId,
-            //         "jjja",
-            //         0
-            //     );
-            // }
-
-            //Debug.Log("No player manager detected for " + clientId);
-            //Client connecting after game has started logic
-            //return;
         }
 
         private void HandleClientDisconnect(ulong clientId)
         {
+            var tmpGameInfo = gameInfo.Value;
+            tmpGameInfo.playerCount--;
+            tmpGameInfo.maxPlayersPerTeam--;
+            gameInfo.Value = tmpGameInfo;
+            
             for(int i = 0; i < playerStates.Count; i++)
             {
                 if(playerStates[i].ClientId == clientId)
@@ -175,6 +159,8 @@ namespace Network
                     playerStates.RemoveAt(i);
                 }
             }
+            playerSpawnerObject.GetComponent<PlayerSpawner>()
+                .UpdateGameInfo(gameInfo.Value);
         }
 
         private void HandlePlayerStateChange(NetworkListEvent<PlayerState> state)
