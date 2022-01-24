@@ -23,7 +23,7 @@ namespace Network {
         [Header("Game Settings")]
         [SerializeField] private int numberOfTeams = 2;
         private NetworkDictionary<ulong, LobbyPlayerState> lobbyPlayers = new NetworkDictionary<ulong, LobbyPlayerState>();
-        private NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
+        public NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
         private LobbyUI lobbyUI;
 
