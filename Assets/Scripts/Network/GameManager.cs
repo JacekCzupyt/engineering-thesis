@@ -29,7 +29,7 @@ namespace Network
         [SerializeField] int NumOfKillsToWin;
         [SerializeField] GameObject EndGameUIobject;
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
-        private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
+        public NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
         private ScoreboardUI scoreboardUI;
         private PlayerScoreUI playerScoreUI;
         private GameScoreUI gameScoreUI;

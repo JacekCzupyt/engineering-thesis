@@ -231,12 +231,19 @@ namespace NetPortals {
         
         private IEnumerator Uploadform()
         {
-            LobbyManager mode = GetComponent<LobbyManager>();
-            GameManager man = GetComponent<GameManager>();
+            LobbyManager mode = GameObject.FindObjectOfType<LobbyManager>();
+            GameManager man = GameObject.FindObjectOfType<GameManager>();
             bool sendMode = true;
-            if(mode!=null||man!=null)
+            if(mode!=null)
             {
-                if (mode.gameMode.Value == GameMode.FreeForAll||man.gameInfo.Value.gameMode==GameMode.FreeForAll)
+                if (mode.gameMode.Value == GameMode.FreeForAll)
+                    sendMode = true;
+                else
+                    sendMode = false;
+            }
+            if(man!=null)
+            {
+                if (man.gameInfo.Value.gameMode ==  GameMode.FreeForAll)
                     sendMode = true;
                 else
                     sendMode = false;
