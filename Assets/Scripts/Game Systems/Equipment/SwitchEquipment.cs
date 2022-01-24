@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game_Systems.Equipment.Weapons;
 using Input_Systems;
@@ -25,6 +26,13 @@ namespace Game_Systems.Equipment {
             currentlyEquipped.OnValueChanged += SwitchEquipmentsCallback;
             equipment[currentlyEquipped.Value].enabled = true;
         }
+        
+        private void OnDestroy() {
+            if (IsOwner) {
+                var input = CharacterInputManager.Instance;
+                input.SwitchEquipment -= SwitchEquipmentLocalCallback;
+            }
+        }
 
         private void SwitchEquipmentLocalCallback(int index) {
             if (index > equipment.Count) {
@@ -39,5 +47,7 @@ namespace Game_Systems.Equipment {
             equipment[prev].enabled = false;
             equipment[current].enabled = true;
         }
+
+
     }
 }

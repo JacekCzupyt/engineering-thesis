@@ -53,6 +53,11 @@ namespace Game_Systems.Equipment {
             rb = player.GetComponent<Rigidbody>();
         }
 
+        private void OnDestroy() {
+            input.AbilityAction.started -= Fire;
+            input.AbilityAction.canceled -= CancelGrapple;
+        }
+
         private void FixedUpdate() {
             if (!IsOwner)
                 return;

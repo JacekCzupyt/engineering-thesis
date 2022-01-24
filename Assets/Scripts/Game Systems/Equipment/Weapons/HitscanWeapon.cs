@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using Audio;
 using Input_Systems;
@@ -7,6 +9,7 @@ using MLAPI.Spawning;
 using UI.Game;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace Game_Systems.Equipment.Weapons {
@@ -90,13 +93,25 @@ namespace Game_Systems.Equipment.Weapons {
 
 
         private void Start() {
+            if (!IsOwner)
+                return;
+            
+            Debug.LogWarning("Script started");
+            
             input = CharacterInputManager.Instance;
             particles = GetComponentInChildren<ParticleSystem>();
             currentAmmoCount = maxAmmoCount;
-            input.Controls.Reload.performed += Reload;
+            input.Reload.performed += Reload;
             playerRb = player.GetComponent<Rigidbody>();
         }
 
+        private void OnDestroy() {
+            if (!IsOwner)
+                return;
+            
+            if(input != null)
+                input.Reload.performed -= Reload;
+        }
 
         private void Update() {
             if (IsOwner) {
