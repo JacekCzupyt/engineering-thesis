@@ -179,6 +179,10 @@ namespace Network {
 
         private void InitializeGameInfoObject()
         {
+            foreach(var manager in GameObject.FindGameObjectsWithTag("GameInfoManager")) {
+                Destroy(manager);
+            }
+            
             var gameInfo = Instantiate(gameInfoManagerPrefab);
             gameInfo.GetComponent<GameInfoManager>().SetGameInfo(new GameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count, lobbyPlayers.Count)); 
         }
