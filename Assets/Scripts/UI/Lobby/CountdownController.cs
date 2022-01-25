@@ -6,16 +6,20 @@ namespace UI.Lobby
 {
     public class CountdownController : MonoBehaviour
     {
-        [SerializeField] public int countdownTime = 5;
-        [SerializeField] public GameObject countdownDisplay;
+        [SerializeField] public GameObject countdownTimerObject;
+        private Text countdownText;
 
-        public void StartTimer(){
-            StartCoroutine(CountdownToStart());
+        private void Start() {
+            countdownText = countdownTimerObject.GetComponent<Text>();
         }
 
-        IEnumerator CountdownToStart()
+        public void StartTimer(int countdownTime){
+            StartCoroutine(CountdownToStart(countdownTime));
+        }
+
+        private IEnumerator CountdownToStart(int countdownTime)
         {
-            Text countdownText = countdownDisplay.gameObject.GetComponent<Text>();
+            countdownTimerObject.SetActive(true);
 
             while(countdownTime > 0)
             {
@@ -27,8 +31,6 @@ namespace UI.Lobby
             }
 
             countdownText.text = "Game will start now...";
-
-            countdownDisplay.gameObject.SetActive(false);
         }
     }
 }

@@ -124,7 +124,14 @@ namespace UI.Lobby {
                 break;
                 default: break;
             }
+        }
 
+        public void StartGameDeactivation()
+        {
+            foreach(var button in this.GetComponentsInChildren<Button>())
+            {
+                button.interactable = false;
+            }
         }
     }
 }

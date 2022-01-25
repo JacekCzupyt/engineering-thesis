@@ -299,7 +299,7 @@ namespace Network
 
         #endregion Game State Changes
 
-        #region UI Updates
+        #region UI Update Calls
 
         private void GameScoreUpdate()
         {
@@ -365,7 +365,7 @@ namespace Network
             }
         }
 
-        #endregion UI Updates
+        #endregion UI Update Calls
 
         #region Utility
 
