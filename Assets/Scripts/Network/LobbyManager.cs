@@ -22,6 +22,7 @@ namespace Network {
 
         [Header("Game Settings")]
         [SerializeField] private int numberOfTeams = 2;
+        
         private NetworkDictionary<ulong, LobbyPlayerState> lobbyPlayers = new NetworkDictionary<ulong, LobbyPlayerState>();
         public NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
@@ -167,14 +168,6 @@ namespace Network {
             
                 playersPerTeam[teamId]--;
             }
-            // var ids = lobbyPlayers.Keys;
-            // int index = 0;
-            // foreach(var id in ids) {
-            //     var playerState = lobbyPlayers[id];
-            //     playerState.TeamId = (index % numOfTeams) + 1;
-            //     lobbyPlayers[id] = playerState;
-            //     index++;
-            // }
         }
 
         private void InitializeGameInfoObject()

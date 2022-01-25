@@ -1,68 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System;
 using Network;
-using UI;
 
-public class PlayerGameManager : MonoBehaviour
+namespace Game_Systems
 {
-    private ulong clientId;
-    private string playerName;
-    private int teamId;
-    private int playerKills;
-    public int playerDeaths;
-    private GameManager gameManager;
-    private GameInfo gameInfo;
-
-    public void SetPlayerState(PlayerState playerState)
+    public class PlayerGameManager : MonoBehaviour
     {
-        clientId = playerState.ClientId;
-        playerName = playerState.PlayerName;
-        teamId = playerState.TeamId;
-        playerKills = playerState.PlayerKills;
-        playerDeaths = playerState.PlayerDeaths;
+        private ulong clientId;
+        private string playerName;
+        private int teamId;
+        private int playerKills;
+        private int playerDeaths;
+        private GameManager gameManager;
+        private GameInfo gameInfo;
 
-    }
-    public void SetGameManager(GameManager manager)
-    {
-        gameManager = manager;
-        gameInfo = gameManager.GetGameInfo();
-    }
+        public void SetPlayerState(PlayerState playerState)
+        {
+            clientId = playerState.ClientId;
+            playerName = playerState.PlayerName;
+            teamId = playerState.TeamId;
+            playerKills = playerState.PlayerKills;
+            playerDeaths = playerState.PlayerDeaths;
 
-    public int GetTeamId()
-    {
-        return teamId;
-    }
+        }
+        public void SetGameManager(GameManager manager)
+        {
+            gameManager = manager;
+            gameObject.GetComponentInChildren<PlayerHealth>().SetGameManager(gameManager);
+            gameInfo = gameManager.GetGameInfo();
+        }
 
-    public void AddPlayerDeath(ulong playerId)
-    {
-        gameManager.PlayerDeathUpdate(playerId);
-    }
+        public int GetTeamId()
+        {
+            return teamId;
+        }
 
-    public void AddPlayerKill(ulong playerId)
-    {
-        gameManager.PlayerKillUpdate(playerId);
-    }
+        public GameMode GetGameMode()
+        {
+            return gameInfo.gameMode;
+        }
 
-    public void UpdatePlayerState(PlayerState state)
-    {
-        this.playerKills = state.PlayerKills;
-        this.playerDeaths = state.PlayerDeaths;
-    }
-
-    public void UpdatePlayerDeaths()
-    {
-        playerDeaths += 1;
-    }
-
-    public GameMode GetGameMode()
-    {
-        return gameInfo.gameMode;
-    }
-
-    public ulong GetClientId()
-    {
-        return clientId;
+        public GameManager GetGameManager()
+        {
+            return gameManager;
+        }
     }
 }
+
+

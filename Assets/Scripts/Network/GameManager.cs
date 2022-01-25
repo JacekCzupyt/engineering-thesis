@@ -77,6 +77,18 @@ namespace Network
             }
         }
 
+        private void Update() {
+            
+            if(Input.GetKeyDown(KeyCode.Tab))
+            {
+                scoreboardUIPanel.SetActive(true);
+            }
+            if(Input.GetKeyUp(KeyCode.Tab))
+            {
+                scoreboardUIPanel.SetActive(false);
+            }
+        }
+
         private void OnDestroy()
         {
             playerStates.OnListChanged -= HandlePlayerStateChange;
@@ -90,6 +102,8 @@ namespace Network
                 NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnect;
             }
         }
+
+        #region Connections
 
         private void HandleClientConnected(ulong clientId) {
             var tmpGameInfo = gameInfo.Value;
@@ -164,8 +178,13 @@ namespace Network
                 .UpdateGameInfo(gameInfo.Value);
         }
 
+        #endregion Connections
+
+        #region Game State Changes
+
         private void HandlePlayerStateChange(NetworkListEvent<PlayerState> state)
         {
+            //All UI Updates
             ScoreboardUpdate();
             PlayerScoreUpdate();
             GameScoreUpdate();
@@ -174,6 +193,17 @@ namespace Network
         private void HandleGameInfoChange(GameInfo prevInfo, GameInfo newInfo)
         {
             UpdateGameMode();
+        }
+
+        private void UpdateGameMode()
+        {
+            scoreboardUI.UpdateGameMode(gameInfo.Value.gameMode);
+            gameScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
+        }
+
+        public void PlayerKillUpdate(ulong clientId)
+        {
+            PlayerKillServerRpc(clientId);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -195,6 +225,11 @@ namespace Network
                     );
                 }
             }
+        }
+
+        public void PlayerDeathUpdate(ulong clientId)
+        {
+            PlayerDeathServerRpc(clientId);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -222,16 +257,10 @@ namespace Network
                 if (playerStates[i].PlayerKills >= numOfKillsToWin)
                 {
                     GameEndedClientRpc(playerStates[i].ClientId, 0);
-                    StartCoroutine(ServerEndGame());
+                    StartCoroutine(ServerEndGameCountdown());
                     break;
                 }
             } 
-        }
-
-        private IEnumerator ServerEndGame()
-        {
-            yield return new WaitForSeconds(5);
-            ServerGameNetPortal.Instance.EndRound();
         }
         
         [ClientRpc]
@@ -255,6 +284,12 @@ namespace Network
             endGameUI.UpdateEndGameText(winStatus);
             StartCoroutine(ClientEndGameCountdown());
         }
+
+        private IEnumerator ServerEndGameCountdown()
+        {
+            yield return new WaitForSeconds(5);
+            ServerGameNetPortal.Instance.EndRound();
+        }
         
         private IEnumerator ClientEndGameCountdown()
         {
@@ -262,17 +297,9 @@ namespace Network
             Cursor.lockState = CursorLockMode.None;
         }
 
-        private void PlayerScoreUpdate()
-        {
-            foreach(var playerState in playerStates)
-            {
-                if(NetworkManager.Singleton.LocalClientId == playerState.ClientId)
-                {
-                    playerScoreUI.UpdatePlayerScore(playerState);
-                    break;
-                }
-            }
-        }
+        #endregion Game State Changes
+
+        #region UI Updates
 
         private void GameScoreUpdate()
         {
@@ -326,33 +353,21 @@ namespace Network
             }
         }
 
-        private void UpdateGameMode()
+        private void PlayerScoreUpdate()
         {
-            scoreboardUI.UpdateGameMode(gameInfo.Value.gameMode);
-            gameScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
-        }
-
-        private void Update() {
-            
-            if(Input.GetKeyDown(KeyCode.Tab))
+            foreach(var playerState in playerStates)
             {
-                scoreboardUIPanel.SetActive(true);
-            }
-            if(Input.GetKeyUp(KeyCode.Tab))
-            {
-                scoreboardUIPanel.SetActive(false);
+                if(NetworkManager.Singleton.LocalClientId == playerState.ClientId)
+                {
+                    playerScoreUI.UpdatePlayerScore(playerState);
+                    break;
+                }
             }
         }
 
-        public void PlayerKillUpdate(ulong clientId)
-        {
-            PlayerKillServerRpc(clientId);
-        }
+        #endregion UI Updates
 
-        public void PlayerDeathUpdate(ulong clientId)
-        {
-            PlayerDeathServerRpc(clientId);
-        }
+        #region Utility
 
         public GameInfo GetGameInfo()
         {
@@ -411,5 +426,7 @@ namespace Network
             }
             return value;
         }
+
+        #endregion Utility
     }
 }
