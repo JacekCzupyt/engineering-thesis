@@ -23,11 +23,13 @@ namespace Network {
 
         [Header("Game Settings")]
         [SerializeField] private int numberOfTeams = 2;
+        [SerializeField] private int numberOfKillsToWin = 5;
         [SerializeField] private int startGameCountdownTime = 5;
 
         private NetworkDictionary<ulong, LobbyPlayerState> lobbyPlayers = new NetworkDictionary<ulong, LobbyPlayerState>();
         public NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
+
         private LobbyUI lobbyUI;
         private CountdownController countdownController;
 
@@ -40,6 +42,7 @@ namespace Network {
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
             countdownController = lobbyUIObject.GetComponent<CountdownController>();
+            lobbyUI.SetTeamsInGameInteractions(false);
 
             if(IsClient)
             {
@@ -52,6 +55,7 @@ namespace Network {
             {
                 lobbyUI.startGameButton.gameObject.SetActive(true);
                 lobbyUI.changeModeButton.gameObject.SetActive(true);
+                lobbyUI.gameOptionsButton.gameObject.SetActive(true);
 
                 NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
@@ -131,7 +135,6 @@ namespace Network {
                 if(lobbyPlayers.Count >= numberOfTeams)
                 {
                     RandomizeTeams(lobbyPlayers.Count, numberOfTeams);
-                    
                 }
                 else{
                     //Proper Error validation on UI
@@ -204,9 +207,19 @@ namespace Network {
             foreach(var manager in GameObject.FindGameObjectsWithTag("GameInfoManager")) {
                 Destroy(manager);
             }
+
+            numberOfKillsToWin = lobbyUI.GetNumberOfKillsToWin();
             
             var gameInfo = Instantiate(gameInfoManagerPrefab);
-            gameInfo.GetComponent<GameInfoManager>().SetGameInfo(new GameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count, lobbyPlayers.Count)); 
+            gameInfo.GetComponent<GameInfoManager>().SetGameInfo(
+                new GameInfo(
+                    gameMode.Value, 
+                    numberOfTeams, 
+                    lobbyPlayers.Count, 
+                    lobbyPlayers.Count, 
+                    numberOfKillsToWin
+                    )
+                ); 
         }
 
         #endregion Start Game Logic

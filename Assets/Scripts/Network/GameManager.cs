@@ -24,7 +24,6 @@ namespace Network
         [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
         [SerializeField] private GameObject playerManagerPrefab;
-        [SerializeField] int numOfKillsToWin;
 
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
         private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
@@ -254,7 +253,7 @@ namespace Network
         {
             for (int i = 0; i < playerStates.Count; i++)
             {
-                if (playerStates[i].PlayerKills >= numOfKillsToWin)
+                if (playerStates[i].PlayerKills >= gameInfo.Value.numberOfKillsToWin)
                 {
                     GameEndedClientRpc(playerStates[i].ClientId, 0);
                     StartCoroutine(ServerEndGameCountdown());
