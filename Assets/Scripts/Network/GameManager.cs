@@ -10,9 +10,7 @@ using UI.Hud;
 using UnityEngine;
 using Game_Systems;
 using System.Collections;
-using UnityEngine.UI;
 using NetPortals;
-using MLAPI.SceneManagement;
 
 namespace Network
 {
@@ -26,34 +24,32 @@ namespace Network
         [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
         [SerializeField] private GameObject playerManagerPrefab;
-        [SerializeField] int NumOfKillsToWin;
-        [SerializeField] GameObject EndGameUIobject;
+        [SerializeField] int numOfKillsToWin;
+
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
         public NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
+        
         private ScoreboardUI scoreboardUI;
         private PlayerScoreUI playerScoreUI;
         private GameScoreUI gameScoreUI;
+        private EndGameUI endGameUI;
         private GameObject gameInfoObject;
         
-        private Canvas can;
-        private Text winMessage;
-        
         public void Start() {
-            //Scoreboard
+            //Assigning UI References to proper elements
             scoreboardUI = gameUIObject.GetComponent<ScoreboardUI>();
             playerScoreUI = gameUIObject.GetComponent<PlayerScoreUI>();
             gameScoreUI = gameUIObject.GetComponent<GameScoreUI>();
+            endGameUI = gameUIObject.GetComponent<EndGameUI>();
 
             scoreboardUIPanel.SetActive(false);
+            endGameUI.SetGameobjectActive(false);
 
-            if(IsClient)
-              can = EndGameUIobject.GetComponentInChildren<Canvas>();
-              winMessage = can.GetComponentInChildren<Text>();
-            
             if (IsClient)
             {
                 playerStates.OnListChanged += HandlePlayerStateChange;
                 gameInfo.OnValueChanged += HandleGameInfoChange;
+                
                 UpdateGameMode();
                 ScoreboardUpdate();
                 PlayerScoreUpdate();
@@ -64,6 +60,9 @@ namespace Network
                 //Game Info
                 gameInfoObject = GameObject.FindGameObjectWithTag("GameInfoManager");
                 gameInfo.Value = gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo();
+
+                //Check game state
+                playerStates.OnListChanged += CheckEndGameState;
 
                 playerSpawnerObject.GetComponent<PlayerSpawner>()
                 .UpdateGameInfo(gameInfo.Value);
@@ -82,6 +81,8 @@ namespace Network
         {
             playerStates.OnListChanged -= HandlePlayerStateChange;
             gameInfo.OnValueChanged -= HandleGameInfoChange;
+
+            if(IsServer) playerStates.OnListChanged -= CheckEndGameState;
 
             if(NetworkManager.Singleton)
             {
@@ -213,22 +214,20 @@ namespace Network
                 }
             }
         }
-        [ServerRpc(RequireOwnership = false)]
-        private void CheckPlayerScoreServerRpc()
+
+        private void CheckEndGameState(NetworkListEvent<PlayerState> state)
         {
             for (int i = 0; i < playerStates.Count; i++)
             {
-                if (playerStates[i].PlayerKills >=NumOfKillsToWin)
+                if (playerStates[i].PlayerKills >= numOfKillsToWin)
                 {
-                    
-                    GameEndedClientRpc(playerStates[i].PlayerName);
+                    GameEndedClientRpc(playerStates[i].ClientId, 0);
                     StartCoroutine(ServerEndGame());
-               
                     break;
-
                 }
-            }
+            } 
         }
+
         private IEnumerator ServerEndGame()
         {
             yield return new WaitForSeconds(5);
@@ -236,20 +235,31 @@ namespace Network
         }
         
         [ClientRpc]
-        private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default)
+        private void GameEndedClientRpc(ulong clientId, int teamId, ClientRpcParams rpcParams = default)
         {
-            StartCoroutine(WaitForGameEnd(playerName));
+            endGameUI.SetGameobjectActive(true);
+            bool winStatus = false;
+            if(teamId == 0)
+            {   
+                if(clientId == NetworkManager.Singleton.LocalClientId) 
+                    winStatus = true;
+            }else
+            {
+                if(playerStates.Where(
+                    p => p.ClientId == NetworkManager.Singleton.LocalClientId)
+                    .FirstOrDefault().TeamId == teamId)
+                    {
+                        winStatus = true;
+                    }
+            }   
+            endGameUI.UpdateEndGameText(winStatus);
+            StartCoroutine(ClientEndGameCountdown());
         }
         
-        private IEnumerator WaitForGameEnd(string playerName)
+        private IEnumerator ClientEndGameCountdown()
         {
-            winMessage.text = "Player " + playerName + " win a game";
-            EndGameUIobject.SetActive(true);
             yield return new WaitForSeconds(5);
-            EndGameUIobject.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
-            //GameNetPortal.Instance.RequestDisconnect();
-            //ServerGameNetPortal.Instance.EndRound();
         }
 
         private void PlayerScoreUpdate()
@@ -337,7 +347,6 @@ namespace Network
         public void PlayerKillUpdate(ulong clientId)
         {
             PlayerKillServerRpc(clientId);
-            CheckPlayerScoreServerRpc();
         }
 
         public void PlayerDeathUpdate(ulong clientId)
