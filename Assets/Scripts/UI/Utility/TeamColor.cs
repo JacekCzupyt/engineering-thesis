@@ -21,4 +21,13 @@ public static class TeamColor
         c.a = alpha;
         return c;
     }
+    public static Color GetPlayerControllerColor(int teamNumber)
+    {
+        switch(teamNumber)
+        {
+            case 1: return Color.red;
+            case 2: return Color.blue;
+        }
+        return Color.white;
+    }
 }

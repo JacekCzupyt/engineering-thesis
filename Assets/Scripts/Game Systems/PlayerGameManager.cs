@@ -27,6 +27,7 @@ namespace Game_Systems
             gameManager = manager;
             gameObject.GetComponentInChildren<PlayerHealth>().SetGameManager(gameManager);
             gameInfo = gameManager.GetGameInfo();
+            SetPlayerColor();
         }
 
         public int GetTeamId()
@@ -42,6 +43,12 @@ namespace Game_Systems
         public GameManager GetGameManager()
         {
             return gameManager;
+        }
+
+        private void SetPlayerColor()
+        {
+            var playerRenderer = gameObject.GetComponent<MeshRenderer>();
+            playerRenderer.material.SetColor("_Color", TeamColor.GetPlayerControllerColor(teamId));
         }
     }
 }

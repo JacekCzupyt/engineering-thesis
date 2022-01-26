@@ -42,7 +42,6 @@ namespace Network {
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
             countdownController = lobbyUIObject.GetComponent<CountdownController>();
-            lobbyUI.SetTeamsInGameInteractions(false);
 
             if(IsClient)
             {

@@ -24,7 +24,6 @@ namespace UI.Lobby {
 
         [Header("Input Field References")]
         [SerializeField] private InputField killsToWinInput;
-        [SerializeField] private InputField teamsInGameInput;
 
         [Header("Text References")]
         [SerializeField] private GameObject playerCountText;
@@ -82,14 +81,6 @@ namespace UI.Lobby {
 
             lobbyManager.SetGameMode((GameMode) mode);
             changeGameModePanel.SetActive(false);
-
-            if(mode == 0)
-            {
-                SetTeamsInGameInteractions(false);
-            }else
-            {
-                SetTeamsInGameInteractions(true);
-            }
         }
 
         public void CreateListItem(LobbyPlayerState state, float position)
@@ -134,26 +125,6 @@ namespace UI.Lobby {
             {
                 killsToWinInput.text = "1";
             }
-        }
-
-        public void ValidateTeamsInGameInput()
-        {
-            if(teamsInGameInput.text.Length <= 0)
-            {
-                teamsInGameInput.text = "2";
-            }else if(Convert.ToInt16(teamsInGameInput.text) > 4)
-            {
-                //Error
-                teamsInGameInput.text = "4";
-            }else if(Convert.ToInt16(teamsInGameInput.text) < 1)
-            {
-                teamsInGameInput.text = "2";
-            }
-        }
-
-        public void SetTeamsInGameInteractions(bool interactable)
-        {
-            teamsInGameInput.interactable = interactable;
         }
 
         public void StartGameDeactivation()

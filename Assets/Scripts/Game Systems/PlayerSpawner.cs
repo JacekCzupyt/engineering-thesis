@@ -55,8 +55,8 @@ namespace Game_Systems
                 dividedPoints[teamId].RemoveAt(spawnPoint);
             }
             
-            player?.GetComponent<PlayerGameManager>().SetGameManager(gameManager);  
             player?.GetComponent<PlayerGameManager>().SetPlayerState(manager.GetPlayerState());              
+            player?.GetComponent<PlayerGameManager>().SetGameManager(gameManager);  
         }
 
         private int GetPlayerCountPerTeam(GameObject[] players, int teamId)
