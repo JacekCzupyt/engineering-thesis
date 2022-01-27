@@ -15,15 +15,15 @@ namespace UI.MainMenu
         public string ip;
         public string name;
         public bool mode;
-        public int nrOfPlayer;
+        public int playerNumber;
         
-        public ServerComponent(int _id,string _ip,string _name,bool _mode, int _nrOfPlayer)
+        public ServerComponent(int _id,string _ip,string _name,bool _mode, int _playerNumber)
         {
             id = _id;
             ip = _ip;
             name = _name;
             mode = _mode;
-            nrOfPlayer = _nrOfPlayer;
+            playerNumber = _playerNumber;
         }
     }
     public class JsonHelper
@@ -97,11 +97,11 @@ namespace UI.MainMenu
                             GameObject g;
                             g = Instantiate(ListItemPrefab, ItemHolder.transform);
                             ItemClassHolder o = (ItemClassHolder) g.GetComponent(typeof(ItemClassHolder));
-                            o.serv = new ServerComponent(ServerArray[i].id, ServerArray[i].ip, ServerArray[i].name,ServerArray[i].mode,ServerArray[i].nrOfPlayer);                         
+                            o.serv = new ServerComponent(ServerArray[i].id, ServerArray[i].ip, ServerArray[i].name,ServerArray[i].mode,ServerArray[i].playerNumber);                         
                             var z=g.transform.Find("Server Name").gameObject;
                             z.GetComponentsInChildren<Text>()[1].text= o.serv.name;
                             var p = g.transform.Find("ServerSpecification").gameObject;
-                            p.GetComponentsInChildren<Text>()[0].text = o.serv.nrOfPlayer+"/10";
+                            p.GetComponentsInChildren<Text>()[0].text = o.serv.playerNumber+"/10";
                             p.GetComponentsInChildren<Text>()[1].text = o.serv.mode?"Free For All": "Team Deathmatch";
                             g.GetComponentInChildren<Button>().onClick.AddListener(delegate { JoinClick(o.serv.ip); });
                         }
