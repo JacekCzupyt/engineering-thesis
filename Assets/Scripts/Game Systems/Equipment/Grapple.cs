@@ -54,6 +54,9 @@ namespace Game_Systems.Equipment {
         }
 
         private void OnDestroy() {
+            if (!IsOwner)
+                return;
+            
             input.AbilityAction.started -= Fire;
             input.AbilityAction.canceled -= CancelGrapple;
         }

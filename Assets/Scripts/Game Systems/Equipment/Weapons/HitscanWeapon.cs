@@ -93,16 +93,16 @@ namespace Game_Systems.Equipment.Weapons {
 
 
         private void Start() {
+            particles = GetComponentInChildren<ParticleSystem>();
+            playerRb = player.GetComponent<Rigidbody>();
+            
             if (!IsOwner)
                 return;
             
-            Debug.LogWarning("Script started");
-            
             input = CharacterInputManager.Instance;
-            particles = GetComponentInChildren<ParticleSystem>();
             currentAmmoCount = maxAmmoCount;
             input.Reload.performed += Reload;
-            playerRb = player.GetComponent<Rigidbody>();
+
         }
 
         private void OnDestroy() {
