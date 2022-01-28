@@ -1,9 +1,11 @@
+using MLAPI;
+using MLAPI.Messaging;
 using UnityEngine;
 using Network;
 
 namespace Game_Systems
 {
-    public class PlayerGameManager : MonoBehaviour
+    public class PlayerGameManager : NetworkBehaviour
     {
         private ulong clientId;
         private string playerName;
@@ -47,8 +49,16 @@ namespace Game_Systems
 
         private void SetPlayerColor()
         {
+            SetPlayerColorClientRpc(teamId);
+            // var playerRenderer = gameObject.GetComponent<MeshRenderer>();
+            // playerRenderer.material.SetColor("_Color", TeamColor.GetPlayerControllerColor(teamId));
+        }
+        
+        [ClientRpc]
+        private void SetPlayerColorClientRpc(int _teamId)
+        {
             var playerRenderer = gameObject.GetComponent<MeshRenderer>();
-            playerRenderer.material.SetColor("_Color", TeamColor.GetPlayerControllerColor(teamId));
+            playerRenderer.material.SetColor("_Color", TeamColor.GetPlayerControllerColor(_teamId));
         }
     }
 }
