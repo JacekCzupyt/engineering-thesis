@@ -12,7 +12,7 @@ namespace Game_Systems.Utility
     {
         public static System.Random rnd = new System.Random();
         public static float collideSpawnRange = 0.15f;
-        public static float verticalSpawnRange = (float)Math.PI/4; //90 degrees
+        public static float verticalSpawnRange = (float)Math.PI/8; //90 degrees
 
         public static List<Vector3> generatePoints(int num, float sphereRad = 10f)
         {
@@ -81,20 +81,6 @@ namespace Game_Systems.Utility
             return points;
         }
 
-        public static void TestPoints()
-        {
-            int i = 1;
-            foreach(var list in GenerateListsOfDividedPoints(2, 1, 70f))
-            {
-                Debug.Log("List " + i);
-                foreach(var point in list)
-                {
-                    Debug.Log("x: " + point.x + ", y: " + point.y + ", z: " + point.z);
-                }
-                i++;
-            }
-        }
-
         public static List<float> GenerateRandomUniquePoints(int num, float max, float min)
         {
             List<float> points = new List<float>();
@@ -127,20 +113,6 @@ namespace Game_Systems.Utility
         {
             return Math.Abs(valueToCheck - valueChecking) <= range;
         }
-
-        // public static  List<Vector3> generatePoints(int num, int sphereRad = 10)
-        // {
-        //     List<Vector3> points = new List<Vector3>();
-        //     if (num == 1)
-        //     {
-        //         points.Add(new Vector3(UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f), UnityEngine.Random.Range(-5f, 5f)));
-        //         return points;
-        //     }
-        //     for (int i = 0; i < num; i++) {
-        //         points.Add(sphereRad * new Vector3(Mathf.Sin(i*2*Mathf.PI/num), 0, Mathf.Cos(i*2*Mathf.PI/num)));
-        //     }
-        //     return points;
-        // }
     }
 
 }

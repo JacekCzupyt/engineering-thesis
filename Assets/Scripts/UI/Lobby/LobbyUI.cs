@@ -14,14 +14,16 @@ namespace UI.Lobby {
 
         [Header("Lobby Panel References")]
         [SerializeField] private GameObject changeGameModePanel;
+        [SerializeField] private GameObject gameOptionsPanel;
 
         [Header("Button References")]
         [SerializeField] private Button readyUpButton;
         [SerializeField] public Button startGameButton;
         [SerializeField] public Button changeModeButton;
-        [SerializeField] public Button playTabButton;
-        [SerializeField] public Button weaponsTabButton;
-        [SerializeField] public Button settingsButton;
+        [SerializeField] public Button gameOptionsButton;
+
+        [Header("Input Field References")]
+        [SerializeField] private InputField killsToWinInput;
 
         [Header("Text References")]
         [SerializeField] private GameObject playerCountText;
@@ -29,13 +31,10 @@ namespace UI.Lobby {
 
         private ListView.ListView lobbyListView;
         private bool IsPlayerReadyUI;
-        private List<GameObject> lobbyPanels;
 
         private void Awake() {
             lobbyListView = lobbyListViewObject.GetComponent<ListView.ListView>();
             IsPlayerReadyUI = false;
-            lobbyPanels = new List<GameObject>(GameObject.FindGameObjectsWithTag("LobbyPanel"));
-            ChangeLobbyPanels(0);
         }
 
         public void OnLeaveButtonClicked()
@@ -54,6 +53,11 @@ namespace UI.Lobby {
             ToggleReadyUpButtonText();
         }
 
+        public void ToggleGameOptionsClicked()
+        {
+            gameOptionsPanel.SetActive(!gameOptionsPanel.activeSelf);
+        }
+
         private void ToggleReadyUpButtonText()
         {
             if(IsPlayerReadyUI)
@@ -68,32 +72,13 @@ namespace UI.Lobby {
             }
         }
 
-        public void ChangeLobbyPanels(int index)
-        {
-            DeactivateLobbyPanels();
-            switch(index){
-                case 0: lobbyPanels.Find(x => x.gameObject.name == "PlayLobby").SetActive(true);
-                break;
-                case 1: lobbyPanels.Find(x => x.gameObject.name == "WeaponsLobbby").SetActive(true);
-                break;
-                case 2: lobbyPanels.Find(x => x.gameObject.name == "SettingsLobby").SetActive(true);
-                break;
-                default: break;
-            }
-        }
-
-        public void DeactivateLobbyPanels(){
-            foreach(var panel in GameObject.FindGameObjectsWithTag("LobbyPanel")){
-                panel.gameObject.SetActive(false);
-            }
-        }
-
         public void OnChangeModeClicked()
         {
             changeGameModePanel.SetActive(true);
         }
 
         public void ChooseGameModeClicked(int mode){
+
             lobbyManager.SetGameMode((GameMode) mode);
             changeGameModePanel.SetActive(false);
         }
@@ -124,7 +109,32 @@ namespace UI.Lobby {
                 break;
                 default: break;
             }
+        }
 
+        public int GetNumberOfKillsToWin()
+        {
+            return Convert.ToInt16(killsToWinInput.text);
+        }
+
+        public void ValidateKillsToWinInput()
+        {
+            if(killsToWinInput.text.Length <= 0)
+            {
+                killsToWinInput.text = "5";
+            }else if(Convert.ToInt16(killsToWinInput.text) <= 0)
+            {
+                killsToWinInput.text = "1";
+            }
+        }
+
+        public void StartGameDeactivation()
+        {
+            foreach(var button in this.GetComponentsInChildren<Button>())
+            {
+                button.interactable = false;
+            }
+
+            gameOptionsPanel.SetActive(false);
         }
     }
 }

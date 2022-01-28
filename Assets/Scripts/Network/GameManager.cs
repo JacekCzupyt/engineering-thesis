@@ -10,9 +10,7 @@ using UI.Hud;
 using UnityEngine;
 using Game_Systems;
 using System.Collections;
-using UnityEngine.UI;
 using NetPortals;
-using MLAPI.SceneManagement;
 
 namespace Network
 {
@@ -26,34 +24,31 @@ namespace Network
         [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
         [SerializeField] private GameObject playerManagerPrefab;
-        [SerializeField] int NumOfKillsToWin;
-        [SerializeField] GameObject EndGameUIobject;
+
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
-        public NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
+        private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
+        
         private ScoreboardUI scoreboardUI;
         private PlayerScoreUI playerScoreUI;
         private GameScoreUI gameScoreUI;
+        private EndGameUI endGameUI;
         private GameObject gameInfoObject;
         
-        private Canvas can;
-        private Text winMessage;
-        
         public void Start() {
-            //Scoreboard
+            //Assigning UI References to proper elements
             scoreboardUI = gameUIObject.GetComponent<ScoreboardUI>();
             playerScoreUI = gameUIObject.GetComponent<PlayerScoreUI>();
             gameScoreUI = gameUIObject.GetComponent<GameScoreUI>();
+            endGameUI = gameUIObject.GetComponent<EndGameUI>();
 
             scoreboardUIPanel.SetActive(false);
+            endGameUI.SetGameobjectActive(false);
 
-            if(IsClient)
-              can = EndGameUIobject.GetComponentInChildren<Canvas>();
-              winMessage = can.GetComponentInChildren<Text>();
-            
             if (IsClient)
             {
                 playerStates.OnListChanged += HandlePlayerStateChange;
                 gameInfo.OnValueChanged += HandleGameInfoChange;
+                
                 UpdateGameMode();
                 ScoreboardUpdate();
                 PlayerScoreUpdate();
@@ -64,6 +59,9 @@ namespace Network
                 //Game Info
                 gameInfoObject = GameObject.FindGameObjectWithTag("GameInfoManager");
                 gameInfo.Value = gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo();
+
+                //Check game state
+                playerStates.OnListChanged += CheckEndGameState;
 
                 playerSpawnerObject.GetComponent<PlayerSpawner>()
                 .UpdateGameInfo(gameInfo.Value);
@@ -78,10 +76,24 @@ namespace Network
             }
         }
 
+        private void Update() {
+            
+            if(Input.GetKeyDown(KeyCode.Tab))
+            {
+                scoreboardUIPanel.SetActive(true);
+            }
+            if(Input.GetKeyUp(KeyCode.Tab))
+            {
+                scoreboardUIPanel.SetActive(false);
+            }
+        }
+
         private void OnDestroy()
         {
             playerStates.OnListChanged -= HandlePlayerStateChange;
             gameInfo.OnValueChanged -= HandleGameInfoChange;
+
+            if(IsServer) playerStates.OnListChanged -= CheckEndGameState;
 
             if(NetworkManager.Singleton)
             {
@@ -89,6 +101,8 @@ namespace Network
                 NetworkManager.Singleton.OnClientDisconnectCallback -= HandleClientDisconnect;
             }
         }
+
+        #region Connections
 
         private void HandleClientConnected(ulong clientId) {
             var tmpGameInfo = gameInfo.Value;
@@ -163,8 +177,13 @@ namespace Network
                 .UpdateGameInfo(gameInfo.Value);
         }
 
+        #endregion Connections
+
+        #region Game State Changes
+
         private void HandlePlayerStateChange(NetworkListEvent<PlayerState> state)
         {
+            //All UI Updates
             ScoreboardUpdate();
             PlayerScoreUpdate();
             GameScoreUpdate();
@@ -173,6 +192,17 @@ namespace Network
         private void HandleGameInfoChange(GameInfo prevInfo, GameInfo newInfo)
         {
             UpdateGameMode();
+        }
+
+        private void UpdateGameMode()
+        {
+            scoreboardUI.UpdateGameMode(gameInfo.Value.gameMode);
+            gameScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
+        }
+
+        public void PlayerKillUpdate(ulong clientId)
+        {
+            PlayerKillServerRpc(clientId);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -196,6 +226,11 @@ namespace Network
             }
         }
 
+        public void PlayerDeathUpdate(ulong clientId)
+        {
+            PlayerDeathServerRpc(clientId);
+        }
+
         [ServerRpc(RequireOwnership = false)]
         private void PlayerDeathServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
         {
@@ -213,56 +248,57 @@ namespace Network
                 }
             }
         }
-        [ServerRpc(RequireOwnership = false)]
-        private void CheckPlayerScoreServerRpc()
+
+        private void CheckEndGameState(NetworkListEvent<PlayerState> state)
         {
             for (int i = 0; i < playerStates.Count; i++)
             {
-                if (playerStates[i].PlayerKills >=NumOfKillsToWin)
+                if (playerStates[i].PlayerKills >= gameInfo.Value.numberOfKillsToWin)
                 {
-                    
-                    GameEndedClientRpc(playerStates[i].PlayerName);
-                    StartCoroutine(ServerEndGame());
-               
+                    GameEndedClientRpc(playerStates[i].ClientId, 0);
+                    StartCoroutine(ServerEndGameCountdown());
                     break;
-
                 }
-            }
+            } 
         }
-        private IEnumerator ServerEndGame()
+        
+        [ClientRpc]
+        private void GameEndedClientRpc(ulong clientId, int teamId, ClientRpcParams rpcParams = default)
+        {
+            endGameUI.SetGameobjectActive(true);
+            bool winStatus = false;
+            if(teamId == 0)
+            {   
+                if(clientId == NetworkManager.Singleton.LocalClientId) 
+                    winStatus = true;
+            }else
+            {
+                if(playerStates.Where(
+                    p => p.ClientId == NetworkManager.Singleton.LocalClientId)
+                    .FirstOrDefault().TeamId == teamId)
+                    {
+                        winStatus = true;
+                    }
+            }   
+            endGameUI.UpdateEndGameText(winStatus);
+            StartCoroutine(ClientEndGameCountdown());
+        }
+
+        private IEnumerator ServerEndGameCountdown()
         {
             yield return new WaitForSeconds(5);
             ServerGameNetPortal.Instance.EndRound();
         }
         
-        [ClientRpc]
-        private void GameEndedClientRpc(string playerName, ClientRpcParams rpcParams = default)
+        private IEnumerator ClientEndGameCountdown()
         {
-            StartCoroutine(WaitForGameEnd(playerName));
-        }
-        
-        private IEnumerator WaitForGameEnd(string playerName)
-        {
-            winMessage.text = "Player " + playerName + " win a game";
-            EndGameUIobject.SetActive(true);
             yield return new WaitForSeconds(5);
-            EndGameUIobject.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
-            //GameNetPortal.Instance.RequestDisconnect();
-            //ServerGameNetPortal.Instance.EndRound();
         }
 
-        private void PlayerScoreUpdate()
-        {
-            foreach(var playerState in playerStates)
-            {
-                if(NetworkManager.Singleton.LocalClientId == playerState.ClientId)
-                {
-                    playerScoreUI.UpdatePlayerScore(playerState);
-                    break;
-                }
-            }
-        }
+        #endregion Game State Changes
+
+        #region UI Update Calls
 
         private void GameScoreUpdate()
         {
@@ -316,34 +352,21 @@ namespace Network
             }
         }
 
-        private void UpdateGameMode()
+        private void PlayerScoreUpdate()
         {
-            scoreboardUI.UpdateGameMode(gameInfo.Value.gameMode);
-            gameScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
-        }
-
-        private void Update() {
-            
-            if(Input.GetKeyDown(KeyCode.Tab))
+            foreach(var playerState in playerStates)
             {
-                scoreboardUIPanel.SetActive(true);
-            }
-            if(Input.GetKeyUp(KeyCode.Tab))
-            {
-                scoreboardUIPanel.SetActive(false);
+                if(NetworkManager.Singleton.LocalClientId == playerState.ClientId)
+                {
+                    playerScoreUI.UpdatePlayerScore(playerState);
+                    break;
+                }
             }
         }
 
-        public void PlayerKillUpdate(ulong clientId)
-        {
-            PlayerKillServerRpc(clientId);
-            CheckPlayerScoreServerRpc();
-        }
+        #endregion UI Update Calls
 
-        public void PlayerDeathUpdate(ulong clientId)
-        {
-            PlayerDeathServerRpc(clientId);
-        }
+        #region Utility
 
         public GameInfo GetGameInfo()
         {
@@ -402,5 +425,7 @@ namespace Network
             }
             return value;
         }
+
+        #endregion Utility
     }
 }

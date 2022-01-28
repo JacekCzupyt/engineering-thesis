@@ -243,7 +243,7 @@ namespace NetPortals {
             }
             if(man!=null)
             {
-                if (man.gameInfo.Value.gameMode ==  GameMode.FreeForAll)
+                if (man.GetGameInfo().gameMode ==  GameMode.FreeForAll)
                     sendMode = true;
                 else
                     sendMode = false;

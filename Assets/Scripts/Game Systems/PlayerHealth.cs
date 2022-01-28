@@ -5,6 +5,7 @@ using UI;
 using UnityEngine;
 using Utility;
 using Visuals;
+using Network;
 using Debug = UnityEngine.Debug;
 
 namespace Game_Systems {
@@ -26,17 +27,9 @@ namespace Game_Systems {
 
         public bool inactive = false;
         private PlayerRespawn respawnPlayer;
-        private PlayerGameManager playerGameManager;
+        private GameManager gameManager;
 
         [SerializeField] private DamageOverlay damageOverlay;
-        
-        GameObject shooter;
-        ScoreSystem score;
-
-
-        private void Awake() {
-            playerGameManager = GetComponentInParent<PlayerGameManager>();
-        }
 
         private void Start() {
             respawnPlayer = GetComponent<PlayerRespawn>();
@@ -51,6 +44,12 @@ namespace Game_Systems {
                 respawnPlayer.Respawn();
             }
         }
+
+        public void SetGameManager(GameManager gameManager)
+        {
+            this.gameManager = gameManager;
+        }
+
         public void TakeDamage(int damage, ulong? player = null)
         {
             if (inactive) {
@@ -66,9 +65,9 @@ namespace Game_Systems {
             if(health.Value<=0)
             {
                 if(player.HasValue)
-                    playerGameManager.AddPlayerKill(player.Value);
+                    gameManager.PlayerKillUpdate(player.Value);
                 
-                playerGameManager.AddPlayerDeath(OwnerClientId);
+                gameManager.PlayerDeathUpdate(OwnerClientId);
             }
         }
         

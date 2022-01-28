@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Game_Systems.Utility;
 using MLAPI;
@@ -22,28 +23,38 @@ namespace Network {
 
         [Header("Game Settings")]
         [SerializeField] private int numberOfTeams = 2;
+        [SerializeField] private int numberOfKillsToWin = 5;
+        [SerializeField] private int startGameCountdownTime = 5;
+
         private NetworkDictionary<ulong, LobbyPlayerState> lobbyPlayers = new NetworkDictionary<ulong, LobbyPlayerState>();
         public NetworkVariable<GameMode> gameMode = new NetworkVariable<GameMode>(GameMode.FreeForAll);
         private NetworkVariable<bool> arrangeCards = new NetworkVariable<bool>(false);
-        private LobbyUI lobbyUI;
 
-        private void Start() {
+        private LobbyUI lobbyUI;
+        private CountdownController countdownController;
+
+        private void Start()
+        {
             Cursor.lockState = CursorLockMode.None;
         }
+
         public override void NetworkStart()
         {
             lobbyUI = lobbyUIObject.GetComponent<LobbyUI>();
+            countdownController = lobbyUIObject.GetComponent<CountdownController>();
+
             if(IsClient)
             {
                 lobbyPlayers.OnDictionaryChanged += HandleLobbyPlayersStateChanged;
                 gameMode.OnValueChanged += HandleGameModeChange;      
-                UpdateGameMode();
+                UpdateGameModeUI();
             }
         
             if(IsServer)
             {
                 lobbyUI.startGameButton.gameObject.SetActive(true);
                 lobbyUI.changeModeButton.gameObject.SetActive(true);
+                lobbyUI.gameOptionsButton.gameObject.SetActive(true);
 
                 NetworkManager.Singleton.OnClientConnectedCallback  += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback  += HandleClientDisconnect;
@@ -75,6 +86,8 @@ namespace Network {
             return true;
         }
 
+        #region Connections
+
         private void HandleClientConnected(ulong clientId)
         {
             var playerData = ServerGameNetPortal.Instance.GetPlayerData(clientId);
@@ -93,7 +106,11 @@ namespace Network {
             if (!lobbyPlayers.Remove(clientId))
                 throw new InvalidOperationException("Can't disconnect non-existent client");
         }
-    
+
+        #endregion Connections
+
+        #region Start Game Logic
+
         [ServerRpc(RequireOwnership = false)]
         private void SpawnPlayerManagerServerRpc(ulong clientId, ServerRpcParams serverParams = default) {
             var manager = Instantiate(playerManagerPrefab);
@@ -103,13 +120,6 @@ namespace Network {
                 playerState.PlayerName,
                 playerState.TeamId
                 );
-        }
-
-        [ServerRpc(RequireOwnership = false)]
-        private void ToggleReadyServerRpc(ServerRpcParams serverRpcParams = default) {
-            var playerState = lobbyPlayers[serverRpcParams.Receive.SenderClientId];
-            playerState.IsReady = !playerState.IsReady;
-            lobbyPlayers[playerState.ClientId] = playerState;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -126,6 +136,7 @@ namespace Network {
                     RandomizeTeams(lobbyPlayers.Count, numberOfTeams);
                 }
                 else{
+                    //Proper Error validation on UI
                     Debug.Log("Number of teams cannot be more than the number of players");
                     return;
                 }
@@ -138,6 +149,27 @@ namespace Network {
 
             InitializeGameInfoObject();
 
+            //Timer Countdowns
+
+            StartTimersClientRpc();
+
+            StartCoroutine(StartGameCountdown());
+        }
+
+        [ClientRpc]
+        private void StartTimersClientRpc()
+        {
+            lobbyUI.StartGameDeactivation();
+            countdownController.StartTimer(startGameCountdownTime);
+        }
+
+        private IEnumerator StartGameCountdown()
+        {
+            while(startGameCountdownTime > 0)
+            {
+                yield return new WaitForSeconds(1f);
+                startGameCountdownTime--;
+            }
             ServerGameNetPortal.Instance.StartGame();
         }
 
@@ -167,14 +199,6 @@ namespace Network {
             
                 playersPerTeam[teamId]--;
             }
-            // var ids = lobbyPlayers.Keys;
-            // int index = 0;
-            // foreach(var id in ids) {
-            //     var playerState = lobbyPlayers[id];
-            //     playerState.TeamId = (index % numOfTeams) + 1;
-            //     lobbyPlayers[id] = playerState;
-            //     index++;
-            // }
         }
 
         private void InitializeGameInfoObject()
@@ -182,9 +206,30 @@ namespace Network {
             foreach(var manager in GameObject.FindGameObjectsWithTag("GameInfoManager")) {
                 Destroy(manager);
             }
+
+            numberOfKillsToWin = lobbyUI.GetNumberOfKillsToWin();
             
             var gameInfo = Instantiate(gameInfoManagerPrefab);
-            gameInfo.GetComponent<GameInfoManager>().SetGameInfo(new GameInfo(gameMode.Value, numberOfTeams, lobbyPlayers.Count, lobbyPlayers.Count)); 
+            gameInfo.GetComponent<GameInfoManager>().SetGameInfo(
+                new GameInfo(
+                    gameMode.Value, 
+                    numberOfTeams, 
+                    lobbyPlayers.Count, 
+                    lobbyPlayers.Count, 
+                    numberOfKillsToWin
+                    )
+                ); 
+        }
+
+        #endregion Start Game Logic
+
+        #region Game Change Activators
+
+        [ServerRpc(RequireOwnership = false)]
+        private void ToggleReadyServerRpc(ServerRpcParams serverRpcParams = default) {
+            var playerState = lobbyPlayers[serverRpcParams.Receive.SenderClientId];
+            playerState.IsReady = !playerState.IsReady;
+            lobbyPlayers[playerState.ClientId] = playerState;
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -196,6 +241,10 @@ namespace Network {
         private void ToggleArrangeCardsServerRpc(ServerRpcParams serverRpcParams = default){
             arrangeCards.Value = !arrangeCards.Value;
         }
+
+        #endregion Game Change Activators
+
+        #region UI Activators
 
         public void LeaveGame()
         {
@@ -215,6 +264,9 @@ namespace Network {
             ChangeGameModeServerRpc(mode);
         }
 
+        #endregion UI Activators
+
+        #region Information Change Handlers
         private void HandleLobbyPlayersStateChanged(NetworkDictionaryEvent<ulong, LobbyPlayerState> lobbyState)
         {
             lobbyUI.DestroyCards();
@@ -239,7 +291,7 @@ namespace Network {
                     k++;
                 }
             }
-            UpdatePlayerCount();
+            UpdatePlayerCountUI();
         
             if(IsHost)
             {
@@ -248,17 +300,24 @@ namespace Network {
         }
 
         private void HandleGameModeChange(GameMode prevMode, GameMode newMode){
-            UpdateGameMode();
+            UpdateGameModeUI();
         }
 
-        private void UpdatePlayerCount()
+        #endregion Information Change Handlers
+
+
+        #region UI Update Calls
+
+        private void UpdatePlayerCountUI()
         {
             lobbyUI.UpdatePlayerCount(lobbyPlayers.Count);
         }
 
-        private void UpdateGameMode(){
+        private void UpdateGameModeUI(){
             lobbyUI.UpdateGameMode(gameMode.Value);
         }
+
+        #endregion UI Update Calls
     }
 }
 
