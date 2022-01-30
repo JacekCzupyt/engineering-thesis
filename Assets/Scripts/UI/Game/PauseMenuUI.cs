@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Input_Systems;
 using NetPortals;
+using UnityEngine.UI;
 
 namespace UI.Game
 {
@@ -14,6 +15,7 @@ namespace UI.Game
         private bool IsPaused;
         private void Awake() {
             characterInputManager = CharacterInputManager.Instance;
+            TogglePlayerInput(false);
             IsPaused = false;
         }
 
@@ -21,7 +23,7 @@ namespace UI.Game
         {
             if(Input.GetKeyDown(KeyCode.Escape))
             {
-                if(pauseMenuObject.activeSelf || settingsMenuObject.activeSelf)
+                if(IsPaused)
                 {
                     ResumeGame();
                 }else{
@@ -34,33 +36,34 @@ namespace UI.Game
         {
             pauseMenuObject.SetActive(false);
             settingsMenuObject.SetActive(false);
-            TogglePlayerInput();
+            TogglePlayerInput(false);
+            IsPaused = false;
         }
 
         private void PauseGame()
         {
             pauseMenuObject.SetActive(true);
-            TogglePlayerInput();
+            TogglePlayerInput(true);
+            IsPaused = true;
         }
 
-        private void TogglePlayerInput()
+        private void TogglePlayerInput(bool pause)
         {
-            if(IsPaused)
-            {  
-                characterInputManager.enabled = true;
-                Cursor.lockState =CursorLockMode.Locked;
-                IsPaused = false;
-            }else
+            if(pause)
             {
                 characterInputManager.enabled = false;
                 Cursor.lockState = CursorLockMode.None;
-                IsPaused = true;
+            }else
+            {  
+                characterInputManager.enabled = true;
+                Cursor.lockState =CursorLockMode.Locked;
             }
+
         }
 
         public void LeaveGame()
         {
-            TogglePlayerInput();
+            TogglePlayerInput(true);
             Cursor.lockState = CursorLockMode.None;
             GameNetPortal.Instance.RequestDisconnect();
         }

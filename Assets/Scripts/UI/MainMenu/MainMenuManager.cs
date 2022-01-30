@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace UI.MainMenu {
@@ -6,6 +7,10 @@ namespace UI.MainMenu {
         [SerializeField] private GameObject initialMenu;
         [SerializeField] private GameObject playMenu;
         [SerializeField] private GameObject settingsMenu;
+
+        private void Start() {
+            Cursor.lockState = CursorLockMode.None;
+        }
 
         public void Play(){
             SwitchMenus(initialMenu, playMenu);
