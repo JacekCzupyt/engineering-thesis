@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using MLAPI;
+using MLAPI.Messaging;
 using UnityEngine;
 using Random = System.Random;
 
@@ -33,6 +35,24 @@ namespace Utility {
             var radAngle = hFov * Mathf.Deg2Rad;
             var radHfov = 2 * Mathf.Atan(Mathf.Tan(radAngle / 2) / cam.aspect);
             cam.fieldOfView = Mathf.Rad2Deg * radHfov;
+        }
+
+        public static ClientRpcParams OwnerClientParams(this NetworkBehaviour script) {
+            return new ClientRpcParams {
+                Send = new ClientRpcSendParams {
+                    TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId == script.OwnerClientId)
+                        .Select(c => c.ClientId).ToArray()
+                }
+            };
+        }
+        
+        public static ClientRpcParams NonOwnerClientParams(this NetworkBehaviour script) {
+            return new ClientRpcParams {
+                Send = new ClientRpcSendParams {
+                    TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId != script.OwnerClientId)
+                        .Select(c => c.ClientId).ToArray()
+                }
+            };
         }
     }
 }

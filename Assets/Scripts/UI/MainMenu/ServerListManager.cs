@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System;
+using MLAPI;
 using NetPortals;
 
 namespace UI.MainMenu
@@ -14,12 +15,16 @@ namespace UI.MainMenu
         public int id;
         public string ip;
         public string name;
+        public bool mode;
+        public int playerNumber;
         
-        public ServerComponent(int _id,string _ip,string _name)
+        public ServerComponent(int _id,string _ip,string _name,bool _mode, int _playerNumber)
         {
             id = _id;
             ip = _ip;
             name = _name;
+            mode = _mode;
+            playerNumber = _playerNumber;
         }
     }
     public class JsonHelper
@@ -47,7 +52,7 @@ namespace UI.MainMenu
         [SerializeField] private GameObject nameError;
         [SerializeField] private GameObject serverBrowserError;
         // Start is called before the first frame update
-        string uri = "http://79.191.52.229:8080/servers";
+        string uri = "http://79.191.162.208:8080/servers";
 
         public void getData()
         {
@@ -93,8 +98,12 @@ namespace UI.MainMenu
                             GameObject g;
                             g = Instantiate(ListItemPrefab, ItemHolder.transform);
                             ItemClassHolder o = (ItemClassHolder) g.GetComponent(typeof(ItemClassHolder));
-                            o.serv = new ServerComponent(ServerArray[i].id, ServerArray[i].ip, ServerArray[i].name);                         
-                            g.GetComponentInChildren<Text>().text = o.serv.name;
+                            o.serv = new ServerComponent(ServerArray[i].id, ServerArray[i].ip, ServerArray[i].name,ServerArray[i].mode,ServerArray[i].playerNumber);                         
+                            var z=g.transform.Find("Server Name").gameObject;
+                            z.GetComponentsInChildren<Text>()[1].text= o.serv.name;
+                            var p = g.transform.Find("ServerSpecification").gameObject;
+                            p.GetComponentsInChildren<Text>()[0].text = o.serv.playerNumber+"/10";
+                            p.GetComponentsInChildren<Text>()[1].text = o.serv.mode?"Free For All": "Team Deathmatch";
                             g.GetComponentInChildren<Button>().onClick.AddListener(delegate { JoinClick(o.serv.ip); });
                         }
                         break;

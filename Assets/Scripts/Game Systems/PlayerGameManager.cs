@@ -1,61 +1,66 @@
-using System.Collections;
-using System.Collections.Generic;
+using MLAPI;
+using MLAPI.Messaging;
 using UnityEngine;
-using System;
 using Network;
 
-public class PlayerGameManager : MonoBehaviour
+namespace Game_Systems
 {
-    private ulong clientId;
-    private string playerName;
-    private int teamId;
-    private int playerKills;
-    public int playerDeaths;
-    private GameManager gameManager;
-    private PlayerScore playerScore;
-    private GameInfo gameInfo;
-    private void Awake() {
-        playerScore = GetComponent<PlayerScore>();
-    }
-
-    public void SetPlayerState(PlayerState playerState)
+    public class PlayerGameManager : NetworkBehaviour
     {
-        clientId = playerState.ClientId;
-        playerName = playerState.PlayerName;
-        teamId = playerState.TeamId;
-        playerKills = playerState.PlayerKills;
-        playerDeaths = playerState.PlayerDeaths;
+        private ulong clientId;
+        private string playerName;
+        private int teamId;
+        private int playerKills;
+        private int playerDeaths;
+        private GameManager gameManager;
+        private GameInfo gameInfo;
 
-    }
-    public void SetGameManager(GameManager manager)
-    {
-        gameManager = manager;
-        gameInfo = gameManager.GetGameInfo();
-    }
+        public void SetPlayerState(PlayerState playerState)
+        {
+            clientId = playerState.ClientId;
+            playerName = playerState.PlayerName;
+            teamId = playerState.TeamId;
+            playerKills = playerState.PlayerKills;
+            playerDeaths = playerState.PlayerDeaths;
 
-    public int GetTeamId()
-    {
-        return teamId;
-    }
+        }
+        public void SetGameManager(GameManager manager)
+        {
+            gameManager = manager;
+            gameObject.GetComponentInChildren<PlayerHealth>().SetGameManager(gameManager);
+            gameInfo = gameManager.GetGameInfo();
+            SetPlayerColor();
+        }
 
-    public void AddPlayerDeath(ulong playerId)
-    {
-        gameManager.PlayerDeathUpdate(playerId);
-    }
+        public int GetTeamId()
+        {
+            return teamId;
+        }
 
-    public void AddPlayerKill(ulong playerId)
-    {
-        gameManager.PlayerKillUpdate(playerId);
-    }
+        public GameMode GetGameMode()
+        {
+            return gameInfo.gameMode;
+        }
 
-    public void UpdatePlayerDeathCounter()
-    {
-        playerDeaths++;
-        playerScore.SetDeathCounter(playerDeaths);
-    }
+        public GameManager GetGameManager()
+        {
+            return gameManager;
+        }
 
-    public GameMode GetGameMode()
-    {
-        return gameInfo.gameMode;
+        private void SetPlayerColor()
+        {
+            SetPlayerColorClientRpc(teamId);
+            // var playerRenderer = gameObject.GetComponent<MeshRenderer>();
+            // playerRenderer.material.SetColor("_Color", TeamColor.GetPlayerControllerColor(teamId));
+        }
+        
+        [ClientRpc]
+        private void SetPlayerColorClientRpc(int _teamId)
+        {
+            var playerRenderer = gameObject.GetComponent<MeshRenderer>();
+            playerRenderer.material.SetColor("_Color", TeamColor.GetPlayerControllerColor(_teamId));
+        }
     }
 }
+
+

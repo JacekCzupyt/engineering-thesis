@@ -16,7 +16,7 @@ namespace Game_Systems {
         }
 
         private void Update() {
-            cam.SetHorizontalFov(settings.data.fov / currentMultiplier);;
+            cam.SetHorizontalFov(settings.data.fov / currentMultiplier);
         }
     }
 }

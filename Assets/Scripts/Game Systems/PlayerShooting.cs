@@ -1,10 +1,9 @@
-using System.Linq;
 using Input_Systems;
 using MLAPI;
 using MLAPI.Messaging;
-using MLAPI.NetworkVariable;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Utility;
 
 namespace Game_Systems {
     public class PlayerShooting : NetworkBehaviour
@@ -22,16 +21,6 @@ namespace Game_Systems {
         private CharacterInputManager input;
 
         private bool firing = false;
-        //NetworkVariable<ParticleSystem> par;
-        private ClientRpcParams NonOwnerClientParams =>
-            new ClientRpcParams
-            {
-                Send = new ClientRpcSendParams
-                {
-                    TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId != OwnerClientId)
-                        .Select(c => c.ClientId).ToArray()
-                }
-            };
 
         void Start()
         {
@@ -89,7 +78,7 @@ namespace Game_Systems {
                     }
                 }
             }
-            ShootClientRPC(NonOwnerClientParams);
+            ShootClientRPC(this.NonOwnerClientParams());
 
         }
 

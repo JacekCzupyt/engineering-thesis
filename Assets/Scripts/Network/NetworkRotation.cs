@@ -3,6 +3,7 @@ using System.Linq;
 using MLAPI;
 using MLAPI.Messaging;
 using UnityEngine;
+using Utility;
 
 namespace Network {
     public class NetworkRotation : NetworkBehaviour {
@@ -18,18 +19,7 @@ namespace Network {
 
         private float lastSendTime;
         private Quaternion lastSentRot;
-
-        /// <summary>
-        /// Rpc params that send data to all clients, except the owner of the object
-        /// </summary>
-        private ClientRpcParams NonOwnerClientParams =>
-            new ClientRpcParams {
-                Send = new ClientRpcSendParams {
-                    TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId != OwnerClientId)
-                        .Select(c => c.ClientId).ToArray()
-                }
-            };
-
+        
         private void Start() {
             playerTransform = transform.parent;
         }
@@ -59,7 +49,7 @@ namespace Network {
             if (IsServer) {
                 SubmitRotationClientRpc(
                     playerTransform.rotation,
-                    NonOwnerClientParams
+                    this.NonOwnerClientParams()
                 );
             }
             else {
@@ -108,7 +98,7 @@ namespace Network {
 
             SubmitRotationClientRpc(
                 rotation,
-                NonOwnerClientParams
+                this.NonOwnerClientParams()
             );
         }
 

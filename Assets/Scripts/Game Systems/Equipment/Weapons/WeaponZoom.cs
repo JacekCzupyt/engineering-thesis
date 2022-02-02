@@ -1,3 +1,4 @@
+using System;
 using Game_Systems.Settings;
 using Input_Systems;
 using UnityEngine;
@@ -25,6 +26,10 @@ namespace Game_Systems.Equipment.Weapons {
             input = CharacterInputManager.Instance;
             input.ToggleZoomIn += ZoomInToggleCallback;
             settings = SettingsManager.Instance;
+        }
+
+        private void OnDestroy() {
+            input.ToggleZoomIn -= ZoomInToggleCallback;
         }
 
         private void Update() {

@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UI.MainMenu;
+using Network;
 
 namespace NetPortals {
     public class ServerGameNetPortal : MonoBehaviour
@@ -28,12 +29,12 @@ namespace NetPortals {
 
         private GameNetPortal gameNetPortal;
 
-        private string uri = "http://79.191.52.229:8080/servers";
+        private string uri = "http://79.191.162.208:8080/servers";
         private int DbId;
-
         private int counter = 0;
-        [SerializeField] AddServerManager servert;
-        bool isAdd;
+
+        public bool informServerBrowser = false;
+        public string serverIp;
 
         private void Awake()
         {
@@ -155,7 +156,7 @@ namespace NetPortals {
 
         private void HandleUserDisconnectRequested()
         {
-            if (isAdd)
+            if (informServerBrowser)
             {
                 CancelInvoke("Upload");               
             }
@@ -170,7 +171,7 @@ namespace NetPortals {
         }
         private IEnumerator DelServer()
         {
-            using (UnityWebRequest www = UnityWebRequest.Delete(uri + $"/{DbId}"))
+            using (UnityWebRequest www = new UnityWebRequest(uri + "/" + DbId,"DELETE"))
             {
                 yield return www.SendWebRequest();
                 if (www.result != UnityWebRequest.Result.Success)
@@ -188,12 +189,15 @@ namespace NetPortals {
         {
             
             if (!NetworkManager.Singleton.IsHost) { return; }
-            isAdd = servert.IsAdd;
-            if (isAdd)
+            if (informServerBrowser)
             {
-                string jsonData = "{\"name\": \"" + servert.serverNameInput.text + "\", \"ip\": \"" + servert.ip + "\"}";
+                int? playerNum = NetworkManager.Singleton.ConnectedClients.Count;
+                if (playerNum == null)
+                    playerNum = 0;
+                string jsonData = "{\"name\":\"" + PlayerPrefs.GetString("ServerName", "Missing Name") + "\",\"ip\":\""+
+                    serverIp + "\",\"playerNumber\":"+ playerNum + ",\"mode\":true}";
                 StartCoroutine(AddServer(uri, jsonData));
-                InvokeRepeating("Upload", 5.0f, 8.0f);
+                InvokeRepeating("Upload", 3.0f, 3.0f);
             }            
             string clientGuid = Guid.NewGuid().ToString();
             string playerName = PlayerPrefs.GetString("PlayerName", "Missing Name");
@@ -202,7 +206,7 @@ namespace NetPortals {
         }
         private IEnumerator AddServer(string uri, string data)
         {
-            using (UnityWebRequest www = UnityWebRequest.Post(uri, ""))
+            using (UnityWebRequest www = new UnityWebRequest(uri, "POST"))
             {
                 byte[] bodyRaw = Encoding.UTF8.GetBytes(data);
                 www.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
@@ -212,6 +216,7 @@ namespace NetPortals {
                 {
                     CancelInvoke("Upload");
                     Debug.Log(www.error);
+                    HandleUserDisconnectRequested();
                     
                 }
                 else
@@ -226,9 +231,29 @@ namespace NetPortals {
         
         private IEnumerator Uploadform()
         {
-
-            using (UnityWebRequest www = UnityWebRequest.Put(uri+"/"+DbId, "{}"))
+            LobbyManager mode = GameObject.FindObjectOfType<LobbyManager>();
+            GameManager man = GameObject.FindObjectOfType<GameManager>();
+            bool sendMode = true;
+            if(mode!=null)
             {
+                if (mode.gameMode.Value == GameMode.FreeForAll)
+                    sendMode = true;
+                else
+                    sendMode = false;
+            }
+            if(man!=null)
+            {
+                if (man.GetGameInfo().gameMode ==  GameMode.FreeForAll)
+                    sendMode = true;
+                else
+                    sendMode = false;
+            }
+            string jsonData = "{\"mode\":"+sendMode.ToString().ToLower()+",\"playerNumber\":" + NetworkManager.Singleton.ConnectedClients.Count +"}";
+            using (UnityWebRequest www = new UnityWebRequest(uri + "/" + DbId, "PUT"))
+            {
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+                www.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
+                www.SetRequestHeader("Content-Type", "application/json");
                 yield return www.SendWebRequest();
 
                 if (www.result != UnityWebRequest.Result.Success)
@@ -293,7 +318,7 @@ namespace NetPortals {
                 gameReturnStatus = ConnectStatus.ServerFull;
             }
 
-            if (gameReturnStatus == ConnectStatus.Success)
+            if (gameReturnStatus == ConnectStatus.Success || gameReturnStatus == ConnectStatus.GameInProgress)
             {
                 clientSceneMap[clientId] = connectionPayload.clientScene;
                 clientIdToGuid[clientId] = connectionPayload.clientGUID;
@@ -304,7 +329,7 @@ namespace NetPortals {
 
             gameNetPortal.ServerToClientConnectResult(clientId, gameReturnStatus);
 
-            if (gameReturnStatus != ConnectStatus.Success)
+            if (gameReturnStatus != ConnectStatus.Success && gameReturnStatus != ConnectStatus.GameInProgress)
             {
                 StartCoroutine(WaitToDisconnectClient(clientId, gameReturnStatus));
             }

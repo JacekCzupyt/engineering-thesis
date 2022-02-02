@@ -31,13 +31,13 @@ namespace Network
             if(!IsServer)
                 throw new InvalidOperationException("This method can only be run on the server");
 
-            // foreach (var player in score.scoreboardPlayers)
-            // {
-            //     if (player.PlayerKills >= NumOfKillsToWin) {
-            //         GameEndedClientRpc(player.PlayerName);
-            //         break;
-            //     }
-            // }
+           /* foreach (var player in score.scoreboardPlayers)
+            {
+            if (player.PlayerKills >= NumOfKillsToWin) {
+                    GameEndedClientRpc(player.PlayerName);
+                     break;
+                }
+            }*/
         }
 
         [ClientRpc]
@@ -53,7 +53,6 @@ namespace Network
             yield return new WaitForSeconds(5);
             Cursor.lockState = CursorLockMode.None;
             GameNetPortal.Instance.RequestDisconnect();
-
         }
 
 

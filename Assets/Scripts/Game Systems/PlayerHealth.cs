@@ -1,29 +1,35 @@
 using MLAPI;
+using MLAPI.Messaging;
 using MLAPI.NetworkVariable;
-using Network;
 using UI;
 using UnityEngine;
+using Utility;
+using Visuals;
+using Network;
+using Debug = UnityEngine.Debug;
 
 namespace Game_Systems {
     public class PlayerHealth : NetworkBehaviour {
-        [SerializeField] public NetworkVariableInt health = new NetworkVariableInt(
+        private NetworkVariableInt health = new NetworkVariableInt(
             new NetworkVariableSettings {WritePermission = NetworkVariablePermission.OwnerOnly},
             100
         );
 
-        private PlayerRespawn respawnPlayer;
-        private PlayerScore playerScore;
-        private PlayerGameManager playerGameManager;
-        
-        GameObject shooter;
-        ScoreSystem score;
-
+        public int Health{
+            get{
+                return health.Value;
+            }
+            set{
+                health.Value = value;
+            }
+        }
         [SerializeField] private HealthBar bar;
 
-        private void Awake() {
-            playerScore = GetComponentInParent<PlayerScore>();
-            playerGameManager = GetComponentInParent<PlayerGameManager>();
-        }
+        public bool inactive = false;
+        private PlayerRespawn respawnPlayer;
+        private GameManager gameManager;
+
+        [SerializeField] private DamageOverlay damageOverlay;
 
         private void Start() {
             respawnPlayer = GetComponent<PlayerRespawn>();
@@ -33,29 +39,47 @@ namespace Game_Systems {
             if (IsOwner) {
                 bar.SetHealth(health.Value);
             }
-            if (IsOwner && health.Value <= 0) {
+            if (IsServer && health.Value <= 0 && !inactive) {
                 health.Value = 100;
                 respawnPlayer.Respawn();
             }
         }
-        public void TakeDamage(int damage, ulong player)
+
+        public void SetGameManager(GameManager gameManager)
         {
+            this.gameManager = gameManager;
+        }
+
+        public void TakeDamage(int damage, ulong? player = null)
+        {
+            if (inactive) {
+                Debug.Log("Player is immune");
+                return;
+            }
+
             Debug.Log($"Apply {damage} Damage");
 
             health.Value -= damage; 
+            TakeDamageClientRPC(damage, this.OwnerClientParams());
 
             if(health.Value<=0)
             {
-                playerGameManager.AddPlayerKill(player);
-                playerGameManager.AddPlayerDeath(OwnerClientId);  
-
-                playerScore.SetDeathCounter(1);
+                if(player.HasValue)
+                    gameManager.PlayerKillUpdate(player.Value);
+                
+                gameManager.PlayerDeathUpdate(OwnerClientId);
             }
         }
-        public void takeDemage(int damage)
-        {
-            Debug.Log($"Apply {damage} Damage");
-            health.Value -= damage;
+        
+        [ClientRpc]
+        private void TakeDamageClientRPC(int damage, ClientRpcParams rpcParams = default) {
+            if (!enabled)
+                return;
+            if (IsOwner) {
+                if (damageOverlay != null) {
+                    damageOverlay.Trigger();
+                }
+            }
         }
     }
 }

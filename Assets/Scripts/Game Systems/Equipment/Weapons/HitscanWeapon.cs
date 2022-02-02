@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using Audio;
 using Input_Systems;
@@ -7,6 +9,7 @@ using MLAPI.Spawning;
 using UI.Game;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace Game_Systems.Equipment.Weapons {
@@ -88,23 +91,27 @@ namespace Game_Systems.Equipment.Weapons {
                 SpreadManager.enabled = false;
         }
 
-        private ClientRpcParams NonOwnerClientParams =>
-            new ClientRpcParams {
-                Send = new ClientRpcSendParams {
-                    TargetClientIds = NetworkManager.Singleton.ConnectedClientsList.Where(c => c.ClientId != OwnerClientId)
-                        .Select(c => c.ClientId).ToArray()
-                }
-            };
-
 
         private void Start() {
-            input = CharacterInputManager.Instance;
             particles = GetComponentInChildren<ParticleSystem>();
-            currentAmmoCount = maxAmmoCount;
-            input.Controls.Reload.performed += Reload;
             playerRb = player.GetComponent<Rigidbody>();
+            
+            if (!IsOwner)
+                return;
+            
+            input = CharacterInputManager.Instance;
+            currentAmmoCount = maxAmmoCount;
+            input.Reload.performed += Reload;
+
         }
 
+        private void OnDestroy() {
+            if (!IsOwner)
+                return;
+            
+            if(input != null)
+                input.Reload.performed -= Reload;
+        }
 
         private void Update() {
             if (IsOwner) {

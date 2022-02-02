@@ -1,35 +1,58 @@
 using System;
+using System.Linq;
 using MLAPI;
 using MLAPI.Connection;
 using MLAPI.Messaging;
 using MLAPI.NetworkVariable.Collections;
 using MLAPI.NetworkVariable;
 using UI.Game;
+using UI.Hud;
 using UnityEngine;
 using Game_Systems;
+using System.Collections;
+using NetPortals;
 
 namespace Network
 {
     public class GameManager : NetworkBehaviour
     {
-        [SerializeField] private GameObject scoreboardUIObject;
+        [Header("UI References")]
+        [SerializeField] private GameObject gameUIObject;
+        [SerializeField] private GameObject scoreboardUIPanel;
+        
+
+        [Header("Game Systems References")]
         [SerializeField] private GameObject playerSpawnerObject;
+        [SerializeField] private GameObject playerManagerPrefab;
+
         private NetworkList<PlayerState> playerStates = new NetworkList<PlayerState>();
         private NetworkVariable<GameInfo> gameInfo = new NetworkVariable<GameInfo>();
+        
+        private ScoreboardUI scoreboardUI;
         private PlayerScoreUI playerScoreUI;
+        private GameScoreUI gameScoreUI;
+        private EndGameUI endGameUI;
         private GameObject gameInfoObject;
-
+        
         public void Start() {
-            //Scoreboard
-            playerScoreUI = scoreboardUIObject.GetComponent<PlayerScoreUI>();
-            playerScoreUI.gameObject.SetActive(false);
+            //Assigning UI References to proper elements
+            scoreboardUI = gameUIObject.GetComponent<ScoreboardUI>();
+            playerScoreUI = gameUIObject.GetComponent<PlayerScoreUI>();
+            gameScoreUI = gameUIObject.GetComponent<GameScoreUI>();
+            endGameUI = gameUIObject.GetComponent<EndGameUI>();
 
-            if(IsClient)
+            scoreboardUIPanel.SetActive(false);
+            endGameUI.SetGameobjectActive(false);
+
+            if (IsClient)
             {
                 playerStates.OnListChanged += HandlePlayerStateChange;
                 gameInfo.OnValueChanged += HandleGameInfoChange;
+                
                 UpdateGameMode();
                 ScoreboardUpdate();
+                PlayerScoreUpdate();
+                GameScoreUpdate();
             }
             if(IsServer)
             {
@@ -37,16 +60,31 @@ namespace Network
                 gameInfoObject = GameObject.FindGameObjectWithTag("GameInfoManager");
                 gameInfo.Value = gameInfoObject.GetComponent<GameInfoManager>().GetGameInfo();
 
+                //Check game state
+                playerStates.OnListChanged += CheckEndGameState;
+
                 playerSpawnerObject.GetComponent<PlayerSpawner>()
-                .ReceiveGameInfo(gameInfo.Value);
+                .UpdateGameInfo(gameInfo.Value);
 
                 NetworkManager.Singleton.OnClientConnectedCallback += HandleClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleClientDisconnect;
 
                 foreach(NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
                 {
-                    HandleClientConnected(client.ClientId);
+                    HandleClientLoaded(client.ClientId);
                 }
+            }
+        }
+
+        private void Update() {
+            
+            if(Input.GetKeyDown(KeyCode.Tab))
+            {
+                scoreboardUIPanel.SetActive(true);
+            }
+            if(Input.GetKeyUp(KeyCode.Tab))
+            {
+                scoreboardUIPanel.SetActive(false);
             }
         }
 
@@ -55,6 +93,8 @@ namespace Network
             playerStates.OnListChanged -= HandlePlayerStateChange;
             gameInfo.OnValueChanged -= HandleGameInfoChange;
 
+            if(IsServer) playerStates.OnListChanged -= CheckEndGameState;
+
             if(NetworkManager.Singleton)
             {
                 NetworkManager.Singleton.OnClientConnectedCallback -= HandleClientConnected;
@@ -62,28 +102,69 @@ namespace Network
             }
         }
 
-        private void HandleClientConnected(ulong clientId)
-        {
-            PlayerManager playerManager = null;
-            foreach (var manager in GameObject.FindGameObjectsWithTag("PlayerManager")) {
-                playerManager = manager.GetComponent<PlayerManager>();
-                if(playerManager.GetClientId() == clientId) break;
-            }
+        #region Connections
 
-            if(!playerManager)
-            {
-                Debug.Log("No player manager detected for " + clientId);
-                //Client connecting after game has started logic
-                return;
+        private void HandleClientConnected(ulong clientId) {
+            var tmpGameInfo = gameInfo.Value;
+            tmpGameInfo.playerCount++;
+            tmpGameInfo.maxPlayersPerTeam++;
+            gameInfo.Value = tmpGameInfo;
+            
+            playerSpawnerObject.GetComponent<PlayerSpawner>()
+                .UpdateGameInfo(gameInfo.Value);
+            HandleClientLoaded(clientId);
+        }
+
+        private void HandleClientLoaded(ulong clientId) {
+            PlayerManager playerManager = null;
+            try {
+                playerManager = NetworkManager.ConnectedClients[clientId].PlayerObject.GetComponent<PlayerManager>();
+                if (!playerManager)
+                    throw new Exception();
             }
+            catch {
+                //No player manager found
+                //We create a new one
+                playerManager = CreatePlayerManager(clientId);
+            }
+            
             playerSpawnerObject.GetComponent<PlayerSpawner>().SpawnPlayer(playerManager);
             Debug.Log("Player with id " + clientId + " has joined the game!");
-            playerStates.Add(playerManager.ToPlayerState());
-            //playerManager.DestoryPlayerManager();
+            playerStates.Add(playerManager.GetPlayerState());
+            playerManager.DestoryPlayerManager();
+        }
+
+        private PlayerManager CreatePlayerManager(ulong clientId) {
+            var newPlayerManagerObject = Instantiate(playerManagerPrefab);
+
+            if(!newPlayerManagerObject)
+                throw new Exception();
+
+            newPlayerManagerObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            
+            var newPlayerManager = newPlayerManagerObject.GetComponent<PlayerManager>();
+            
+            var playerData = ServerGameNetPortal.Instance.GetPlayerData(clientId);
+            
+            int teamId = 0;
+
+            if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            {
+                teamId = AssignTeamToNewPlayer();
+            }
+
+            newPlayerManager.SetPlayerData(clientId, playerData.Value.PlayerName, teamId);
+
+            return newPlayerManager;
         }
 
         private void HandleClientDisconnect(ulong clientId)
         {
+            var tmpGameInfo = gameInfo.Value;
+            tmpGameInfo.playerCount--;
+            tmpGameInfo.maxPlayersPerTeam--;
+            gameInfo.Value = tmpGameInfo;
+            
             for(int i = 0; i < playerStates.Count; i++)
             {
                 if(playerStates[i].ClientId == clientId)
@@ -92,16 +173,36 @@ namespace Network
                     playerStates.RemoveAt(i);
                 }
             }
+            playerSpawnerObject.GetComponent<PlayerSpawner>()
+                .UpdateGameInfo(gameInfo.Value);
         }
+
+        #endregion Connections
+
+        #region Game State Changes
 
         private void HandlePlayerStateChange(NetworkListEvent<PlayerState> state)
         {
+            //All UI Updates
             ScoreboardUpdate();
+            PlayerScoreUpdate();
+            GameScoreUpdate();
         }
 
         private void HandleGameInfoChange(GameInfo prevInfo, GameInfo newInfo)
         {
             UpdateGameMode();
+        }
+
+        private void UpdateGameMode()
+        {
+            scoreboardUI.UpdateGameMode(gameInfo.Value.gameMode);
+            gameScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
+        }
+
+        public void PlayerKillUpdate(ulong clientId)
+        {
+            PlayerKillServerRpc(clientId);
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -125,6 +226,11 @@ namespace Network
             }
         }
 
+        public void PlayerDeathUpdate(ulong clientId)
+        {
+            PlayerDeathServerRpc(clientId);
+        }
+
         [ServerRpc(RequireOwnership = false)]
         private void PlayerDeathServerRpc(ulong clientId, ServerRpcParams serverRpcParams = default)
         {
@@ -143,10 +249,78 @@ namespace Network
             }
         }
 
+        private void CheckEndGameState(NetworkListEvent<PlayerState> state)
+        {
+            for (int i = 0; i < playerStates.Count; i++)
+            {
+                if (playerStates[i].PlayerKills >= gameInfo.Value.numberOfKillsToWin)
+                {
+                    GameEndedClientRpc(playerStates[i].ClientId, 0);
+                    StartCoroutine(ServerEndGameCountdown());
+                    break;
+                }
+            } 
+        }
+        
+        [ClientRpc]
+        private void GameEndedClientRpc(ulong clientId, int teamId, ClientRpcParams rpcParams = default)
+        {
+            endGameUI.SetGameobjectActive(true);
+            bool winStatus = false;
+            if(teamId == 0)
+            {   
+                if(clientId == NetworkManager.Singleton.LocalClientId) 
+                    winStatus = true;
+            }else
+            {
+                if(playerStates.Where(
+                    p => p.ClientId == NetworkManager.Singleton.LocalClientId)
+                    .FirstOrDefault().TeamId == teamId)
+                    {
+                        winStatus = true;
+                    }
+            }   
+            endGameUI.UpdateEndGameText(winStatus);
+            StartCoroutine(ClientEndGameCountdown());
+        }
+
+        private IEnumerator ServerEndGameCountdown()
+        {
+            yield return new WaitForSeconds(5);
+            ServerGameNetPortal.Instance.EndRound();
+        }
+        
+        private IEnumerator ClientEndGameCountdown()
+        {
+            yield return new WaitForSeconds(5);
+            Cursor.lockState = CursorLockMode.None;
+        }
+
+        #endregion Game State Changes
+
+        #region UI Update Calls
+
+        private void GameScoreUpdate()
+        {
+            gameScoreUI.DeleteScores();
+            if(gameInfo.Value.gameMode == GameMode.TeamDeathmatch)
+            {
+                for(int i = 0; i < gameInfo.Value.teamCount; i++)
+                {
+                    gameScoreUI.AddTeamScores(i, GetTeamScore(i + 1));
+                }
+            } else if(gameInfo.Value.gameMode == GameMode.FreeForAll)
+            {
+                PlayerState localPlayerState = GetLocalPlayerState();
+                PlayerState topPlayer = GetTopPlayerScore();
+                gameScoreUI.SetPlayerScore(topPlayer, 0);
+                gameScoreUI.SetPlayerScore(localPlayerState, 1);
+            }   
+        }
+        
         private void ScoreboardUpdate()
         {
-            playerScoreUI.DestroyCards();
-            playerScoreUI.DeleteScores();
+            scoreboardUI.DestroyCards();
             
             if(gameInfo.Value.gameMode == GameMode.FreeForAll)
             {
@@ -154,7 +328,7 @@ namespace Network
                 foreach(var player in playerStates)
                 {
                     float position = -(30*i + 30*(i+1));
-                    playerScoreUI.CreateListItem(player, position,
+                    scoreboardUI.CreateListItem(player, position,
                     NetworkManager.Singleton.LocalClientId == player.ClientId);
                     i++;
                 }
@@ -169,43 +343,30 @@ namespace Network
                         if(player.TeamId == i)
                         {
                             float position = -(30*k + 20*(k+1) + (i-1) * teamSeparator);
-                            playerScoreUI.CreateListItem(player, position,
+                            scoreboardUI.CreateListItem(player, position,
                             NetworkManager.Singleton.LocalClientId == player.ClientId);
-                            
                             k++;
                         }
                     }
-                    playerScoreUI.AddTeamScores(i, GetTeamScore(i));
                 }
             }
         }
 
-        private void UpdateGameMode()
+        private void PlayerScoreUpdate()
         {
-            playerScoreUI.UpdateGameMode(gameInfo.Value.gameMode);
-        }
-
-        private void Update() {
-            
-            if(Input.GetKeyDown(KeyCode.Tab))
+            foreach(var playerState in playerStates)
             {
-                scoreboardUIObject.SetActive(true);
-            }
-            if(Input.GetKeyUp(KeyCode.Tab))
-            {
-                scoreboardUIObject.SetActive(false);
+                if(NetworkManager.Singleton.LocalClientId == playerState.ClientId)
+                {
+                    playerScoreUI.UpdatePlayerScore(playerState);
+                    break;
+                }
             }
         }
 
-        public void PlayerKillUpdate(ulong clientId)
-        {
-            PlayerKillServerRpc(clientId);
-        }
+        #endregion UI Update Calls
 
-        public void PlayerDeathUpdate(ulong clientId)
-        {
-            PlayerDeathServerRpc(clientId);
-        }
+        #region Utility
 
         public GameInfo GetGameInfo()
         {
@@ -222,17 +383,49 @@ namespace Network
             return score;
         }
 
+        public PlayerState GetLocalPlayerState()
+        {
+            foreach(var playerState in playerStates)
+            {
+                if(playerState.ClientId == NetworkManager.Singleton.LocalClientId) return playerState;
+            }
+            return new PlayerState();
+        }
+
         public PlayerState GetTopPlayerScore()
         {
-            PlayerState topPlayer = playerStates[0];
-            foreach(var player in playerStates)
+            PlayerState topPlayer = new PlayerState();
+            foreach(var playerState in playerStates)
             {
-                if(player.PlayerKills >= topPlayer.PlayerKills)
+                if(playerState.PlayerKills >= topPlayer.PlayerKills)
                 {
-                    topPlayer = player;
+                    topPlayer = playerState;
                 }
             }
             return topPlayer;
         }
+
+        public int AssignTeamToNewPlayer()
+        {
+            int teamCount = gameInfo.Value.teamCount;
+            int[] teamsCount = new int[teamCount];
+            for(int i = 0; i < teamCount; i++)
+            {
+                teamsCount[i] = PlayersPerTeam(i+1);
+            }
+            return Array.IndexOf(teamsCount, teamsCount.Min()) + 1;
+        }
+
+        public int PlayersPerTeam(int teamId)
+        {
+            int value = 0;
+            foreach(var playerState in playerStates)
+            {
+                if(playerState.TeamId == teamId) value++;
+            }
+            return value;
+        }
+
+        #endregion Utility
     }
 }

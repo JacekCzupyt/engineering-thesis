@@ -14,7 +14,7 @@ namespace Input_Systems {
             }
         }
         private PlayerControls controls;
-        public PlayerControls.PlayerActions Controls => controls.Player;
+        // public PlayerControls.PlayerActions Controls => controls.Player;
 
         private void Awake() {
             if (_instance != null && _instance != this) {
@@ -22,10 +22,11 @@ namespace Input_Systems {
             }
             else {
                 _instance = this;
+                controls = new PlayerControls();
+                SetupCallbacks();
+                DontDestroyOnLoad(this.gameObject);
             }
-            controls = new PlayerControls();
-            SetupCallbacks();
-            DontDestroyOnLoad(this.gameObject);
+
         }
 
         private void SetupCallbacks() {
@@ -39,11 +40,11 @@ namespace Input_Systems {
         }
 
         private void OnEnable() {
-            controls.Enable();
+            controls?.Enable();
         }
 
         private void OnDisable() {
-            controls.Disable();
+            controls?.Disable();
         }
 
         public event Action<int> SwitchEquipment;
@@ -78,5 +79,7 @@ namespace Input_Systems {
         public InputAction AbilityAction => controls.Player.Ability;
 
         public InputAction HoldZoomIn => controls.Player.ZoomIn;
+
+        public InputAction Reload => controls.Player.Reload;
     }
 }

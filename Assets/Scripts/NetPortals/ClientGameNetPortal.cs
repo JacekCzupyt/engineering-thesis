@@ -55,6 +55,14 @@ namespace NetPortals {
         }
 
         public void StartClient() {
+            
+            if (NetworkManager.Singleton.IsClient)
+                NetworkManager.Singleton.StopClient();
+            
+            if (NetworkManager.Singleton.IsHost)
+                NetworkManager.Singleton.StopHost();
+            
+            
             var payload = JsonUtility.ToJson(
                 new ConnectionPayload() {
                     clientGUID = Guid.NewGuid().ToString(),
@@ -130,6 +138,9 @@ namespace NetPortals {
             if (address.Length > 0) {
                 transport.ConnectAddress = address;
                 Debug.Log(transport.ConnectAddress);
+            }
+            else {
+                transport.ConnectAddress = "127.0.0.1";
             }
         }
     }
