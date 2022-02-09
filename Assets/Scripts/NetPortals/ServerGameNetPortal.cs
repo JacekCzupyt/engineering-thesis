@@ -29,7 +29,7 @@ namespace NetPortals {
 
         private GameNetPortal gameNetPortal;
 
-        private string uri = "http://79.191.162.208:8080/servers";
+        private string uri = "http://79.191.60.59:8080/servers";
         private int DbId;
         private int counter = 0;
 
